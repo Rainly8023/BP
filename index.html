@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>鸣潮 旧雨杯 </title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Oswald:wght@400;500;600;700&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --w:1920px;--h:1080px;
+  --p1-col:#e85c30;--p2-col:#3a8fff;
+  --ban-col:#cc2020;--pick-col:#d4a020;
+  --bg-deep:#020610;
+  --bg-panel:rgba(4,12,30,0.88);
+  --bg-card:rgba(8,18,42,0.80);
+  --border-main:rgba(60,120,220,0.35);
+  --border-glow:rgba(80,160,255,0.6);
+  --text-main:#d0e8ff;--text-muted:#5080b0;
+  --gold:#d4a020;--teal:#20c8a0;
+  --font-main:'Noto Sans SC','Oswald',sans-serif;
+}
+
+html,body{
+  width:var(--w);height:var(--h);
+  overflow:hidden;background:transparent;
+  font-family:var(--font-main);
+  color:var(--text-main);
+}
+
+/* ─── Background ─── */
+#bg{
+  position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 900px 600px at 50% 40%, rgba(10,30,80,0.6) 0%, transparent 70%),
+    radial-gradient(ellipse 600px 400px at 20% 80%, rgba(20,60,120,0.3) 0%, transparent 60%),
+    radial-gradient(ellipse 600px 400px at 80% 80%, rgba(10,40,100,0.3) 0%, transparent 60%),
+    #020610;
+}
+
+/* Matrix grid lines */
+#bg::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(40,100,200,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(40,100,200,0.07) 1px, transparent 1px);
+  background-size:60px 60px;
+}
+
+/* Hexagon pattern overlay */
+#bg::after{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='104'%3E%3Cpolygon points='60,4 116,34 116,70 60,100 4,70 4,34' fill='none' stroke='rgba(40,100,200,0.08)' stroke-width='1'/%3E%3C/svg%3E");
+  background-size:120px 104px;
+  opacity:0.8;
+}
+
+/* ─── Main Layout ─── */
+#app{
+  position:relative;z-index:1;
+  width:var(--w);height:var(--h);
+  display:grid;
+  grid-template-rows:52px 1fr 110px;
+  grid-template-columns:200px 1fr 200px;
+  gap:0;
+}
+
+/* ─── Top Header ─── */
+#header{
+  grid-column:1/-1;grid-row:1;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,rgba(4,12,36,0.95) 0%,rgba(2,8,24,0.85) 100%);
+  border-bottom:1px solid var(--border-main);
+  position:relative;
+}
+#header::before{
+  content:'';position:absolute;bottom:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--border-glow),transparent);
+}
+#title-text{
+  font-family:'Oswald','Noto Sans SC',sans-serif;
+  font-size:22px;font-weight:600;letter-spacing:8px;
+  color:#c8deff;text-transform:uppercase;
+  text-shadow:0 0 20px rgba(80,160,255,0.4);
+}
+#title-sub{
+  position:absolute;right:32px;top:50%;transform:translateY(-50%);
+  font-size:13px;letter-spacing:3px;color:var(--text-muted);
+}
+#phase-tag{
+  position:absolute;left:32px;top:50%;transform:translateY(-50%);
+  font-size:13px;letter-spacing:2px;
+  padding:3px 12px;border-radius:2px;
+  border:1px solid var(--border-glow);
+  color:var(--border-glow);
+  background:rgba(50,120,255,0.1);
+}
+
+/* ─── Player Panels (sides) ─── */
+.player-panel{
+  grid-row:2/3;
+  background:var(--bg-panel);
+  border-right:1px solid var(--border-main);
+  display:flex;flex-direction:column;
+  padding:0;
+}
+#p2-panel{
+  border-right:none;
+  border-left:1px solid var(--border-main);
+}
+
+.player-header{
+  height:40px;display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;letter-spacing:4px;text-transform:uppercase;
+  border-bottom:1px solid var(--border-main);
+}
+.p1-header{background:linear-gradient(90deg,rgba(232,92,48,0.25),transparent);color:var(--p1-col);}
+.p2-header{background:linear-gradient(270deg,rgba(58,143,255,0.25),transparent);color:var(--p2-col);}
+
+.section-title{
+  font-size:9px;letter-spacing:3px;color:var(--text-muted);
+  text-transform:uppercase;padding:6px 10px 3px;
+  border-bottom:1px solid rgba(40,80,160,0.2);
+}
+
+/* Character slots in side panels */
+.char-slot{
+  display:flex;align-items:center;gap:6px;
+  padding:4px 8px;border-bottom:1px solid rgba(20,50,100,0.3);
+  position:relative;overflow:hidden;min-height:52px;
+  transition:background 0.3s;
+}
+.char-slot.active{
+  background:rgba(80,160,255,0.06);
+}
+.char-slot.is-ban::before{
+  content:'';position:absolute;inset:0;
+  background:rgba(180,20,20,0.12);
+}
+.char-slot.is-ban .char-name-text{
+  text-decoration:line-through;color:#885050;
+}
+
+.char-avatar{
+  width:40px;height:40px;flex-shrink:0;
+  border-radius:3px;
+  background:rgba(10,25,60,0.8);
+  border:1px solid rgba(40,90,180,0.3);
+  overflow:hidden;display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.char-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;}
+.char-avatar.empty{border-style:dashed;border-color:rgba(40,80,160,0.2);}
+
+/* Ban X overlay */
+.ban-x{
+  position:absolute;inset:0;
+  background:rgba(180,20,20,0.55);
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+}
+.ban-x svg{width:24px;height:24px;}
+
+.char-info{flex:1;min-width:0;}
+.char-name-text{font-size:12px;font-weight:700;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.char-el-text{font-size:9px;color:var(--text-muted);letter-spacing:1px;margin-top:1px;}
+.slot-label{font-size:9px;color:var(--text-muted);flex-shrink:0;letter-spacing:1px;}
+
+/* Active glow on the current slot */
+.char-slot.current-active{
+  background:rgba(80,160,255,0.12);
+  border-bottom-color:rgba(80,160,255,0.4);
+  animation:slot-pulse 1.4s ease-in-out infinite;
+}
+@keyframes slot-pulse{
+  0%,100%{box-shadow:inset 0 0 0 0 rgba(80,160,255,0);}
+  50%{box-shadow:inset 2px 0 12px rgba(80,160,255,0.15);}
+}
+
+/* ─── Center Panel ─── */
+#center{
+  grid-row:2/3;grid-column:2;
+  display:flex;flex-direction:column;
+  background:transparent;
+  position:relative;
+}
+
+/* Video area placeholder */
+#video-area{
+  flex:1;
+  background:rgba(0,0,0,0.3);
+  position:relative;
+  overflow:hidden;
+}
+#video-area-inner{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+}
+#video-placeholder{
+  font-size:14px;letter-spacing:3px;color:rgba(80,120,180,0.4);
+  pointer-events:none;
+}
+
+/* Corner decorations */
+.corner-tl,.corner-tr,.corner-bl,.corner-br{
+  position:absolute;width:20px;height:20px;z-index:2;
+  pointer-events:none;
+}
+.corner-tl{top:4px;left:4px;border-top:2px solid var(--border-glow);border-left:2px solid var(--border-glow);}
+.corner-tr{top:4px;right:4px;border-top:2px solid var(--border-glow);border-right:2px solid var(--border-glow);}
+.corner-bl{bottom:4px;left:4px;border-bottom:2px solid var(--border-glow);border-left:2px solid var(--border-glow);}
+.corner-br{bottom:4px;right:4px;border-bottom:2px solid var(--border-glow);border-right:2px solid var(--border-glow);}
+
+/* BAN row in center */
+#ban-row{
+  display:flex;align-items:center;justify-content:center;
+  gap:8px;padding:8px 16px;
+  background:rgba(4,10,28,0.9);
+  border-top:1px solid var(--border-main);
+  border-bottom:1px solid var(--border-main);
+  position:relative;
+}
+#ban-label{
+  position:absolute;left:50%;transform:translateX(-50%);
+  font-size:11px;letter-spacing:4px;font-weight:700;
+  color:var(--ban-col);padding:3px 14px;
+  border:1px solid rgba(200,30,30,0.4);
+  background:rgba(180,20,20,0.12);
+  border-radius:2px;
+  pointer-events:none;
+}
+
+.ban-avatar{
+  width:54px;height:54px;border-radius:3px;
+  background:rgba(8,18,48,0.9);
+  border:1px solid rgba(40,90,180,0.3);
+  overflow:hidden;display:flex;align-items:center;justify-content:center;
+  position:relative;transition:border-color 0.3s;
+}
+.ban-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;}
+.ban-avatar.empty{border-style:dashed;border-color:rgba(40,80,160,0.2);}
+.ban-avatar.p1-ban{border-color:rgba(232,92,48,0.5);}
+.ban-avatar.p2-ban{border-color:rgba(58,143,255,0.5);}
+.ban-avatar.filled::after{
+  content:'✕';position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(160,20,20,0.55);
+  font-size:20px;font-weight:900;color:#fff;
+}
+
+/* ─── Bottom Panel ─── */
+#bottom{
+  grid-column:1/-1;grid-row:3;
+  background:linear-gradient(0deg,rgba(2,8,24,0.97) 0%,rgba(4,12,36,0.92) 100%);
+  border-top:1px solid var(--border-main);
+  display:flex;align-items:stretch;
+  position:relative;
+}
+#bottom::before{
+  content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--border-glow),transparent);
+}
+
+/* Score & controls section */
+#score-area{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:40px;
+  padding:0 30px;
+}
+
+.score-block{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.score-label{font-size:9px;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase;}
+.score-num{
+  font-family:'Oswald',sans-serif;font-size:48px;font-weight:700;line-height:1;
+  text-shadow:0 0 20px currentColor;cursor:pointer;user-select:none;
+}
+.score-p1{color:var(--p1-col);}
+.score-p2{color:var(--p2-col);}
+
+.score-divider{font-size:32px;color:var(--text-muted);font-weight:300;}
+
+/* Holographic challenge area */
+#holo-area{
+  width:460px;flex-shrink:0;
+  border-left:1px solid var(--border-main);
+  padding:10px 16px;
+  display:flex;flex-direction:column;gap:6px;
+}
+#holo-title{
+  font-size:10px;letter-spacing:4px;color:var(--teal);text-transform:uppercase;
+  border-bottom:1px solid rgba(30,200,150,0.2);padding-bottom:4px;
+}
+#holo-enemies{
+  display:flex;gap:8px;align-items:center;
+}
+.enemy-slot{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  position:relative;
+}
+.enemy-avatar{
+  width:48px;height:48px;border-radius:3px;
+  background:rgba(8,18,48,0.9);
+  border:1px solid rgba(30,200,150,0.25);
+  overflow:hidden;display:flex;align-items:center;justify-content:center;
+}
+.enemy-avatar img{width:100%;height:100%;object-fit:cover;}
+.enemy-name{font-size:9px;color:var(--text-muted);letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:54px;text-align:center;}
+.enemy-slot.defeated .enemy-avatar{
+  filter:grayscale(0.8);opacity:0.5;
+}
+.enemy-slot.defeated::after{
+  content:'✓';position:absolute;top:2px;right:2px;
+  width:16px;height:16px;background:var(--teal);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:#000;font-weight:700;z-index:2;
+}
+.enemy-slot.current .enemy-avatar{
+  border-color:var(--teal);
+  box-shadow:0 0 8px rgba(30,200,150,0.4);
+}
+
+#holo-score-row{
+  display:flex;align-items:center;justify-content:space-between;
+}
+#holo-score-display{
+  font-size:11px;color:var(--teal);letter-spacing:2px;
+}
+#holo-score-num{
+  font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:var(--teal);
+}
+
+/* Current action display */
+#action-display{
+  width:320px;flex-shrink:0;
+  border-left:1px solid var(--border-main);
+  padding:12px 20px;
+  display:flex;flex-direction:column;justify-content:center;gap:8px;
+}
+#action-turn-row{
+  display:flex;align-items:center;gap:10px;
+}
+#action-who{font-size:13px;font-weight:700;letter-spacing:2px;}
+#action-phase{font-size:11px;letter-spacing:2px;color:var(--text-muted);}
+#action-selected-name{
+  font-size:20px;font-weight:700;letter-spacing:2px;
+  min-height:28px;color:var(--gold);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+#action-btn-row{display:flex;gap:8px;}
+
+.btn{
+  padding:6px 16px;border-radius:2px;
+  font-family:var(--font-main);font-size:12px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;cursor:pointer;
+  border:1px solid;transition:all 0.15s;
+}
+.btn-confirm{
+  background:rgba(80,160,255,0.2);color:var(--border-glow);
+  border-color:var(--border-glow);
+}
+.btn-confirm:hover{background:rgba(80,160,255,0.35);}
+.btn-confirm:disabled{opacity:0.35;cursor:not-allowed;}
+.btn-reset{
+  background:transparent;color:var(--text-muted);
+  border-color:rgba(60,100,180,0.3);
+}
+.btn-reset:hover{color:var(--text-main);border-color:var(--text-muted);}
+
+/* ─── Character Select Modal ─── */
+#char-modal{
+  display:none;
+  position:fixed;inset:0;z-index:100;
+  background:rgba(2,6,20,0.92);
+  flex-direction:column;
+  padding:24px;gap:16px;
+}
+#char-modal.visible{display:flex;}
+#modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+}
+#modal-title{font-size:16px;letter-spacing:4px;color:var(--border-glow);text-transform:uppercase;}
+#modal-filters{display:flex;gap:8px;}
+.el-filter{
+  padding:4px 12px;border-radius:2px;cursor:pointer;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  background:transparent;color:var(--text-muted);
+  border:1px solid rgba(40,80,160,0.3);
+  font-family:var(--font-main);transition:all 0.15s;
+}
+.el-filter.active,.el-filter:hover{
+  color:var(--border-glow);border-color:var(--border-glow);
+  background:rgba(80,160,255,0.1);
+}
+#modal-search{
+  width:280px;background:rgba(8,18,48,0.9);border:1px solid var(--border-main);
+  border-radius:2px;color:var(--text-main);font-family:var(--font-main);
+  font-size:12px;padding:6px 12px;outline:none;
+}
+#char-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(76px,1fr));
+  gap:6px;overflow-y:auto;flex:1;
+  scrollbar-width:thin;scrollbar-color:rgba(40,80,160,0.4) transparent;
+}
+.grid-card{
+  background:rgba(6,14,38,0.9);border:1px solid rgba(30,60,140,0.4);
+  border-radius:3px;padding:5px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  transition:all 0.12s;position:relative;overflow:hidden;
+}
+.grid-card:hover:not(.g-unavail){
+  border-color:var(--border-glow);background:rgba(40,90,200,0.15);
+}
+.grid-card.g-selected{
+  border-color:var(--gold);background:rgba(212,160,32,0.12);
+}
+.grid-card.g-unavail{opacity:0.28;cursor:not-allowed;}
+.grid-card.g-unavail::after{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(45deg,transparent,transparent 6px,rgba(0,0,0,0.3) 6px,rgba(0,0,0,0.3) 8px);
+}
+.grid-avatar{
+  width:60px;height:60px;border-radius:3px;
+  background:rgba(4,12,36,0.8);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.grid-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;}
+.grid-name{font-size:10px;font-weight:700;letter-spacing:1px;text-align:center;color:var(--text-main);}
+.grid-el{font-size:8px;letter-spacing:1px;text-align:center;}
+
+/* Element colors */
+.el-Fusion{color:#ff7040;}
+.el-Glacio{color:#60c8ff;}
+.el-Electro{color:#b070ff;}
+.el-Aero{color:#40d890;}
+.el-Spectro{color:#ffe040;}
+.el-Havoc{color:#d060d0;}
+
+/* Holo challenge modal */
+#holo-modal{
+  display:none;position:fixed;inset:0;z-index:100;
+  background:rgba(2,6,20,0.92);align-items:center;justify-content:center;
+}
+#holo-modal.visible{display:flex;}
+#holo-modal-inner{
+  background:rgba(4,12,36,0.98);border:1px solid var(--teal);
+  border-radius:4px;padding:28px 32px;
+  width:520px;display:flex;flex-direction:column;gap:16px;
+}
+#holo-modal-title{font-size:14px;letter-spacing:4px;color:var(--teal);text-align:center;}
+#enemy-list-edit{display:flex;flex-direction:column;gap:8px;}
+.enemy-row-edit{
+  display:flex;gap:8px;align-items:center;
+}
+.enemy-input{
+  flex:1;background:rgba(4,12,36,0.9);border:1px solid rgba(30,200,150,0.3);
+  border-radius:2px;color:var(--text-main);font-family:var(--font-main);
+  font-size:12px;padding:6px 10px;outline:none;
+}
+.enemy-input::placeholder{color:var(--text-muted);}
+.enemy-idx{font-size:11px;color:var(--teal);width:20px;text-align:right;flex-shrink:0;}
+.btn-holo-confirm{
+  background:rgba(30,200,150,0.15);color:var(--teal);
+  border:1px solid var(--teal);padding:8px 24px;
+  border-radius:2px;font-family:var(--font-main);font-size:12px;
+  font-weight:700;letter-spacing:2px;cursor:pointer;text-align:center;
+}
+.btn-holo-confirm:hover{background:rgba(30,200,150,0.28);}
+
+/* Notification toast */
+#toast{
+  position:fixed;top:80px;left:50%;transform:translateX(-50%);
+  background:rgba(212,160,32,0.9);color:#111;
+  padding:8px 24px;border-radius:2px;font-size:14px;font-weight:700;
+  letter-spacing:2px;z-index:200;
+  opacity:0;transition:opacity 0.3s;pointer-events:none;
+  white-space:nowrap;
+}
+#toast.show{opacity:1;}
+
+/* Glowing separator lines */
+.glow-sep{
+  position:absolute;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 0%,var(--border-glow) 50%,transparent 100%);
+}
+
+/* Score reset flash */
+@keyframes score-reset{
+  0%{color:var(--ban-col);text-shadow:0 0 20px var(--ban-col);}
+  100%{color:var(--teal);text-shadow:0 0 20px var(--teal);}
+}
+.score-flash{animation:score-reset 0.8s ease-out;}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+
+<div id="toast" id="toast"></div>
+
+<!-- ─── MAIN APP ─── -->
+<div id="app">
+  <!-- Header -->
+  <div id="header">
+    <div id="phase-tag" id="phase-tag">BP 阶段</div>
+    <div id="title-text">旧 雨 杯 · 鸣 潮 娱 乐 赛</div>
+    <div id="title-sub">JINZHOU CUP · WUTHERING WAVES</div>
+  </div>
+
+  <!-- Player 1 Panel -->
+  <div class="player-panel" id="p1-panel">
+    <div class="player-header p1-header">玩家一</div>
+    <div class="section-title">BAN 禁用</div>
+    <div id="p1-ban-slots"></div>
+    <div class="section-title">PICK 选择</div>
+    <div id="p1-pick-slots"></div>
+  </div>
+
+  <!-- Center Panel -->
+  <div id="center">
+    <div class="corner-tl"></div><div class="corner-tr"></div>
+    <div class="corner-bl"></div><div class="corner-br"></div>
+    <div id="video-area">
+      <div id="video-area-inner">
+        <div id="video-placeholder">[ 视频源区域 / 直播画面 ]</div>
+      </div>
+    </div>
+    <!-- BAN row -->
+    <div id="ban-row">
+      <div id="p1-ban-row"></div>
+      <div style="width:100px;"></div><!-- spacer for label -->
+      <div id="ban-label">BANS</div>
+      <div id="p2-ban-row"></div>
+    </div>
+  </div>
+
+  <!-- Player 2 Panel -->
+  <div class="player-panel" id="p2-panel">
+    <div class="player-header p2-header">玩家二</div>
+    <div class="section-title">BAN 禁用</div>
+    <div id="p2-ban-slots"></div>
+    <div class="section-title">PICK 选择</div>
+    <div id="p2-pick-slots"></div>
+  </div>
+
+  <!-- Bottom Panel -->
+  <div id="bottom">
+    <!-- Action Display -->
+    <div id="action-display">
+      <div id="action-turn-row">
+        <span id="action-who">玩家一</span>
+        <span id="action-phase">禁用阶段</span>
+      </div>
+      <div id="action-selected-name">— 请选择角色 —</div>
+      <div id="action-btn-row">
+        <button class="btn btn-confirm" id="confirm-btn" onclick="confirmAction()" disabled>确 认</button>
+        <button class="btn btn-reset" onclick="showCharModal()">选 角</button>
+        <button class="btn btn-reset" onclick="resetBP()">重 置</button>
+      </div>
+    </div>
+
+    <!-- Score Area -->
+    <div id="score-area">
+      <div class="score-block">
+        <div class="score-label">玩家一</div>
+        <div class="score-num score-p1" id="score-p1">0</div>
+      </div>
+      <div class="score-divider">:</div>
+      <div class="score-block">
+        <div class="score-label">玩家二</div>
+        <div class="score-num score-p2" id="score-p2">0</div>
+      </div>
+    </div>
+
+    <!-- Holographic Challenge -->
+    <div id="holo-area">
+      <div id="holo-title">全息战略 · 当前挑战</div>
+      <div id="holo-enemies"></div>
+      <div id="holo-score-row">
+        <div id="holo-score-display">积分 <span id="holo-score-num">0</span></div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-confirm" style="font-size:10px;padding:4px 10px;" onclick="defeatEnemy()">击败</button>
+          <button class="btn btn-reset" style="font-size:10px;padding:4px 10px;" onclick="challengerDied()">角色阵亡</button>
+          <button class="btn btn-reset" style="font-size:10px;padding:4px 10px;" onclick="showHoloModal()">设置</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CHAR SELECT MODAL ─── -->
+<div id="char-modal">
+  <div id="modal-header">
+    <div id="modal-title" id="modal-title">选择角色</div>
+    <div style="display:flex;gap:12px;align-items:center;">
+      <input id="modal-search" placeholder="搜索..." oninput="filterGrid()">
+      <div id="modal-filters"></div>
+      <button class="btn btn-reset" onclick="closeCharModal()">关 闭</button>
+    </div>
+  </div>
+  <div id="char-grid"></div>
+</div>
+
+<!-- ─── HOLO SETUP MODAL ─── -->
+<div id="holo-modal">
+  <div id="holo-modal-inner">
+    <div id="holo-modal-title">全息战略挑战设置</div>
+    <div style="font-size:11px;color:var(--text-muted);letter-spacing:2px;text-align:center;">输入本次挑战的怪物名称（按出场顺序）</div>
+    <div id="enemy-list-edit"></div>
+    <div style="display:flex;gap:8px;justify-content:center;">
+      <button class="btn-holo-confirm" onclick="saveHoloSetup()">保存配置</button>
+      <button class="btn btn-reset" onclick="closeHoloModal()">取 消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+
+const CHARS = [
+  {name:'今汐',el:'Spectro',img:'./images/jx.jpg'},
+  {name:'珂莱塔',el:'Glacio',img:'./images/klt.jpg'},
+  {name:'椿',el:'Havoc',img:'./images/c.jpg'},
+  {name:'漂泊者·衍射',el:'Spectro',img:'./images/manys.jpg'}, 
+  {name:'漂泊者·湮灭',el:'Havoc',img:'./images/manym.jpg'}, 
+  {name:'吟霖',el:'Electro',img:'./images/ys.jpg'},
+  {name:'维里奈',el:'Spectro',img:'./images/wln.jpg'},
+  {name:'相里要',el:'Electro',img:'./images/xly.jpg'},
+  {name:'长离',el:'Fusion',img:'./images/cl.jpg'},
+  {name:'布兰特',el:'Fusion',img:'./images/blt.jpg'},
+  {name:'折枝',el:'Glacio',img:'./images/zz.jpg'},
+  {name:'卡卡罗',el:'Electro',img:'./images/kkl.jpg'},
+  {name:'凌阳',el:'Glacio',img:'./images/ly.jpg'},
+  {name:'安可',el:'Fusion',img:'./images/ak.jpg'},
+  {name:'守岸人',el:'Spectro',img:'./images/sar.jpg'},
+  {name:'菲比',el:'Spectro',img:'./images/fb.jpg'},
+  {name:'忌炎',el:'Aero',img:'./images/jy.jpg'},
+  {name:'坎特蕾拉',el:'Havoc',img:'./images/ll.jpg'},
+  {name:'赞妮',el:'Spectro',img:'./images/zn.jpg'},
+  {name:'夏空',el:'Aero',img:'./images/xk.jpg'},
+  {name:'卡提希娅',el:'Aero',img:'./images/kt.jpg'},
+  {name:'露帕',el:'Fusion',img:'./images/lp.jpg'},
+  {name:'琳奈',el:'Spectro',img:'./images/ln.jpg'},
+  {name:'莫宁',el:'Fusion',img:'./images/mn.jpg'},
+  {name:'爱弥斯',el:'Fusion',img:'./images/am.jpg'},
+  {name:'陆·赫斯',el:'Spectro',img:'./images/lh.jpg'},
+  {name:'西格莉卡',el:'Aero',img:'./images/SG.jpg'},
+  {name:'洛可可',el:'Havoc',img:'./images/lkk.jpg'},
+  {name:'奥古斯塔',el:'Electro',img:'./images/ag.jpg'},
+  {name:'尤诺',el:'Glacio',img:'./images/yn.jpg'},
+  {name:'仇远',el:'Aero',img:'./images/cy.jpg'},
+  {name:'弗洛洛',el:'Havoc',img:'./images/fll.jpg'},
+  {name:'千咲',el:'Havoc',img:'./images/qx.jpg'}, 
+
+  // 4星角色（12位）
+  {name:'秧秧',el:'Aero',img:'./images/yy.jpg'},
+  {name:'白芷',el:'Glacio',img:'./images/bz.jpg'},
+  {name:'炽霞',el:'Fusion',img:'./images/cx.jpg'},
+  {name:'散华',el:'Glacio',img:'./images/sh.jpg'},
+  {name:'釉瑚',el:'Glacio',img:'./images/yh.jpg'},
+  {name:'丹瑾',el:'Havoc',img:'./images/dj.jpg'},
+  {name:'莫特斐',el:'Fusion',img:'./images/mtf.jpg'},
+  {name:'渊武',el:'Electro',img:'./images/yw.jpg'},
+  {name:'秋水',el:'Aero',img:'./images/qs.jpg'},
+  {name:'桃祈',el:'Havoc',img:'./images/tq.jpg'},
+  {name:'灯灯',el:'Electro',img:'./images/dd.jpg'},
+  {name:'卜灵',el:'Electro',img:'./images/bl.jpg'}, 
+  {name:'鉴心',el:'Aero',img:'./images/jx1.jpg'}
+];
+
+const EL_ZH = {Fusion:'热熔',Glacio:'冷凝',Electro:'导电',Aero:'气动',Spectro:'衍射',Havoc:'湮灭'};
+const ELEMENTS = ['全部','Fusion','Glacio','Electro','Aero','Spectro','Havoc'];
+
+// BP sequence: {phase:'ban'|'pick', player:1|2}
+const SEQUENCE = [
+  {phase:'ban',player:1},{phase:'ban',player:2},
+  {phase:'ban',player:1},{phase:'ban',player:2},
+  {phase:'pick',player:2},{phase:'pick',player:1},
+  {phase:'pick',player:1},{phase:'pick',player:2},
+  {phase:'pick',player:2},{phase:'pick',player:1},
+];
+const BANS_EACH = 2, PICKS_EACH = 3;
+
+// ─────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────
+let S = {
+  step: 0,
+  p1bans: [], 
+  p2bans: [],
+  p1picks: [], 
+  p2picks: [],
+  selected: null,
+  filterEl: '全部',
+  search: '',
+  done: false,
+  scoreP1: 0, 
+  scoreP2: 0,
+  
+  holoEnemies: [
+    '飞廉之猩',
+    '燎照之骑',
+    '无冠者',
+    '芙露德莉斯',
+    '赫卡忒',
+    '罗蕾莱'
+  ],
+  
+  holoCurrentEnemy: 0,
+  holoScore: 0,
+};
+
+// ─────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────
+function bannedNames(){ return [...S.p1bans,...S.p2bans].map(c=>c.name); }
+function pickedNames(){ return [...S.p1picks,...S.p2picks].map(c=>c.name); }
+function isUnavail(name){ return bannedNames().includes(name)||pickedNames().includes(name); }
+
+function showToast(msg,dur=2200){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+// 图片加载失败时显示文字
+function imgError(img, text) {
+  img.style.display='none';
+  img.parentNode.innerHTML=`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(180,210,255,0.7);text-align:center;padding:2px;">${text}</div>`;
+}
+
+// ─────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────
+function renderSideSlots(){
+  const mk=(slots,labelPfx,count,isBan,playerClass)=>{
+    let html='';
+    for(let i=0;i<count;i++){
+      const c=slots[i];
+      const isActive=!S.done && S.step<SEQUENCE.length &&
+        SEQUENCE[S.step].phase===(isBan?'ban':'pick') &&
+        SEQUENCE[S.step].player===(playerClass===1?1:2) &&
+        !c;
+      let cls='char-slot';
+      if(isBan&&c) cls+=' is-ban';
+      if(isActive) cls+=' current-active';
+      
+      let avatarHtml = '';
+      if(c) {
+        avatarHtml = `<img src="${c.img}" onerror="imgError(this, '${c.name}')" alt="${c.name}">`;
+      } else {
+        avatarHtml = `<div style="width:100%;height:100%;border:1px dashed rgba(40,80,160,0.3);"></div>`;
+      }
+      
+      html+=`<div class="${cls}">
+        <div class="char-avatar${!c?' empty':''}">
+          ${avatarHtml}
+          ${isBan&&c?`<div class="ban-x"><svg viewBox="0 0 24 24" fill="none" stroke="#ff4040" stroke-width="3"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg></div>`:''}
+        </div>
+        <div class="char-info">
+          <div class="char-name-text">${c?c.name:(isBan?'— 禁用 —':'— 待选 —')}</div>
+          ${c?`<div class="char-el-text el-${c.el}">${EL_ZH[c.el]} · ${c.el}</div>`:''}
+        </div>
+        <div class="slot-label">${labelPfx}${i+1}</div>
+      </div>`;
+    }
+    return html;
+  };
+  document.getElementById('p1-ban-slots').innerHTML=mk(S.p1bans,'B',BANS_EACH,true,1);
+  document.getElementById('p1-pick-slots').innerHTML=mk(S.p1picks,'P',PICKS_EACH,false,1);
+  document.getElementById('p2-ban-slots').innerHTML=mk(S.p2bans,'B',BANS_EACH,true,2);
+  document.getElementById('p2-pick-slots').innerHTML=mk(S.p2picks,'P',PICKS_EACH,false,2);
+}
+
+
+function renderBanRow(){
+  const mkBan=(slots,cls,count)=>Array.from({length:count},(_,i)=>{
+    const c=slots[i];
+    let content = '';
+    if(c) {
+      content = `<img src="${c.img}" onerror="imgError(this, '${c.name}')" style="width:100%;height:100%;object-fit:cover;object-position:top;" alt="${c.name}">`;
+    }
+    return `<div class="ban-avatar${!c?' empty':' filled '+cls}">${content}</div>`;
+  }).join('');
+  
+  document.getElementById('p1-ban-row').innerHTML=`<div style="display:flex;gap:5px;">${mkBan(S.p1bans,'p1-ban',BANS_EACH)}</div>`;
+  document.getElementById('p2-ban-row').innerHTML=`<div style="display:flex;gap:5px;">${mkBan(S.p2bans,'p2-ban',BANS_EACH)}</div>`;
+}
+
+function renderActionBar(){
+  if(S.done){
+    document.getElementById('action-who').textContent='BP 完成';
+    document.getElementById('action-who').style.color='var(--gold)';
+    document.getElementById('action-phase').textContent='';
+    document.getElementById('action-selected-name').textContent='— 双方阵容已确定 —';
+    document.getElementById('confirm-btn').disabled=true;
+    document.getElementById('phase-tag').textContent='BP 完成';
+    return;
+  }
+  if(S.step>=SEQUENCE.length){S.done=true;renderActionBar();return;}
+  const cur=SEQUENCE[S.step];
+  const whoEl=document.getElementById('action-who');
+  whoEl.textContent=`玩家${cur.player}`;
+  whoEl.style.color=cur.player===1?'var(--p1-col)':'var(--p2-col)';
+  document.getElementById('action-phase').textContent=cur.phase==='ban'?'▸ 禁用阶段':'▸ 选择阶段';
+  document.getElementById('action-selected-name').textContent=S.selected?S.selected.name:'— 请点击选角 —';
+  document.getElementById('confirm-btn').disabled=!S.selected;
+  document.getElementById('phase-tag').textContent=cur.phase==='ban'?`BAN ${S.step+1}/4`:`PICK ${S.step-3}/6`;
+}
+
+function renderHolo(){
+  const enemies=S.holoEnemies;
+  let html='';
+  enemies.forEach((name,i)=>{
+    let cls='enemy-slot';
+    if(i<S.holoCurrentEnemy) cls+=' defeated';
+    else if(i===S.holoCurrentEnemy) cls+=' current';
+    const initial = name.charAt(0);
+    html+=`<div class="${cls}">
+      <div class="enemy-avatar">
+        <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--teal);background:rgba(10,30,60,0.9);">${initial}</div>
+      </div>
+      <div class="enemy-name">${name}</div>
+    </div>`;
+  });
+  document.getElementById('holo-enemies').innerHTML=html;
+  document.getElementById('holo-score-num').textContent=S.holoScore;
+}
+
+function renderScores(){
+  document.getElementById('score-p1').textContent=S.scoreP1;
+  document.getElementById('score-p2').textContent=S.scoreP2;
+}
+
+function renderAll(){
+  renderSideSlots();
+  renderBanRow();
+  renderActionBar();
+  renderHolo();
+  renderScores();
+}
+
+// ─────────────────────────────────────────
+// BP LOGIC
+// ─────────────────────────────────────────
+function showCharModal(){
+  S.selected=null;
+  document.getElementById('char-modal').classList.add('visible');
+  buildFilterBar();
+  renderGrid();
+}
+function closeCharModal(){
+  document.getElementById('char-modal').classList.remove('visible');
+  renderActionBar();
+}
+
+function buildFilterBar(){
+  document.getElementById('modal-filters').innerHTML=ELEMENTS.map(el=>
+    `<button class="el-filter${S.filterEl===el?' active':''}" onclick="setFilter('${el}')">${el==='全部'?'全部':(EL_ZH[el]||el)+' '+el}</button>`
+  ).join('');
+}
+
+function setFilter(el){S.filterEl=el;buildFilterBar();renderGrid();}
+
+function filterGrid(){
+  S.search=document.getElementById('modal-search').value;
+  renderGrid();
+}
+
+
+function renderGrid(){
+  const s=S.search.toLowerCase();
+  const list=CHARS.filter(c=>{
+    if(S.filterEl!=='全部'&&c.el!==S.filterEl) return false;
+    if(s&&!c.name.includes(s)&&!c.el.toLowerCase().includes(s)) return false;
+    return true;
+  });
+  const title=S.step<SEQUENCE.length?
+    (SEQUENCE[S.step].phase==='ban'?`禁用角色 — 玩家${SEQUENCE[S.step].player}`:`选择角色 — 玩家${SEQUENCE[S.step].player}`):
+    '选择角色';
+  document.getElementById('modal-title').textContent=title;
+  
+  document.getElementById('char-grid').innerHTML=list.map(c=>{
+    const unavail=isUnavail(c.name);
+    let cls='grid-card';
+    if(unavail) cls+=' g-unavail';
+    else if(S.selected&&S.selected.name===c.name) cls+=' g-selected';
+    
+    return `<div class="${cls}" onclick="${unavail?'':'selectChar(\''+c.name+'\')'}">
+      <div class="grid-avatar">
+        <img src="${c.img}" onerror="imgError(this, '${c.name}')" style="width:100%;height:100%;object-fit:cover;object-position:top;" alt="${c.name}">
+      </div>
+      <div class="grid-name">${c.name}</div>
+      <div class="grid-el el-${c.el}">${EL_ZH[c.el]} ${c.el}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectChar(name){
+  if(isUnavail(name)) return;
+  S.selected=CHARS.find(c=>c.name===name);
+  renderGrid();
+  document.getElementById('confirm-btn').disabled=false;
+  document.getElementById('action-selected-name').textContent=S.selected.name;
+  closeCharModal();
+}
+
+function confirmAction(){
+  if(!S.selected||S.done) return;
+  if(S.step>=SEQUENCE.length) return;
+  const cur=SEQUENCE[S.step];
+  const c=S.selected;
+  if(cur.phase==='ban'){
+    if(cur.player===1) S.p1bans.push(c);
+    else S.p2bans.push(c);
+  } else {
+    if(cur.player===1) S.p1picks.push(c);
+    else S.p2picks.push(c);
+  }
+  S.selected=null;
+  S.step++;
+  if(S.step>=SEQUENCE.length) S.done=true;
+  renderAll();
+  if(S.done) showToast('BP 阶段完成！双方阵容已确定',3000);
+}
+
+function resetBP(){
+  S.step=0;S.p1bans=[];S.p2bans=[];S.p1picks=[];S.p2picks=[];
+  S.selected=null;S.done=false;S.filterEl='全部';S.search='';
+  document.getElementById('modal-search').value='';
+  document.getElementById('phase-tag').textContent='BP 阶段';
+  renderAll();
+  showToast('BP 已重置');
+}
+
+// ─────────────────────────────────────────
+// HOLOGRAPHIC CHALLENGE
+// ─────────────────────────────────────────
+function showHoloModal(){
+  const edit=document.getElementById('enemy-list-edit');
+  edit.innerHTML=Array.from({length:6},(_,i)=>
+    `<div class="enemy-row-edit">
+      <span class="enemy-idx">${i+1}</span>
+      <input class="enemy-input" placeholder="怪物名称 ${i+1}（可留空）" value="${S.holoEnemies[i]||''}">
+    </div>`
+  ).join('');
+  document.getElementById('holo-modal').classList.add('visible');
+}
+function closeHoloModal(){document.getElementById('holo-modal').classList.remove('visible');}
+function saveHoloSetup(){
+  const inputs=document.querySelectorAll('.enemy-input');
+  S.holoEnemies=Array.from(inputs).map(i=>i.value.trim()).filter(Boolean);
+  S.holoCurrentEnemy=0;
+  S.holoScore=0;
+  closeHoloModal();
+  renderHolo();
+  showToast('挑战配置已保存');
+}
+
+function defeatEnemy(){
+  if(S.holoCurrentEnemy>=S.holoEnemies.length){
+    showToast('所有怪物已击败！');return;
+  }
+  S.holoScore++;
+  const name=S.holoEnemies[S.holoCurrentEnemy];
+  S.holoCurrentEnemy++;
+  renderHolo();
+  showToast(`击败 ${name}！积分 +1 → ${S.holoScore}`);
+  if(S.holoCurrentEnemy>=S.holoEnemies.length){
+    setTimeout(()=>showToast('🏆 全部怪物已击败！',3000),2400);
+  }
+}
+
+function challengerDied(){
+  const prev=S.holoScore;
+  S.holoScore=0;
+  renderHolo();
+  showToast(`角色阵亡！积分清零（${prev} → 0）`);
+  const el=document.getElementById('holo-score-num');
+  el.classList.add('score-flash');
+  setTimeout(()=>el.classList.remove('score-flash'),900);
+}
+
+// ─────────────────────────────────────────
+// SCORE MANUAL ADJUST
+// ─────────────────────────────────────────
+document.getElementById('score-p1').addEventListener('click',()=>{
+  S.scoreP1++;renderScores();});
+document.getElementById('score-p2').addEventListener('click',()=>{
+  S.scoreP2++;renderScores();});
+document.getElementById('score-p1').addEventListener('contextmenu',e=>{
+  e.preventDefault();if(S.scoreP1>0){S.scoreP1--;renderScores();}});
+document.getElementById('score-p2').addEventListener('contextmenu',e=>{
+  e.preventDefault();if(S.scoreP2>0){S.scoreP2--;renderScores();}});
+
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
+renderAll();
+</script>
+</body>
+</html>
