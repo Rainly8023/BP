@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>旧雨杯 · 赛前倒计时</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Oswald:wght@400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ice1:#a8d8f7;--ice2:#6ab8f0;--ice3:#c8ecff;
+  --ice-glow:rgba(168,216,247,0.65);
+  --ice-shadow:rgba(80,160,230,0.45);
+  --gold:#d4a020;--teal:#20c8a0;
+  --font:'Noto Sans SC','Oswald',sans-serif;
+}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#020810;font-family:var(--font);}
+
+/* 背景 */
+#bg{position:fixed;inset:0;z-index:0;background:url('./3.jpg') center/cover no-repeat;}
+#bg-dim{position:fixed;inset:0;z-index:1;
+  background:rgba(2,6,20,0.72);}
+#scanlines{position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,8,30,0.05) 2px,rgba(0,8,30,0.05) 4px);}
+#pcanvas{position:fixed;inset:0;z-index:2;pointer-events:none;}
+
+/* 冰蓝边框 */
+.fl-top,.fl-bottom{position:fixed;left:0;right:0;height:3px;z-index:25;pointer-events:none;
+  background:linear-gradient(90deg,transparent 0%,var(--ice2) 14%,var(--ice3) 38%,#fff 50%,var(--ice3) 62%,var(--ice2) 86%,transparent 100%);
+  box-shadow:0 0 16px var(--ice-glow),0 0 40px var(--ice-shadow);}
+.fl-top{top:0;}.fl-bottom{bottom:0;}
+.fl-left,.fl-right{position:fixed;top:0;bottom:0;width:3px;z-index:25;pointer-events:none;
+  background:linear-gradient(180deg,transparent,var(--ice2) 14%,var(--ice1) 50%,var(--ice2) 86%,transparent);
+  box-shadow:0 0 16px var(--ice-glow),0 0 40px var(--ice-shadow);}
+.fl-left{left:0;}.fl-right{right:0;}
+.fc{position:fixed;z-index:26;pointer-events:none;}
+.fc.tl{top:0;left:0;width:80px;height:80px;border-top:3px solid var(--ice1);border-left:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),-6px -6px 40px var(--ice-shadow);}
+.fc.tr{top:0;right:0;width:80px;height:80px;border-top:3px solid var(--ice1);border-right:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),6px -6px 40px var(--ice-shadow);}
+.fc.bl{bottom:0;left:0;width:80px;height:80px;border-bottom:3px solid var(--ice1);border-left:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),-6px 6px 40px var(--ice-shadow);}
+.fc.br{bottom:0;right:0;width:80px;height:80px;border-bottom:3px solid var(--ice1);border-right:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),6px 6px 40px var(--ice-shadow);}
+.fd{position:fixed;z-index:28;pointer-events:none;transform:rotate(45deg);width:13px;height:13px;background:var(--ice3);box-shadow:0 0 16px var(--ice-glow),0 0 32px var(--ice-shadow);}
+.fd.tl{top:10px;left:10px;}.fd.tr{top:10px;right:10px;}
+.fd.bl{bottom:10px;left:10px;}.fd.br{bottom:10px;right:10px;}
+.fm{position:fixed;z-index:27;pointer-events:none;transform:rotate(45deg);width:10px;height:10px;background:rgba(200,236,255,0.95);box-shadow:0 0 14px var(--ice-glow);}
+.fm.top{top:9px;left:calc(50% - 5px);}.fm.bottom{bottom:9px;left:calc(50% - 5px);}
+.fm.left{left:9px;top:calc(50% - 5px);}.fm.right{right:9px;top:calc(50% - 5px);}
+
+/* 主内容 */
+#main{
+  position:relative;z-index:10;
+  width:1920px;height:1080px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:0;
+}
+
+/* logo区 */
+#logo-area{
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:24px;
+}
+#logo-img{height:48px;width:auto;object-fit:contain;
+  filter:drop-shadow(0 0 12px var(--ice-glow));}
+#event-title{
+  font-family:'Oswald',sans-serif;
+  font-size:36px;font-weight:700;letter-spacing:10px;
+  color:#d8eeff;text-transform:uppercase;
+  text-shadow:0 0 24px var(--ice-glow),0 0 50px var(--ice-shadow);
+}
+
+/* 分隔线 */
+.h-line{
+  width:600px;height:1px;margin:8px 0 32px;
+  background:linear-gradient(90deg,transparent,var(--ice2) 20%,var(--ice3) 50%,var(--ice2) 80%,transparent);
+  box-shadow:0 0 10px var(--ice-glow);
+}
+
+/* 赛事信息 */
+#match-info{
+  display:flex;gap:48px;align-items:center;
+  margin-bottom:40px;
+}
+.match-tag{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.match-tag-label{font-size:10px;letter-spacing:4px;color:rgba(168,216,247,0.5);text-transform:uppercase;}
+.match-tag-value{font-size:16px;font-weight:700;letter-spacing:3px;color:var(--ice1);}
+.match-divider{width:1px;height:36px;background:linear-gradient(180deg,transparent,rgba(168,216,247,0.3),transparent);}
+
+/* 倒计时主体 */
+#countdown-wrap{
+  display:flex;align-items:center;gap:0;
+  margin-bottom:40px;
+}
+.time-block{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.time-num{
+  font-family:'Oswald',sans-serif;
+  font-size:120px;font-weight:700;line-height:1;
+  color:var(--ice3);
+  text-shadow:0 0 30px var(--ice-glow),0 0 80px var(--ice-shadow);
+  min-width:200px;text-align:center;
+  animation:numglow 2s ease-in-out infinite;
+}
+@keyframes numglow{
+  0%,100%{text-shadow:0 0 30px var(--ice-glow),0 0 80px var(--ice-shadow);}
+  50%{text-shadow:0 0 50px var(--ice-glow),0 0 120px var(--ice-shadow),0 0 200px rgba(80,160,230,0.2);}
+}
+.time-label{font-size:11px;letter-spacing:4px;color:rgba(168,216,247,0.5);text-transform:uppercase;}
+.time-sep{
+  font-family:'Oswald',sans-serif;
+  font-size:100px;font-weight:300;color:rgba(106,184,240,0.5);
+  margin:0 8px;padding-bottom:20px;
+  animation:seppulse 1s ease-in-out infinite;
+}
+@keyframes seppulse{0%,100%{opacity:0.3;}50%{opacity:0.8;}}
+
+/* 进度条 */
+#progress-wrap{
+  width:700px;margin-bottom:32px;
+}
+#progress-bar-bg{
+  width:100%;height:3px;
+  background:rgba(60,120,200,0.2);
+  border-radius:2px;
+  overflow:hidden;
+  position:relative;
+}
+#progress-bar{
+  height:100%;width:100%;
+  background:linear-gradient(90deg,var(--ice2),var(--ice3),#fff);
+  border-radius:2px;
+  transition:width 1s linear;
+  box-shadow:0 0 10px var(--ice-glow);
+}
+
+/* 等待提示 */
+#waiting-text{
+  font-size:13px;letter-spacing:5px;color:rgba(168,216,247,0.45);
+  text-transform:uppercase;
+  animation:blink 2s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:0.4;}50%{opacity:0.8;}}
+
+/* 已结束 */
+#finished{
+  display:none;
+  flex-direction:column;align-items:center;gap:16px;
+}
+#finished.show{display:flex;}
+#finished-text{
+  font-family:'Oswald',sans-serif;font-size:56px;font-weight:700;
+  letter-spacing:8px;color:var(--ice3);
+  text-shadow:0 0 30px var(--ice-glow),0 0 80px var(--ice-shadow);
+  animation:numglow 1.5s ease-in-out infinite;
+}
+
+/* 控制面板 */
+#ctrl-panel{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  display:flex;gap:12px;align-items:center;z-index:30;
+  background:rgba(2,6,20,0.9);border:1px solid rgba(106,184,240,0.2);
+  border-radius:4px;padding:10px 20px;
+}
+.ctrl-label{font-size:10px;letter-spacing:2px;color:rgba(168,216,247,0.4);}
+.time-input{
+  background:rgba(4,12,36,0.9);border:1px solid rgba(106,184,240,0.3);
+  border-radius:2px;color:var(--ice1);font-family:var(--font);
+  font-size:13px;padding:4px 10px;outline:none;width:70px;text-align:center;
+}
+.ctrl-btn{
+  font-family:var(--font);font-size:11px;letter-spacing:2px;
+  padding:5px 14px;border-radius:2px;cursor:pointer;transition:all 0.15s;
+  border:1px solid rgba(106,184,240,0.4);color:var(--ice1);
+  background:rgba(60,130,220,0.12);
+}
+.ctrl-btn:hover{background:rgba(168,216,247,0.2);box-shadow:0 0 10px var(--ice-glow);}
+.ctrl-btn.red{border-color:rgba(200,50,50,0.4);color:#e06060;background:rgba(180,20,20,0.1);}
+.ctrl-btn.red:hover{background:rgba(200,50,50,0.2);}
+
+/* 玩家VS区 */
+#vs-area{
+  display:flex;align-items:center;gap:60px;
+  margin-bottom:32px;
+}
+.vs-player{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.vs-player-name{font-size:22px;font-weight:700;letter-spacing:3px;}
+.vs-player-name.p1{color:#e85c30;text-shadow:0 0 14px rgba(232,92,48,0.5);}
+.vs-player-name.p2{color:#3a8fff;text-shadow:0 0 14px rgba(58,143,255,0.5);}
+.vs-player-sub{font-size:10px;letter-spacing:2px;color:rgba(168,216,247,0.4);}
+.vs-text{
+  font-family:'Oswald',sans-serif;font-size:40px;font-weight:700;
+  color:rgba(168,216,247,0.3);letter-spacing:4px;
+}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div id="bg-dim"></div>
+<div id="scanlines"></div>
+<canvas id="pcanvas"></canvas>
+
+<div class="fl-top"></div><div class="fl-bottom"></div>
+<div class="fl-left"></div><div class="fl-right"></div>
+<div class="fc tl"></div><div class="fc tr"></div>
+<div class="fc bl"></div><div class="fc br"></div>
+<div class="fd tl"></div><div class="fd tr"></div>
+<div class="fd bl"></div><div class="fd br"></div>
+<div class="fm top"></div><div class="fm bottom"></div>
+<div class="fm left"></div><div class="fm right"></div>
+
+<div id="main">
+  <div id="logo-area">
+    <img id="logo-img" src="./logo.png" onerror="this.style.display='none'" alt="">
+    <div id="event-title">旧 雨 杯</div>
+  </div>
+  <div class="h-line"></div>
+
+  <div id="match-info">
+    <div class="match-tag">
+      <div class="match-tag-label">赛事</div>
+      <div class="match-tag-value">鸣潮娱乐赛</div>
+    </div>
+    <div class="match-divider"></div>
+    <div class="match-tag">
+      <div class="match-tag-label">阶段</div>
+      <div class="match-tag-value" id="stage-text">小组赛</div>
+    </div>
+    <div class="match-divider"></div>
+    <div class="match-tag">
+      <div class="match-tag-label">对局</div>
+      <div class="match-tag-value" id="bo-text">BO3</div>
+    </div>
+  </div>
+
+  <div id="vs-area">
+    <div class="vs-player">
+      <div class="vs-player-name p1" id="cd-p1-name">玩家一</div>
+      <div class="vs-player-sub">PLAYER 1</div>
+    </div>
+    <div class="vs-text">VS</div>
+    <div class="vs-player">
+      <div class="vs-player-name p2" id="cd-p2-name">玩家二</div>
+      <div class="vs-player-sub">PLAYER 2</div>
+    </div>
+  </div>
+
+  <div id="countdown-wrap">
+    <div class="time-block">
+      <div style="display:flex;align-items:flex-end;">
+        <div style="text-align:center;">
+          <div class="time-num" id="t-min">05</div>
+          <div class="time-label">分钟</div>
+        </div>
+        <div class="time-sep">:</div>
+        <div style="text-align:center;">
+          <div class="time-num" id="t-sec">00</div>
+          <div class="time-label">秒</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="progress-wrap">
+    <div id="progress-bar-bg">
+      <div id="progress-bar"></div>
+    </div>
+  </div>
+
+  <div id="waiting-text">— 比赛即将开始，请做好准备 —</div>
+
+  <div id="finished">
+    <div id="finished-text">比 赛 开 始 ！</div>
+  </div>
+</div>
+
+<!-- 控制面板 -->
+<div id="ctrl-panel">
+  <span class="ctrl-label">倒计时</span>
+  <input class="time-input" id="min-input" value="5" min="0" max="99" type="number">
+  <span class="ctrl-label">分</span>
+  <input class="time-input" id="sec-input" value="0" min="0" max="59" type="number">
+  <span class="ctrl-label">秒</span>
+  <button class="ctrl-btn" onclick="startCountdown()">开始</button>
+  <button class="ctrl-btn red" onclick="resetCountdown()">重置</button>
+  <span class="ctrl-label" style="margin-left:12px;">P1</span>
+  <input class="time-input" id="p1-input" value="玩家一" style="width:100px;">
+  <span class="ctrl-label">P2</span>
+  <input class="time-input" id="p2-input" value="玩家二" style="width:100px;">
+  <button class="ctrl-btn" onclick="updateNames()">更新</button>
+  <span class="ctrl-label" style="margin-left:12px;">阶段</span>
+  <select id="stage-sel" style="background:rgba(4,12,36,0.9);border:1px solid rgba(106,184,240,0.3);color:#a8d8f7;font-family:var(--font);font-size:12px;padding:4px 8px;border-radius:2px;outline:none;">
+    <option>小组赛</option>
+    <option>半决赛</option>
+    <option>决赛</option>
+    <option>友谊赛</option>
+  </select>
+  <select id="bo-sel" style="background:rgba(4,12,36,0.9);border:1px solid rgba(106,184,240,0.3);color:#a8d8f7;font-family:var(--font);font-size:12px;padding:4px 8px;border-radius:2px;outline:none;">
+    <option>BO1</option>
+    <option selected>BO3</option>
+    <option>BO5</option>
+  </select>
+  <button class="ctrl-btn" onclick="updateInfo()">应用</button>
+</div>
+
+<script>
+// 粒子
+(function(){
+  const c=document.getElementById('pcanvas'),x=c.getContext('2d');
+  c.width=1920;c.height=1080;
+  const pts=Array.from({length:55},()=>({
+    px:Math.random()*1920,py:Math.random()*1080,
+    r:Math.random()*2+0.5,
+    vx:(Math.random()-0.5)*0.25,vy:-(Math.random()*0.4+0.06),
+    a:Math.random()*0.4+0.08,
+    col:Math.random()>0.4?'rgba(168,216,247,':'rgba(200,236,255,'
+  }));
+  function draw(){
+    x.clearRect(0,0,1920,1080);
+    pts.forEach(p=>{
+      x.beginPath();x.arc(p.px,p.py,p.r,0,Math.PI*2);
+      x.fillStyle=p.col+p.a+')';x.fill();
+      p.px+=p.vx;p.py+=p.vy;
+      if(p.py<-10){p.py=1090;p.px=Math.random()*1920;}
+      if(p.px<-10)p.px=1930;if(p.px>1930)p.px=-10;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+let totalSecs=300;
+let remaining=300;
+let timer=null;
+let running=false;
+
+function pad(n){return String(n).padStart(2,'0');}
+
+function updateDisplay(){
+  const m=Math.floor(remaining/60);
+  const s=remaining%60;
+  document.getElementById('t-min').textContent=pad(m);
+  document.getElementById('t-sec').textContent=pad(s);
+  const pct=totalSecs>0?(remaining/totalSecs)*100:0;
+  document.getElementById('progress-bar').style.width=pct+'%';
+}
+
+function startCountdown(){
+  if(running) return;
+  const m=parseInt(document.getElementById('min-input').value)||0;
+  const s=parseInt(document.getElementById('sec-input').value)||0;
+  totalSecs=m*60+s;
+  remaining=totalSecs;
+  updateDisplay();
+  document.getElementById('finished').classList.remove('show');
+  document.getElementById('waiting-text').style.display='';
+  running=true;
+  timer=setInterval(()=>{
+    if(remaining<=0){
+      clearInterval(timer);running=false;
+      document.getElementById('waiting-text').style.display='none';
+      document.getElementById('finished').classList.add('show');
+      document.getElementById('t-min').textContent='00';
+      document.getElementById('t-sec').textContent='00';
+      document.getElementById('progress-bar').style.width='0%';
+      return;
+    }
+    remaining--;
+    updateDisplay();
+  },1000);
+}
+
+function resetCountdown(){
+  clearInterval(timer);running=false;
+  remaining=totalSecs;
+  updateDisplay();
+  document.getElementById('finished').classList.remove('show');
+  document.getElementById('waiting-text').style.display='';
+}
+
+function updateNames(){
+  document.getElementById('cd-p1-name').textContent=document.getElementById('p1-input').value||'玩家一';
+  document.getElementById('cd-p2-name').textContent=document.getElementById('p2-input').value||'玩家二';
+}
+
+function updateInfo(){
+  document.getElementById('stage-text').textContent=document.getElementById('stage-sel').value;
+  document.getElementById('bo-text').textContent=document.getElementById('bo-sel').value;
+}
+
+updateDisplay();
+</script>
+</body>
+</html>

@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>旧雨杯 · 结算页面</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Oswald:wght@400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ice1:#a8d8f7;--ice2:#6ab8f0;--ice3:#c8ecff;
+  --ice-glow:rgba(168,216,247,0.65);
+  --ice-shadow:rgba(80,160,230,0.45);
+  --p1:#e85c30;--p2:#3a8fff;
+  --gold:#d4a020;--teal:#20c8a0;
+  --font:'Noto Sans SC','Oswald',sans-serif;
+}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#020810;font-family:var(--font);}
+
+#bg{position:fixed;inset:0;z-index:0;background:url('./3.jpg') center/cover no-repeat;}
+#bg-dim{position:fixed;inset:0;z-index:1;background:rgba(2,6,20,0.78);}
+#scanlines{position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,8,30,0.05) 2px,rgba(0,8,30,0.05) 4px);}
+#pcanvas{position:fixed;inset:0;z-index:2;pointer-events:none;}
+
+/* 边框 */
+.fl-top,.fl-bottom{position:fixed;left:0;right:0;height:3px;z-index:25;pointer-events:none;
+  background:linear-gradient(90deg,transparent 0%,var(--ice2) 14%,var(--ice3) 38%,#fff 50%,var(--ice3) 62%,var(--ice2) 86%,transparent 100%);
+  box-shadow:0 0 16px var(--ice-glow),0 0 40px var(--ice-shadow);}
+.fl-top{top:0;}.fl-bottom{bottom:0;}
+.fl-left,.fl-right{position:fixed;top:0;bottom:0;width:3px;z-index:25;pointer-events:none;
+  background:linear-gradient(180deg,transparent,var(--ice2) 14%,var(--ice1) 50%,var(--ice2) 86%,transparent);
+  box-shadow:0 0 16px var(--ice-glow),0 0 40px var(--ice-shadow);}
+.fl-left{left:0;}.fl-right{right:0;}
+.fc{position:fixed;z-index:26;pointer-events:none;}
+.fc.tl{top:0;left:0;width:80px;height:80px;border-top:3px solid var(--ice1);border-left:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),-6px -6px 40px var(--ice-shadow);}
+.fc.tr{top:0;right:0;width:80px;height:80px;border-top:3px solid var(--ice1);border-right:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),6px -6px 40px var(--ice-shadow);}
+.fc.bl{bottom:0;left:0;width:80px;height:80px;border-bottom:3px solid var(--ice1);border-left:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),-6px 6px 40px var(--ice-shadow);}
+.fc.br{bottom:0;right:0;width:80px;height:80px;border-bottom:3px solid var(--ice1);border-right:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),6px 6px 40px var(--ice-shadow);}
+.fd{position:fixed;z-index:28;pointer-events:none;transform:rotate(45deg);width:13px;height:13px;background:var(--ice3);box-shadow:0 0 16px var(--ice-glow),0 0 32px var(--ice-shadow);}
+.fd.tl{top:10px;left:10px;}.fd.tr{top:10px;right:10px;}
+.fd.bl{bottom:10px;left:10px;}.fd.br{bottom:10px;right:10px;}
+.fm{position:fixed;z-index:27;pointer-events:none;transform:rotate(45deg);width:10px;height:10px;background:rgba(200,236,255,0.95);box-shadow:0 0 14px var(--ice-glow);}
+.fm.top{top:9px;left:calc(50% - 5px);}.fm.bottom{bottom:9px;left:calc(50% - 5px);}
+.fm.left{left:9px;top:calc(50% - 5px);}.fm.right{right:9px;top:calc(50% - 5px);}
+
+/* 主内容 */
+#main{
+  position:relative;z-index:10;
+  width:1920px;height:1080px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:0;
+}
+
+/* 标题 */
+#result-title{
+  font-family:'Oswald',sans-serif;font-size:20px;font-weight:400;
+  letter-spacing:8px;color:var(--ice1);text-transform:uppercase;
+  margin-bottom:8px;opacity:0.7;
+}
+#event-badge{
+  font-family:'Oswald',sans-serif;font-size:32px;font-weight:700;
+  letter-spacing:8px;color:#d8eeff;text-transform:uppercase;
+  text-shadow:0 0 20px var(--ice-glow),0 0 50px var(--ice-shadow);
+  margin-bottom:32px;
+}
+
+/* 胜者展示 */
+#winner-area{
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  margin-bottom:36px;
+  animation:winner-in 0.8s ease-out both;
+}
+@keyframes winner-in{
+  0%{transform:scale(0.7) translateY(30px);opacity:0;}
+  100%{transform:scale(1) translateY(0);opacity:1;}
+}
+#winner-label{
+  font-size:13px;letter-spacing:6px;color:rgba(212,160,32,0.8);
+  text-transform:uppercase;
+}
+#winner-crown{
+  font-size:52px;
+  animation:crown-float 2s ease-in-out infinite;
+  filter:drop-shadow(0 0 16px rgba(212,160,32,0.6));
+}
+@keyframes crown-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+#winner-name{
+  font-family:'Oswald',sans-serif;
+  font-size:72px;font-weight:700;letter-spacing:6px;
+  line-height:1;
+}
+#winner-name.w-p1{color:var(--p1);text-shadow:0 0 24px rgba(232,92,48,0.6),0 0 60px rgba(232,92,48,0.3);}
+#winner-name.w-p2{color:var(--p2);text-shadow:0 0 24px rgba(58,143,255,0.6),0 0 60px rgba(58,143,255,0.3);}
+#winner-sub{font-size:14px;letter-spacing:4px;color:rgba(168,216,247,0.5);}
+
+/* 分割线 */
+.v-line{width:800px;height:1px;margin:4px 0 32px;
+  background:linear-gradient(90deg,transparent,var(--gold) 20%,rgba(212,160,32,0.8) 50%,var(--gold) 80%,transparent);
+  box-shadow:0 0 10px rgba(212,160,32,0.4);}
+
+/* 比分卡 */
+#score-card{
+  display:flex;align-items:center;gap:0;
+  background:rgba(4,10,30,0.85);
+  border:1px solid rgba(106,184,240,0.2);
+  border-radius:4px;
+  overflow:hidden;
+  margin-bottom:36px;
+  animation:score-in 1s ease-out 0.3s both;
+}
+@keyframes score-in{0%{opacity:0;transform:translateY(20px);}100%{opacity:1;transform:translateY(0);}}
+.score-side{
+  display:flex;flex-direction:column;align-items:center;
+  padding:28px 60px;gap:10px;
+}
+.score-side.p1-side{background:linear-gradient(135deg,rgba(232,92,48,0.12) 0%,transparent 100%);}
+.score-side.p2-side{background:linear-gradient(225deg,rgba(58,143,255,0.12) 0%,transparent 100%);}
+.score-player-name{font-size:16px;font-weight:700;letter-spacing:3px;}
+.score-player-name.p1n{color:var(--p1);}
+.score-player-name.p2n{color:var(--p2);}
+.score-num-big{
+  font-family:'Oswald',sans-serif;font-size:80px;font-weight:700;line-height:1;
+  text-shadow:0 0 24px currentColor,0 0 50px currentColor;
+}
+.score-num-big.p1n{color:var(--p1);}
+.score-num-big.p2n{color:var(--p2);}
+.score-center-div{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0 40px;gap:8px;
+}
+.score-vs-text{
+  font-family:'Oswald',sans-serif;font-size:28px;font-weight:300;
+  color:rgba(168,216,247,0.25);letter-spacing:4px;
+}
+.score-bo-text{
+  font-size:11px;letter-spacing:3px;
+  color:rgba(168,216,247,0.35);
+  padding:3px 12px;border:1px solid rgba(168,216,247,0.15);border-radius:2px;
+}
+
+/* pick展示 */
+#picks-area{
+  display:flex;gap:80px;
+  animation:score-in 1s ease-out 0.5s both;
+}
+.picks-block{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.picks-label{font-size:9px;letter-spacing:3px;color:rgba(168,216,247,0.35);text-transform:uppercase;}
+.picks-chars{display:flex;gap:8px;}
+.pick-char{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.pick-avatar{
+  width:52px;height:52px;border-radius:3px;
+  background:rgba(6,16,46,0.9);
+  overflow:hidden;display:flex;align-items:center;justify-content:center;
+}
+.pick-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;}
+.pick-avatar.empty-av{border:1px dashed rgba(106,184,240,0.15);}
+.pick-name{font-size:9px;color:rgba(168,216,247,0.5);letter-spacing:1px;text-align:center;max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pick-avatar.p1-av{border:1px solid rgba(232,92,48,0.4);}
+.pick-avatar.p2-av{border:1px solid rgba(58,143,255,0.4);}
+
+/* 控制面板 */
+#ctrl-panel{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  display:flex;gap:10px;align-items:center;z-index:30;
+  background:rgba(2,6,20,0.92);border:1px solid rgba(106,184,240,0.2);
+  border-radius:4px;padding:10px 20px;flex-wrap:wrap;justify-content:center;
+}
+.ctrl-label{font-size:10px;letter-spacing:2px;color:rgba(168,216,247,0.4);}
+.ctrl-input{background:rgba(4,12,36,0.9);border:1px solid rgba(106,184,240,0.3);
+  border-radius:2px;color:var(--ice1);font-family:var(--font);
+  font-size:12px;padding:4px 10px;outline:none;}
+.ctrl-btn{font-family:var(--font);font-size:11px;letter-spacing:2px;
+  padding:5px 14px;border-radius:2px;cursor:pointer;transition:all 0.15s;
+  border:1px solid rgba(106,184,240,0.4);color:var(--ice1);
+  background:rgba(60,130,220,0.12);}
+.ctrl-btn:hover{background:rgba(168,216,247,0.2);}
+.ctrl-btn.gold{border-color:rgba(212,160,32,0.5);color:var(--gold);background:rgba(212,160,32,0.08);}
+.ctrl-btn.gold:hover{background:rgba(212,160,32,0.2);}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div id="bg-dim"></div>
+<div id="scanlines"></div>
+<canvas id="pcanvas"></canvas>
+
+<div class="fl-top"></div><div class="fl-bottom"></div>
+<div class="fl-left"></div><div class="fl-right"></div>
+<div class="fc tl"></div><div class="fc tr"></div>
+<div class="fc bl"></div><div class="fc br"></div>
+<div class="fd tl"></div><div class="fd tr"></div>
+<div class="fd bl"></div><div class="fd br"></div>
+<div class="fm top"></div><div class="fm bottom"></div>
+<div class="fm left"></div><div class="fm right"></div>
+
+<div id="main">
+  <div id="result-title">MATCH RESULT</div>
+  <div id="event-badge">旧 雨 杯 · 鸣 潮 娱 乐 赛</div>
+
+  <div id="winner-area">
+    <div id="winner-label">🏆 本局胜者</div>
+    <div id="winner-crown">👑</div>
+    <div id="winner-name" class="w-p1">玩家一</div>
+    <div id="winner-sub">WINNER</div>
+  </div>
+
+  <div class="v-line"></div>
+
+  <div id="score-card">
+    <div class="score-side p1-side">
+      <div class="score-player-name p1n" id="res-p1-name">玩家一</div>
+      <div class="score-num-big p1n" id="res-score-p1">2</div>
+    </div>
+    <div class="score-center-div">
+      <div class="score-vs-text">:</div>
+      <div class="score-bo-text" id="res-bo">BO3</div>
+    </div>
+    <div class="score-side p2-side">
+      <div class="score-player-name p2n" id="res-p2-name">玩家二</div>
+      <div class="score-num-big p2n" id="res-score-p2">1</div>
+    </div>
+  </div>
+
+  <div id="picks-area">
+    <div class="picks-block">
+      <div class="picks-label">玩家一阵容</div>
+      <div class="picks-chars" id="p1-picks-display"></div>
+    </div>
+    <div class="picks-block">
+      <div class="picks-label">玩家二阵容</div>
+      <div class="picks-chars" id="p2-picks-display"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 控制面板 -->
+<div id="ctrl-panel">
+  <span class="ctrl-label">胜者</span>
+  <select id="winner-sel" class="ctrl-input" style="width:90px;">
+    <option value="1">玩家一</option>
+    <option value="2">玩家二</option>
+  </select>
+  <span class="ctrl-label">P1</span>
+  <input class="ctrl-input" id="rp1-name" value="玩家一" style="width:90px;">
+  <span class="ctrl-label">P2</span>
+  <input class="ctrl-input" id="rp2-name" value="玩家二" style="width:90px;">
+  <span class="ctrl-label">比分</span>
+  <input class="ctrl-input" id="r-score1" value="2" type="number" min="0" max="9" style="width:50px;text-align:center;">
+  <span class="ctrl-label">:</span>
+  <input class="ctrl-input" id="r-score2" value="1" type="number" min="0" max="9" style="width:50px;text-align:center;">
+  <select id="r-bo" class="ctrl-input" style="width:70px;">
+    <option>BO1</option>
+    <option selected>BO3</option>
+    <option>BO5</option>
+  </select>
+  <button class="ctrl-btn gold" onclick="applyResult()">🏆 更新结算</button>
+  <button class="ctrl-btn" onclick="loadFromBP()">从BP同步</button>
+</div>
+
+<script>
+(function(){
+  const c=document.getElementById('pcanvas'),x=c.getContext('2d');
+  c.width=1920;c.height=1080;
+  const pts=Array.from({length:60},()=>({
+    px:Math.random()*1920,py:Math.random()*1080,
+    r:Math.random()*2+0.4,
+    vx:(Math.random()-0.5)*0.22,vy:-(Math.random()*0.35+0.05),
+    a:Math.random()*0.38+0.07,
+    col:Math.random()>0.4?'rgba(168,216,247,':'rgba(212,160,32,'
+  }));
+  function draw(){
+    x.clearRect(0,0,1920,1080);
+    pts.forEach(p=>{
+      x.beginPath();x.arc(p.px,p.py,p.r,0,Math.PI*2);
+      x.fillStyle=p.col+p.a+')';x.fill();
+      p.px+=p.vx;p.py+=p.vy;
+      if(p.py<-10){p.py=1090;p.px=Math.random()*1920;}
+      if(p.px<-10)p.px=1930;if(p.px>1930)p.px=-10;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+const EL_ZH={Fusion:'热熔',Glacio:'冷凝',Electro:'导电',Aero:'气动',Spectro:'衍射',Havoc:'湮灭'};
+
+function imgErr(img,n){
+  img.style.display='none';
+  img.parentNode.insertAdjacentHTML('beforeend',
+    `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:rgba(168,216,247,0.7);text-align:center;padding:2px;line-height:1.2;">${n}</div>`);
+}
+
+function renderPickRow(id, picks, cls){
+  const el=document.getElementById(id);
+  if(!picks||picks.length===0){
+    el.innerHTML=Array.from({length:3},()=>`<div class="pick-char"><div class="pick-avatar empty-av"></div><div class="pick-name">—</div></div>`).join('');
+    return;
+  }
+  el.innerHTML=picks.map(c=>`
+    <div class="pick-char">
+      <div class="pick-avatar ${cls}">
+        <img src="${c.img}" onerror="imgErr(this,'${c.name}')" alt="${c.name}">
+      </div>
+      <div class="pick-name">${c.name}</div>
+    </div>`).join('');
+}
+
+function applyResult(){
+  const w=parseInt(document.getElementById('winner-sel').value);
+  const p1n=document.getElementById('rp1-name').value||'玩家一';
+  const p2n=document.getElementById('rp2-name').value||'玩家二';
+  const s1=document.getElementById('r-score1').value;
+  const s2=document.getElementById('r-score2').value;
+  const bo=document.getElementById('r-bo').value;
+
+  document.getElementById('res-p1-name').textContent=p1n;
+  document.getElementById('res-p2-name').textContent=p2n;
+  document.getElementById('res-score-p1').textContent=s1;
+  document.getElementById('res-score-p2').textContent=s2;
+  document.getElementById('res-bo').textContent=bo;
+
+  const wn=document.getElementById('winner-name');
+  wn.textContent=w===1?p1n:p2n;
+  wn.className='w-p'+(w===1?'1':'2');
+
+  // 重新触发动画
+  const wa=document.getElementById('winner-area');
+  wa.style.animation='none';wa.offsetHeight;
+  wa.style.animation='winner-in 0.8s ease-out both';
+}
+
+function loadFromBP(){
+  try{
+    const S=JSON.parse(localStorage.getItem('wuwa_bp_state'));
+    if(!S) return;
+    if(S.p1name) document.getElementById('rp1-name').value=S.p1name;
+    if(S.p2name) document.getElementById('rp2-name').value=S.p2name;
+    if(S.scoreP1!=null) document.getElementById('r-score1').value=S.scoreP1;
+    if(S.scoreP2!=null) document.getElementById('r-score2').value=S.scoreP2;
+    // 自动判断胜者
+    if(S.scoreP1>S.scoreP2) document.getElementById('winner-sel').value='1';
+    else if(S.scoreP2>S.scoreP1) document.getElementById('winner-sel').value='2';
+    // 同步picks
+    renderPickRow('p1-picks-display',S.p1picks,'p1-av');
+    renderPickRow('p2-picks-display',S.p2picks,'p2-av');
+    applyResult();
+  } catch(e){console.error(e);}
+}
+
+// 初始化
+renderPickRow('p1-picks-display',[],'p1-av');
+renderPickRow('p2-picks-display',[],'p2-av');
+// 自动从BP同步
+setTimeout(loadFromBP, 500);
+setInterval(()=>{
+  try{
+    const S=JSON.parse(localStorage.getItem('wuwa_bp_state'));
+    if(S){
+      renderPickRow('p1-picks-display',S.p1picks,'p1-av');
+      renderPickRow('p2-picks-display',S.p2picks,'p2-av');
+    }
+  }catch(e){}
+},1000);
+</script>
+</body>
+</html>
