@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>旧雨杯 · BP 回放</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Oswald:wght@400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --p1:#e85c30;--p2:#3a8fff;--ban:#cc2020;--pick:#d4a020;--teal:#20c8a0;
+  --ice1:#a8d8f7;--ice2:#6ab8f0;--ice3:#c8ecff;
+  --ice-glow:rgba(168,216,247,0.6);--ice-shadow:rgba(80,160,230,0.4);
+  --bg:#020810;--panel:rgba(4,10,30,0.92);--border:rgba(40,80,160,0.28);
+  --font:'Noto Sans SC','Oswald',sans-serif;--text:#d8eeff;--muted:#4a7090;
+}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--bg);font-family:var(--font);color:var(--text);}
+
+#bg{position:fixed;inset:0;z-index:0;
+  background:radial-gradient(ellipse 1400px 800px at 50% 40%,rgba(8,20,60,0.75) 0%,transparent 70%),var(--bg);}
+#bg::before{content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(30,80,180,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(30,80,180,0.05) 1px,transparent 1px);
+  background-size:60px 60px;}
+#pcanvas{position:fixed;inset:0;z-index:1;pointer-events:none;}
+
+.fl-top,.fl-bottom{position:fixed;left:0;right:0;height:3px;z-index:25;pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--ice2) 14%,var(--ice3) 38%,#fff 50%,var(--ice3) 62%,var(--ice2) 86%,transparent);
+  box-shadow:0 0 16px var(--ice-glow),0 0 40px var(--ice-shadow);}
+.fl-top{top:0;}.fl-bottom{bottom:0;}
+.fl-left,.fl-right{position:fixed;top:0;bottom:0;width:3px;z-index:25;pointer-events:none;
+  background:linear-gradient(180deg,transparent,var(--ice2) 20%,var(--ice1) 50%,var(--ice2) 80%,transparent);box-shadow:0 0 16px var(--ice-glow);}
+.fl-left{left:0;}.fl-right{right:0;}
+.fc{position:fixed;z-index:26;pointer-events:none;}
+.fc.tl{top:0;left:0;width:60px;height:60px;border-top:3px solid var(--ice1);border-left:3px solid var(--ice1);box-shadow:0 0 20px var(--ice-glow);}
+.fc.tr{top:0;right:0;width:60px;height:60px;border-top:3px solid var(--ice1);border-right:3px solid var(--ice1);box-shadow:0 0 20px var(--ice-glow);}
+.fc.bl{bottom:0;left:0;width:60px;height:60px;border-bottom:3px solid var(--ice1);border-left:3px solid var(--ice1);box-shadow:0 0 20px var(--ice-glow);}
+.fc.br{bottom:0;right:0;width:60px;height:60px;border-bottom:3px solid var(--ice1);border-right:3px solid var(--ice1);box-shadow:0 0 20px var(--ice-glow);}
+
+/* Layout */
+#app{position:relative;z-index:10;width:1920px;height:1080px;display:flex;flex-direction:column;padding:20px 50px 110px;}
+
+/* Header */
+#rp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:10px;
+  border-bottom:1px solid rgba(106,184,240,0.18);}
+#rp-title{font-family:'Oswald',sans-serif;font-size:26px;font-weight:700;letter-spacing:10px;color:#d8eeff;
+  text-shadow:0 0 20px var(--ice-glow);text-transform:uppercase;}
+#rp-sub{font-size:10px;letter-spacing:4px;color:rgba(168,216,247,0.3);margin-top:2px;}
+#rp-match-info{display:flex;gap:12px;align-items:center;}
+.rp-badge{font-size:11px;letter-spacing:3px;padding:4px 14px;border-radius:2px;}
+.rp-badge.teal{color:var(--teal);border:1px solid rgba(32,200,160,0.3);background:rgba(32,200,160,0.06);}
+.rp-badge.ice{color:var(--ice1);border:1px solid rgba(106,184,240,0.25);background:rgba(106,184,240,0.05);}
+
+/* Main content: side panels + center */
+#rp-main{flex:1;display:grid;grid-template-columns:280px 1fr 280px;gap:12px;overflow:hidden;}
+
+/* Side panels */
+.rp-side{background:var(--panel);border:1px solid var(--border);border-radius:4px;
+  display:flex;flex-direction:column;overflow:hidden;}
+.rp-side-header{height:40px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;letter-spacing:4px;border-bottom:1px solid var(--border);}
+.rp-p1-hdr{background:linear-gradient(90deg,rgba(232,92,48,0.2),transparent);color:var(--p1);}
+.rp-p2-hdr{background:linear-gradient(270deg,rgba(58,143,255,0.2),transparent);color:var(--p2);}
+.rp-sec-label{font-size:8px;letter-spacing:3px;color:var(--muted);padding:5px 10px 3px;
+  border-bottom:1px solid rgba(20,50,100,0.3);text-transform:uppercase;}
+.rp-slots{flex:1;display:flex;flex-direction:column;}
+.rp-slot{display:flex;align-items:center;gap:7px;padding:5px 8px;
+  border-bottom:1px solid rgba(20,50,100,0.25);min-height:52px;
+  opacity:0;transition:opacity 0.4s,background 0.3s;position:relative;overflow:hidden;}
+.rp-slot.revealed{opacity:1;}
+.rp-slot.is-ban{background:rgba(180,20,20,0.06);}
+.rp-slot.is-pick{background:rgba(212,160,32,0.04);}
+.rp-slot.highlight{animation:slothighlight 0.6s ease-out;}
+@keyframes slothighlight{
+  0%{background:rgba(80,160,255,0.25);}
+  100%{background:transparent;}
+}
+.rp-slot.is-ban.highlight{animation:banhighlight 0.6s ease-out;}
+@keyframes banhighlight{0%{background:rgba(200,30,30,0.4);}100%{background:rgba(180,20,20,0.06);}}
+.rp-av{width:38px;height:38px;border-radius:2px;flex-shrink:0;
+  background:rgba(4,12,36,0.9);border:1px solid rgba(40,80,160,0.3);overflow:hidden;}
+.rp-av img{width:100%;height:100%;object-fit:cover;object-position:top;}
+.rp-av.ban-av{border-color:rgba(204,32,32,0.4);}
+.rp-av.pick-av{border-color:rgba(212,160,32,0.4);}
+.rp-slot-info{flex:1;min-width:0;}
+.rp-slot-name{font-size:11px;font-weight:700;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rp-slot-type{font-size:8px;letter-spacing:2px;margin-top:2px;}
+.slot-type-ban{color:var(--ban);}.slot-type-pick{color:var(--pick);}
+.rp-slot-num{font-size:10px;color:var(--muted);flex-shrink:0;font-family:'Oswald',sans-serif;}
+.ban-x-overlay{position:absolute;inset:0;background:rgba(160,20,20,0.45);
+  display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.ban-x-overlay::after{content:'✕';font-size:18px;font-weight:700;color:rgba(255,80,80,0.9);}
+
+/* Center panel */
+#rp-center{background:transparent;display:flex;flex-direction:column;gap:10px;}
+
+/* Current action display */
+#rp-action-card{
+  background:rgba(4,10,30,0.92);border:1px solid rgba(106,184,240,0.25);
+  border-radius:4px;padding:16px 20px;
+  display:flex;align-items:center;gap:20px;
+  min-height:90px;
+  transition:border-color 0.3s;
+}
+#rp-action-card.phase-ban{border-color:rgba(200,30,30,0.5);background:rgba(4,8,24,0.95);}
+#rp-action-card.phase-pick{border-color:rgba(212,160,32,0.5);background:rgba(4,10,24,0.95);}
+#rp-action-avatar{width:60px;height:60px;border-radius:3px;overflow:hidden;
+  background:rgba(4,12,36,0.9);border:1px solid rgba(40,80,160,0.3);flex-shrink:0;}
+#rp-action-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;}
+#rp-action-info{flex:1;}
+#rp-action-phase{font-size:9px;letter-spacing:4px;text-transform:uppercase;margin-bottom:4px;}
+.phase-ban-txt{color:var(--ban);}.phase-pick-txt{color:var(--pick);}
+#rp-action-char{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;letter-spacing:3px;}
+#rp-action-player{font-size:11px;letter-spacing:3px;margin-top:4px;}
+#rp-step-badge{font-family:'Oswald',sans-serif;font-size:48px;font-weight:700;
+  color:rgba(168,216,247,0.1);flex-shrink:0;}
+
+/* Timeline */
+#rp-timeline-wrap{background:rgba(4,10,30,0.88);border:1px solid var(--border);border-radius:4px;padding:14px 16px;flex:1;overflow:hidden;}
+#rp-tl-label{font-size:9px;letter-spacing:4px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;}
+#rp-timeline{display:flex;flex-wrap:wrap;gap:6px;}
+.tl-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  width:72px;opacity:0.2;transition:opacity 0.4s,transform 0.3s;
+  cursor:pointer;
+}
+.tl-item.done{opacity:0.6;}
+.tl-item.current{opacity:1;transform:scale(1.1);}
+.tl-item.future{opacity:0.15;}
+.tl-av{width:48px;height:48px;border-radius:2px;overflow:hidden;
+  background:rgba(4,12,36,0.9);border:1px solid rgba(40,80,160,0.25);}
+.tl-av img{width:100%;height:100%;object-fit:cover;object-position:top;}
+.tl-item.phase-ban .tl-av{border-color:rgba(200,30,30,0.5);}
+.tl-item.phase-pick .tl-av{border-color:rgba(212,160,32,0.5);}
+.tl-item.current .tl-av{box-shadow:0 0 12px var(--ice-glow);}
+.tl-name{font-size:8px;letter-spacing:0.5px;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:72px;}
+.tl-type{font-size:7px;letter-spacing:1px;}
+.tl-ban-t{color:var(--ban);}.tl-pick-t{color:var(--pick);}
+.tl-arrow{color:rgba(106,184,240,0.3);font-size:10px;align-self:center;margin-bottom:18px;}
+
+/* Progress bar */
+#rp-progress-wrap{background:rgba(4,10,30,0.88);border:1px solid var(--border);border-radius:4px;padding:12px 16px;}
+#rp-prog-row{display:flex;align-items:center;gap:12px;}
+#rp-prog-label{font-size:9px;letter-spacing:3px;color:var(--muted);width:80px;flex-shrink:0;}
+#rp-prog-bg{flex:1;height:6px;background:rgba(15,35,90,0.7);border-radius:3px;overflow:hidden;}
+#rp-prog-fill{height:100%;background:linear-gradient(90deg,var(--ice2),var(--ice3),#fff);
+  border-radius:3px;transition:width 0.5s ease-out;box-shadow:0 0 8px var(--ice-glow);}
+#rp-prog-num{font-family:'Oswald',sans-serif;font-size:13px;color:var(--ice1);width:60px;text-align:right;}
+
+/* Empty state */
+#rp-empty{display:none;flex-direction:column;align-items:center;justify-content:center;
+  flex:1;gap:16px;}
+#rp-empty.show{display:flex;}
+#rp-empty-icon{font-size:48px;opacity:0.25;}
+#rp-empty-txt{font-size:13px;letter-spacing:4px;color:var(--muted);}
+
+/* Control bar (fixed bottom) */
+#rp-ctrl{
+  position:fixed;bottom:0;left:0;right:0;height:100px;z-index:40;
+  background:rgba(2,6,20,0.97);border-top:1px solid rgba(106,184,240,0.2);
+  display:flex;align-items:center;justify-content:center;gap:16px;padding:0 40px;
+}
+#rp-ctrl::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(106,184,240,0.3),transparent);}
+.rc-btn{font-family:var(--font);font-size:11px;letter-spacing:3px;
+  padding:8px 20px;border-radius:2px;cursor:pointer;transition:all 0.15s;
+  border:1px solid rgba(106,184,240,0.35);color:var(--ice1);background:rgba(40,100,200,0.1);}
+.rc-btn:hover:not(:disabled){background:rgba(106,184,240,0.2);}
+.rc-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.rc-btn.gold{border-color:rgba(212,160,32,0.45);color:var(--gold);background:rgba(212,160,32,0.08);}
+.rc-btn.gold:hover:not(:disabled){background:rgba(212,160,32,0.2);}
+.rc-btn.red{border-color:rgba(200,50,50,0.4);color:#e06060;background:rgba(180,20,20,0.1);}
+.rc-btn.red:hover{background:rgba(200,50,50,0.2);}
+.rc-div{width:1px;height:40px;background:rgba(40,80,160,0.3);}
+.rc-label{font-size:10px;letter-spacing:2px;color:rgba(168,216,247,0.3);}
+#speed-sel{background:rgba(4,12,36,0.9);border:1px solid rgba(106,184,240,0.28);
+  color:var(--ice1);font-family:var(--font);font-size:11px;padding:5px 10px;
+  border-radius:2px;outline:none;}
+#rp-player-info{display:flex;flex-direction:column;align-items:center;gap:3px;}
+#rp-vs-bar{display:flex;align-items:center;gap:16px;font-size:13px;font-weight:700;letter-spacing:2px;}
+#rp-p1-tag{color:var(--p1);}
+#rp-p2-tag{color:var(--p2);}
+#rp-vs-mid{color:rgba(168,216,247,0.2);font-size:10px;letter-spacing:3px;}
+#auto-indicator{font-size:9px;letter-spacing:2px;color:var(--teal);
+  padding:2px 8px;border:1px solid rgba(32,200,160,0.3);border-radius:2px;
+  display:none;}
+#auto-indicator.on{display:inline;}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<canvas id="pcanvas"></canvas>
+<div class="fl-top"></div><div class="fl-bottom"></div>
+<div class="fl-left"></div><div class="fl-right"></div>
+<div class="fc tl"></div><div class="fc tr"></div><div class="fc bl"></div><div class="fc br"></div>
+
+<div id="app">
+  <div id="rp-header">
+    <div>
+      <div id="rp-title">B P 回 放</div>
+      <div id="rp-sub">BP REPLAY · 旧雨杯 · 鸣潮娱乐赛</div>
+    </div>
+    <div id="rp-match-info">
+      <div class="rp-badge ice" id="rp-stage-badge">赛事 BP</div>
+      <div class="rp-badge teal" id="rp-steps-badge">共 0 步</div>
+    </div>
+  </div>
+
+  <div id="rp-empty" class="show">
+    <div id="rp-empty-icon">⏮</div>
+    <div id="rp-empty-txt">— 暂无 BP 数据 · 请先在控制端完成一局 BP —</div>
+  </div>
+
+  <div id="rp-main" style="display:none;">
+    <!-- P1 Side -->
+    <div class="rp-side" id="rp-p1-side">
+      <div class="rp-side-header rp-p1-hdr" id="rp-p1-name">玩家一</div>
+      <div class="rp-sec-label">禁 用</div>
+      <div class="rp-slots" id="rp-p1-bans"></div>
+      <div class="rp-sec-label">选 用</div>
+      <div class="rp-slots" id="rp-p1-picks"></div>
+    </div>
+
+    <!-- Center -->
+    <div id="rp-center">
+      <div id="rp-action-card">
+        <div id="rp-action-avatar"><img id="rp-av-img" src="" alt=""></div>
+        <div id="rp-action-info">
+          <div id="rp-action-phase" class="phase-ban-txt">— 等待回放 —</div>
+          <div id="rp-action-char">请点击播放</div>
+          <div id="rp-action-player"></div>
+        </div>
+        <div id="rp-step-badge">—</div>
+      </div>
+
+      <div id="rp-timeline-wrap">
+        <div id="rp-tl-label">回放时间轴 · 点击任意步骤跳转</div>
+        <div id="rp-timeline"></div>
+      </div>
+
+      <div id="rp-progress-wrap">
+        <div id="rp-prog-row">
+          <div id="rp-prog-label">回放进度</div>
+          <div id="rp-prog-bg"><div id="rp-prog-fill" style="width:0%"></div></div>
+          <div id="rp-prog-num">0 / 0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- P2 Side -->
+    <div class="rp-side" id="rp-p2-side">
+      <div class="rp-side-header rp-p2-hdr" id="rp-p2-name">玩家二</div>
+      <div class="rp-sec-label">禁 用</div>
+      <div class="rp-slots" id="rp-p2-bans"></div>
+      <div class="rp-sec-label">选 用</div>
+      <div class="rp-slots" id="rp-p2-picks"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Control Bar -->
+<div id="rp-ctrl">
+  <div id="rp-player-info">
+    <div id="rp-vs-bar">
+      <span id="rp-p1-tag">玩家一</span>
+      <span id="rp-vs-mid">VS</span>
+      <span id="rp-p2-tag">玩家二</span>
+    </div>
+  </div>
+  <div class="rc-div"></div>
+  <button class="rc-btn" id="btn-to-start" onclick="goToStep(0)" title="回到开头">⏮ 开头</button>
+  <button class="rc-btn" id="btn-prev" onclick="prevStep()">◀ 上一步</button>
+  <button class="rc-btn gold" id="btn-play" onclick="toggleAuto()">▶ 自动播放</button>
+  <button class="rc-btn" id="btn-next" onclick="nextStep()">下一步 ▶</button>
+  <button class="rc-btn" id="btn-to-end" onclick="goToStep(999)">结尾 ⏭</button>
+  <div class="rc-div"></div>
+  <span class="rc-label">速度</span>
+  <select id="speed-sel" onchange="updateSpeed()">
+    <option value="2000">慢速 2s</option>
+    <option value="1200" selected>正常 1.2s</option>
+    <option value="700">快速 0.7s</option>
+    <option value="400">极速 0.4s</option>
+  </select>
+  <span id="auto-indicator" class="on">● 自动中</span>
+  <div class="rc-div"></div>
+  <button class="rc-btn" onclick="loadFromBP()">重新加载 BP</button>
+  <button class="rc-btn red" onclick="resetReplay()">重置</button>
+</div>
+
+<script>
+// Particles
+(function(){
+  const c=document.getElementById('pcanvas'),x=c.getContext('2d');
+  c.width=1920;c.height=1080;
+  const pts=Array.from({length:35},()=>({
+    px:Math.random()*1920,py:Math.random()*1080,r:Math.random()*1.5+0.4,
+    vx:(Math.random()-0.5)*0.2,vy:-(Math.random()*0.28+0.04),
+    a:Math.random()*0.28+0.05,col:Math.random()>0.5?'rgba(168,216,247,':'rgba(106,184,240,'
+  }));
+  function draw(){
+    x.clearRect(0,0,1920,1080);
+    pts.forEach(p=>{
+      x.beginPath();x.arc(p.px,p.py,p.r,0,Math.PI*2);
+      x.fillStyle=p.col+p.a+')';x.fill();
+      p.px+=p.vx;p.py+=p.vy;
+      if(p.py<-10){p.py=1090;p.px=Math.random()*1920;}
+      if(p.px<-10)p.px=1930;if(p.px>1930)p.px=-10;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+const EL_ZH={Fusion:'热熔',Glacio:'冷凝',Electro:'导电',Aero:'气动',Spectro:'衍射',Havoc:'湮灭'};
+
+let timeline=[];
+let currentStep=-1;
+let autoTimer=null;
+let autoPlaying=false;
+let stepInterval=1200;
+let p1name='玩家一',p2name='玩家二';
+
+function loadFromBP(){
+  try{
+    const S=JSON.parse(localStorage.getItem('wuwa_bp_state')||'{}');
+    if(!S.bpTimeline||S.bpTimeline.length===0){
+      showEmpty(true);return;
+    }
+    timeline=S.bpTimeline;
+    p1name=S.p1name||'玩家一';
+    p2name=S.p2name||'玩家二';
+    showEmpty(false);
+    resetReplay();
+    buildTimeline();
+    updatePlayerNames();
+    document.getElementById('rp-steps-badge').textContent='共 '+timeline.length+' 步';
+    buildSlots();
+  }catch(e){console.error(e);showEmpty(true);}
+}
+
+function showEmpty(v){
+  document.getElementById('rp-empty').classList.toggle('show',v);
+  document.getElementById('rp-main').style.display=v?'none':'grid';
+}
+
+function updatePlayerNames(){
+  document.getElementById('rp-p1-name').textContent=p1name;
+  document.getElementById('rp-p2-name').textContent=p2name;
+  document.getElementById('rp-p1-tag').textContent=p1name;
+  document.getElementById('rp-p2-tag').textContent=p2name;
+}
+
+function buildSlots(){
+  // Build empty slots for bans (2 each) and picks (3 each)
+  ['p1','p2'].forEach(p=>{
+    const bansEl=document.getElementById('rp-'+p+'-bans');
+    const picksEl=document.getElementById('rp-'+p+'-picks');
+    bansEl.innerHTML=Array.from({length:2},(_,i)=>slotHTML(p+'-ban-'+i,'BAN','ban')).join('');
+    picksEl.innerHTML=Array.from({length:3},(_,i)=>slotHTML(p+'-pick-'+i,'PICK','pick')).join('');
+  });
+}
+
+function slotHTML(id,typeLabel,phase){
+  return `<div class="rp-slot" id="slot-${id}">
+    <div class="rp-av ${phase}-av"><img src="" onerror="this.style.display='none'" alt=""></div>
+    <div class="rp-slot-info">
+      <div class="rp-slot-name">— 待定 —</div>
+      <div class="rp-slot-type slot-type-${phase}">${typeLabel}</div>
+    </div>
+    <div class="rp-slot-num"></div>
+  </div>`;
+}
+
+function buildTimeline(){
+  const el=document.getElementById('rp-timeline');
+  el.innerHTML=timeline.map((t,i)=>{
+    const pname=t.player===1?p1name:p2name;
+    const pcolor=t.player===1?'var(--p1)':'var(--p2)';
+    return `<div class="tl-item future phase-${t.phase}" id="tl-${i}" onclick="goToStep(${i+1})">
+      <div class="tl-av"><img src="${t.char.img}" onerror="this.style.display='none'" alt="${t.char.name}"></div>
+      <div class="tl-name" style="color:${pcolor}">${t.char.name}</div>
+      <div class="tl-type tl-${t.phase}-t">${t.phase==='ban'?'BAN':'PICK'}</div>
+    </div>`+
+    (i<timeline.length-1?`<div class="tl-arrow">›</div>`:'');
+  }).join('');
+}
+
+function goToStep(n){
+  stopAuto();
+  const target=Math.min(n,timeline.length);
+  resetReplay(false);
+  for(let i=0;i<target;i++) applyStep(i,false);
+  currentStep=target-1;
+  if(target>0) showCurrentAction(target-1);
+  else clearAction();
+  updateProgress();
+  updateTimelineHighlight();
+  updateButtons();
+}
+
+function nextStep(){
+  if(currentStep>=timeline.length-1)return;
+  currentStep++;
+  applyStep(currentStep,true);
+  showCurrentAction(currentStep);
+  updateProgress();
+  updateTimelineHighlight();
+  updateButtons();
+}
+
+function prevStep(){
+  if(currentStep<0)return;
+  goToStep(currentStep);
+}
+
+function applyStep(idx,animate){
+  const t=timeline[idx];
+  if(!t)return;
+  const p=t.player===1?'p1':'p2';
+  const phase=t.phase;
+  // Count existing bans/picks for this player to find slot index
+  const prevOfType=timeline.slice(0,idx).filter(x=>x.player===t.player&&x.phase===t.phase).length;
+  const slotId=`slot-${p}-${phase}-${prevOfType}`;
+  const slot=document.getElementById(slotId);
+  if(!slot)return;
+  slot.querySelector('.rp-slot-name').textContent=t.char.name;
+  slot.querySelector('.rp-slot-type').textContent=phase==='ban'?'BAN':'PICK';
+  slot.querySelector('.rp-slot-type').className='rp-slot-type slot-type-'+phase;
+  slot.querySelector('.rp-slot-num').textContent='#'+(idx+1);
+  const img=slot.querySelector('img');
+  img.style.display='';img.src=t.char.img;
+  slot.classList.add('revealed','is-'+phase);
+  if(phase==='ban'){
+    if(!slot.querySelector('.ban-x-overlay')){
+      const ov=document.createElement('div');ov.className='ban-x-overlay';slot.appendChild(ov);
+    }
+  }
+  if(animate)slot.classList.add('highlight');
+  setTimeout(()=>slot.classList.remove('highlight'),700);
+}
+
+function showCurrentAction(idx){
+  const t=timeline[idx];
+  if(!t)return;
+  const pname=t.player===1?p1name:p2name;
+  const pcolor=t.player===1?'var(--p1)':'var(--p2)';
+  const card=document.getElementById('rp-action-card');
+  card.className='phase-'+t.phase;
+  document.getElementById('rp-av-img').src=t.char.img;
+  document.getElementById('rp-av-img').style.display='';
+  document.getElementById('rp-action-phase').textContent=t.phase==='ban'?'— 禁 用 —':'— 选 用 —';
+  document.getElementById('rp-action-phase').className='phase-'+t.phase+'-txt';
+  document.getElementById('rp-action-char').textContent=t.char.name;
+  document.getElementById('rp-action-char').style.color=t.phase==='ban'?'var(--ban)':'var(--pick)';
+  document.getElementById('rp-action-player').textContent=pname;
+  document.getElementById('rp-action-player').style.color=pcolor;
+  document.getElementById('rp-step-badge').textContent=(idx+1);
+}
+
+function clearAction(){
+  document.getElementById('rp-action-card').className='';
+  document.getElementById('rp-action-phase').textContent='— 等待回放 —';
+  document.getElementById('rp-action-char').textContent='点击「下一步」或「自动播放」';
+  document.getElementById('rp-action-player').textContent='';
+  document.getElementById('rp-step-badge').textContent='—';
+  document.getElementById('rp-av-img').src='';
+}
+
+function updateProgress(){
+  const total=timeline.length;
+  const done=currentStep+1;
+  const pct=total>0?Math.round((done/total)*100):0;
+  document.getElementById('rp-prog-fill').style.width=pct+'%';
+  document.getElementById('rp-prog-num').textContent=done+' / '+total;
+}
+
+function updateTimelineHighlight(){
+  timeline.forEach((_,i)=>{
+    const el=document.getElementById('tl-'+i);
+    if(!el)return;
+    if(i<currentStep+1)el.className=el.className.replace(/\b(future|current|done)\b/g,'')+'done';
+    else if(i===currentStep+1) el.className=el.className.replace(/\b(future|current|done)\b/g,'')+'current';
+    else el.className=el.className.replace(/\b(future|current|done)\b/g,'')+'future';
+  });
+  // Scroll current into view
+  const cur=document.getElementById('tl-'+(currentStep+1));
+  if(cur)cur.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+}
+
+function updateButtons(){
+  document.getElementById('btn-prev').disabled=currentStep<0;
+  document.getElementById('btn-next').disabled=currentStep>=timeline.length-1;
+  document.getElementById('btn-to-end').disabled=currentStep>=timeline.length-1;
+  document.getElementById('btn-to-start').disabled=currentStep<0;
+}
+
+function toggleAuto(){
+  if(autoPlaying){stopAuto();}
+  else{startAuto();}
+}
+
+function startAuto(){
+  if(currentStep>=timeline.length-1)goToStep(0);
+  autoPlaying=true;
+  document.getElementById('btn-play').textContent='⏸ 暂停';
+  document.getElementById('auto-indicator').classList.add('on');
+  function tick(){
+    if(currentStep>=timeline.length-1){stopAuto();return;}
+    nextStep();
+    autoTimer=setTimeout(tick,stepInterval);
+  }
+  autoTimer=setTimeout(tick,300);
+}
+
+function stopAuto(){
+  clearTimeout(autoTimer);autoPlaying=false;
+  document.getElementById('btn-play').textContent='▶ 自动播放';
+  document.getElementById('auto-indicator').classList.remove('on');
+}
+
+function updateSpeed(){
+  stepInterval=parseInt(document.getElementById('speed-sel').value)||1200;
+  if(autoPlaying){stopAuto();startAuto();}
+}
+
+function resetReplay(full=true){
+  stopAuto();
+  currentStep=-1;
+  if(full){
+    buildSlots();
+    clearAction();
+  }
+  // Reset slots
+  document.querySelectorAll('.rp-slot').forEach(s=>{
+    s.classList.remove('revealed','is-ban','is-pick','highlight');
+    s.querySelector('.rp-slot-name').textContent='— 待定 —';
+    s.querySelector('.rp-slot-num').textContent='';
+    const img=s.querySelector('img');img.src='';img.style.display='';
+    const ov=s.querySelector('.ban-x-overlay');if(ov)ov.remove();
+  });
+  updateProgress();
+  updateTimelineHighlight();
+  updateButtons();
+  if(full)clearAction();
+}
+
+// Load on start
+loadFromBP();
+// Auto-reload if BP changes
+setInterval(()=>{
+  try{
+    const S=JSON.parse(localStorage.getItem('wuwa_bp_state')||'{}');
+    if(S.bpTimeline&&S.bpTimeline.length!==timeline.length){
+      loadFromBP();
+    }
+  }catch(e){}
+},2000);
+</script>
+</body>
+</html>

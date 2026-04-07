@@ -168,6 +168,27 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 .el-Fusion{color:#ff7040;}.el-Glacio{color:#60c8ff;}.el-Electro{color:#b070ff;}
 .el-Aero{color:#40d890;}.el-Spectro{color:#ffe040;}.el-Havoc{color:#d060d0;}
 
+/* 角色提示卡 */
+#char-tooltip{
+  position:fixed;z-index:9998;
+  background:rgba(2,6,24,0.97);
+  border:1px solid var(--pk-border);
+  border-radius:4px;padding:10px 14px;
+  min-width:168px;pointer-events:none;
+  opacity:0;transition:opacity 0.12s;
+  box-shadow:0 4px 24px var(--pk-shadow),0 0 12px rgba(247,168,196,0.12);
+}
+#char-tooltip.show{opacity:1;}
+.tt-name{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--text);margin-bottom:4px;}
+.tt-el{font-size:9px;letter-spacing:2px;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid rgba(40,80,160,0.25);}
+.tt-row{display:flex;align-items:flex-start;gap:6px;margin-bottom:3px;}
+.tt-label{font-size:8px;letter-spacing:1px;color:var(--muted);width:28px;flex-shrink:0;padding-top:1px;}
+.tt-val{font-size:10px;font-weight:700;color:var(--text);}
+.tt-syn{display:flex;gap:4px;flex-wrap:wrap;}
+.tt-syn-tag{font-size:9px;padding:1px 6px;border-radius:2px;
+  background:rgba(247,168,196,0.1);border:1px solid rgba(247,168,196,0.22);
+  color:var(--pk1);letter-spacing:1px;}
+
 /* 全息控制 */
 #holo-ctrl{background:var(--panel);border:1px solid rgba(30,200,150,0.28);border-radius:4px;padding:12px 16px;display:flex;flex-direction:column;gap:8px;}
 #holo-ctrl-title{font-size:9px;letter-spacing:4px;color:var(--teal);border-bottom:1px solid rgba(30,200,150,0.18);padding-bottom:4px;}
@@ -277,6 +298,12 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
     </div>
   </div>
 </div>
+<div id="char-tooltip">
+  <div class="tt-name" id="tt-name"></div>
+  <div class="tt-el" id="tt-el"></div>
+  <div class="tt-row"><span class="tt-label">定位</span><span class="tt-val" id="tt-role">—</span></div>
+  <div class="tt-row"><span class="tt-label">搭档</span><div class="tt-syn" id="tt-syn"></div></div>
+</div>
 <div id="toast"></div>
 
 <script>
@@ -329,6 +356,54 @@ const CHARS=[
   {name:'鉴心',el:'Aero',img:'./images/jx1.jpg'},
 ];
 const EL_ZH={Fusion:'热熔',Glacio:'冷凝',Electro:'导电',Aero:'气动',Spectro:'衍射',Havoc:'湮灭'};
+const CHAR_TIPS={
+  '今汐':{role:'主C',synergy:['维里奈','吟霖']},
+  '珂莱塔':{role:'主C',synergy:['散华','凌阳']},
+  '椿':{role:'主C',synergy:['丹瑾','桃祈']},
+  '漂泊者·衍射':{role:'主C',synergy:['维里奈','守岸人']},
+  '漂泊者·湮灭':{role:'主C',synergy:['丹瑾','桃祈']},
+  '吟霖':{role:'副C/辅助',synergy:['今汐','卡卡罗']},
+  '维里奈':{role:'治疗/辅助',synergy:['今汐','菲比']},
+  '相里要':{role:'主C',synergy:['灯灯','卜灵']},
+  '长离':{role:'主C',synergy:['布兰特','莫宁']},
+  '布兰特':{role:'副C',synergy:['长离','莫宁']},
+  '折枝':{role:'辅助',synergy:['珂莱塔','凌阳']},
+  '卡卡罗':{role:'主C',synergy:['吟霖','今汐']},
+  '凌阳':{role:'辅助',synergy:['珂莱塔','折枝']},
+  '安可':{role:'主C',synergy:['炽霞','莫特斐']},
+  '守岸人':{role:'辅助/治疗',synergy:['漂泊者·衍射','菲比']},
+  '菲比':{role:'主C',synergy:['维里奈','守岸人']},
+  '忌炎':{role:'主C',synergy:['维里奈','卡提希娅']},
+  '坎特蕾拉':{role:'主C',synergy:['吟霖','维里奈']},
+  '赞妮':{role:'辅助',synergy:['吟霖','今汐']},
+  '夏空':{role:'主C',synergy:['忌炎','卡提希娅']},
+  '卡提希娅':{role:'辅助',synergy:['忌炎','夏空']},
+  '露帕':{role:'主C',synergy:['布兰特','长离']},
+  '琳奈':{role:'主C',synergy:['守岸人','维里奈']},
+  '莫宁':{role:'副C',synergy:['长离','布兰特']},
+  '爱弥斯':{role:'主C',synergy:['莫宁','布兰特']},
+  '陆·赫斯':{role:'主C',synergy:['守岸人','维里奈']},
+  '西格莉卡':{role:'主C',synergy:['卡提希娅','忌炎']},
+  '洛可可':{role:'主C',synergy:['丹瑾','桃祈']},
+  '奥古斯塔':{role:'主C',synergy:['灯灯','卜灵']},
+  '尤诺':{role:'辅助',synergy:['珂莱塔','散华']},
+  '仇远':{role:'主C',synergy:['卡提希娅','忌炎']},
+  '弗洛洛':{role:'主C',synergy:['丹瑾','椿']},
+  '千咲':{role:'主C',synergy:['桃祈','丹瑾']},
+  '秧秧':{role:'辅助',synergy:['忌炎','仇远']},
+  '白芷':{role:'治疗/辅助',synergy:['珂莱塔','散华']},
+  '炽霞':{role:'副C',synergy:['安可','莫特斐']},
+  '散华':{role:'辅助',synergy:['珂莱塔','凌阳']},
+  '釉瑚':{role:'辅助',synergy:['折枝','珂莱塔']},
+  '丹瑾':{role:'副C',synergy:['椿','洛可可']},
+  '莫特斐':{role:'副C',synergy:['安可','炽霞']},
+  '渊武':{role:'主C',synergy:['灯灯','卜灵']},
+  '秋水':{role:'主C',synergy:['守岸人','维里奈']},
+  '桃祈':{role:'辅助',synergy:['椿','洛可可']},
+  '灯灯':{role:'治疗/辅助',synergy:['相里要','渊武']},
+  '卜灵':{role:'辅助',synergy:['相里要','渊武']},
+  '鉴心':{role:'主C',synergy:['维里奈','守岸人']},
+};
 const ELEMENTS=['全部','Fusion','Glacio','Electro','Aero','Spectro','Havoc'];
 const SEQ=[
   {phase:'ban',player:1},{phase:'ban',player:2},
@@ -342,6 +417,7 @@ const BANS_EACH=2,PICKS_EACH=3;
 let S={
   step:0,p1bans:[],p2bans:[],p1picks:[],p2picks:[],
   selected:null,done:false,scoreP1:0,scoreP2:0,
+  statsRecorded:false,bpTimeline:[],
   filterEl:'全部',search:'',
   p1name:'玩家一',p2name:'玩家二',
   p1sub:'旧雨杯参赛选手',p2sub:'旧雨杯参赛选手',
@@ -409,7 +485,7 @@ function renderGrid(){
   document.getElementById('char-grid').innerHTML=list.map(c=>{
     const na=isUnavail(c.name);
     let cls='g-card';if(na)cls+=' g-na';else if(S.selected&&S.selected.name===c.name)cls+=' g-sel';
-    return `<div class="${cls}" onclick="${na?'':'selectChar(\''+c.name+'\')'}">
+    return `<div class="${cls}" data-name="${c.name}" onclick="${na?'':'selectChar(\''+c.name+'\')'}">
       <div class="g-avatar"><img src="${c.img}" onerror="imgErr(this,'${c.name}')" alt="${c.name}"></div>
       <div class="g-name">${c.name}</div>
       <div class="g-el el-${c.el}">${EL_ZH[c.el]}</div>
@@ -426,16 +502,30 @@ function selectChar(name){
 function confirmAction(){
   if(!S.selected||S.done||S.step>=SEQ.length)return;
   const cur=SEQ[S.step];const c=S.selected;
+  S.bpTimeline.push({step:S.step,phase:cur.phase,player:cur.player,char:{name:c.name,img:c.img,el:c.el},ts:Date.now()});
   if(cur.phase==='ban'){if(cur.player===1)S.p1bans.push(c);else S.p2bans.push(c);}
   else{if(cur.player===1)S.p1picks.push(c);else S.p2picks.push(c);}
   S.selected=null;S.step++;
   if(S.step>=SEQ.length)S.done=true;
   saveState();renderAll();
-  if(S.done)toast('BP 完成！双方阵容已确定',3000);
+  if(S.done){toast('BP 完成！双方阵容已确定',3000);recordBPStats();}
+}
+function recordBPStats(){
+  if(S.statsRecorded)return;
+  S.statsRecorded=true;
+  try{
+    let st=JSON.parse(localStorage.getItem('wuwa_tour_stats')||'{"totalGames":0,"chars":{},"lastUpdate":null}');
+    st.totalGames++;st.lastUpdate=Date.now();
+    const addPick=ch=>{if(!st.chars[ch.name])st.chars[ch.name]={picks:0,bans:0};st.chars[ch.name].picks++;};
+    const addBan=ch=>{if(!st.chars[ch.name])st.chars[ch.name]={picks:0,bans:0};st.chars[ch.name].bans++;};
+    S.p1picks.forEach(addPick);S.p2picks.forEach(addPick);
+    S.p1bans.forEach(addBan);S.p2bans.forEach(addBan);
+    localStorage.setItem('wuwa_tour_stats',JSON.stringify(st));
+  }catch(e){console.error(e);}
 }
 
 function resetBP(){
-  S.step=0;S.p1bans=[];S.p2bans=[];S.p1picks=[];S.p2picks=[];S.selected=null;S.done=false;
+  S.step=0;S.p1bans=[];S.p2bans=[];S.p1picks=[];S.p2picks=[];S.selected=null;S.done=false;S.statsRecorded=false;S.bpTimeline=[];
   saveState();renderAll();toast('BP 已重置');
 }
 function renderScores(){
@@ -483,6 +573,34 @@ function resetHolo(){
   S.holoCurrentEnemy=0;S.holoScore=0;
   saveState();renderHoloCtrl();toast('挑战已重置');
 }
+
+// 角色提示卡交互
+(function(){
+  const tip=document.getElementById('char-tooltip');
+  const grid=document.getElementById('char-grid');
+  function showTip(e,name){
+    const d=CHAR_TIPS[name];
+    if(!d){tip.classList.remove('show');return;}
+    const c=CHARS.find(x=>x.name===name);
+    document.getElementById('tt-name').textContent=name;
+    const elEl=document.getElementById('tt-el');
+    elEl.textContent=(c?EL_ZH[c.el]||c.el:'')+(c?' · '+c.el:'');
+    elEl.className='tt-el el-'+(c?c.el:'');
+    document.getElementById('tt-role').textContent=d.role;
+    document.getElementById('tt-syn').innerHTML=d.synergy.map(s=>`<span class="tt-syn-tag">${s}</span>`).join('');
+    const tx=e.clientX+14, ty=e.clientY-8;
+    const tw=tip.offsetWidth||175, th=tip.offsetHeight||115;
+    tip.style.left=(tx+tw>window.innerWidth?tx-tw-28:tx)+'px';
+    tip.style.top=(ty+th>window.innerHeight?window.innerHeight-th-8:Math.max(4,ty))+'px';
+    tip.classList.add('show');
+  }
+  grid.addEventListener('mousemove',e=>{
+    const card=e.target.closest('.g-card');
+    if(card&&!card.classList.contains('g-na')&&card.dataset.name){showTip(e,card.dataset.name);}
+    else{tip.classList.remove('show');}
+  });
+  grid.addEventListener('mouseleave',()=>tip.classList.remove('show'));
+})();
 
 buildFilterBtns();renderAll();saveState();
 </script>

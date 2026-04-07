@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>旧雨杯 · 阵容展示</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Oswald:wght@400;500;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --p1:#e85c30;--p2:#3a8fff;
+  --p1-glow:rgba(232,92,48,0.55);--p2-glow:rgba(58,143,255,0.55);
+  --gold:#d4a020;--teal:#20c8a0;
+  --ice1:#a8d8f7;--ice2:#6ab8f0;--ice3:#c8ecff;
+  --ice-glow:rgba(168,216,247,0.6);--ice-shadow:rgba(80,160,230,0.4);
+  --bg:#020810;--font:'Noto Sans SC','Oswald',sans-serif;--text:#d8eeff;--muted:#4a7090;
+}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--bg);font-family:var(--font);color:var(--text);}
+
+/* ── 背景层 ── */
+#bg-art{position:fixed;inset:0;z-index:0;background:url('./3.jpg') center/cover no-repeat;}
+#bg-dim{position:fixed;inset:0;z-index:1;
+  background:
+    linear-gradient(180deg,rgba(2,6,20,0.92) 0%,rgba(2,6,20,0.7) 12%,rgba(2,6,20,0.55) 30%,rgba(2,6,20,0.55) 70%,rgba(2,6,20,0.75) 88%,rgba(2,6,20,0.95) 100%),
+    linear-gradient(90deg,rgba(2,6,20,0.88) 0%,rgba(2,6,20,0.6) 18%,transparent 30%,transparent 70%,rgba(2,6,20,0.6) 82%,rgba(2,6,20,0.88) 100%);}
+#scanlines{position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,8,30,0.04) 2px,rgba(0,8,30,0.04) 4px);}
+#pcanvas{position:fixed;inset:0;z-index:2;pointer-events:none;}
+
+/* ── 冰蓝边框 ── */
+.fl-top,.fl-bottom{position:fixed;left:0;right:0;height:3px;z-index:30;pointer-events:none;
+  background:linear-gradient(90deg,transparent 0%,var(--ice2) 12%,var(--ice3) 36%,#fff 50%,var(--ice3) 64%,var(--ice2) 88%,transparent 100%);
+  box-shadow:0 0 18px var(--ice-glow),0 0 50px var(--ice-shadow);}
+.fl-top{top:0;}.fl-bottom{bottom:0;}
+.fl-left,.fl-right{position:fixed;top:0;bottom:0;width:3px;z-index:30;pointer-events:none;
+  background:linear-gradient(180deg,transparent,var(--ice2) 15%,var(--ice1) 50%,var(--ice2) 85%,transparent);
+  box-shadow:0 0 18px var(--ice-glow);}
+.fl-left{left:0;}.fl-right{right:0;}
+.fc{position:fixed;z-index:31;pointer-events:none;}
+.fc.tl{top:0;left:0;width:80px;height:80px;border-top:3px solid var(--ice1);border-left:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),-8px -8px 40px var(--ice-shadow);}
+.fc.tr{top:0;right:0;width:80px;height:80px;border-top:3px solid var(--ice1);border-right:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),8px -8px 40px var(--ice-shadow);}
+.fc.bl{bottom:0;left:0;width:80px;height:80px;border-bottom:3px solid var(--ice1);border-left:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),-8px 8px 40px var(--ice-shadow);}
+.fc.br{bottom:0;right:0;width:80px;height:80px;border-bottom:3px solid var(--ice1);border-right:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),8px 8px 40px var(--ice-shadow);}
+.fd{position:fixed;z-index:32;pointer-events:none;transform:rotate(45deg);width:12px;height:12px;background:var(--ice3);box-shadow:0 0 14px var(--ice-glow);}
+.fd.tl{top:9px;left:9px;}.fd.tr{top:9px;right:9px;}.fd.bl{bottom:9px;left:9px;}.fd.br{bottom:9px;right:9px;}
+
+/* ── 总体布局 ── */
+#app{position:relative;z-index:10;width:1920px;height:1080px;display:flex;flex-direction:column;}
+
+/* ── 顶部 Header ── */
+#top-bar{
+  height:72px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,rgba(2,6,20,0.97) 0%,rgba(2,6,20,0.8) 100%);
+  border-bottom:1px solid rgba(106,184,240,0.15);
+  position:relative;flex-shrink:0;
+}
+#top-bar::after{content:'';position:absolute;bottom:0;left:8%;right:8%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--ice-glow),transparent);}
+#event-title{font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;letter-spacing:10px;
+  color:#d8eeff;text-shadow:0 0 22px var(--ice-glow);text-transform:uppercase;}
+#phase-badge{position:absolute;left:40px;font-size:11px;letter-spacing:3px;
+  color:var(--ice2);padding:3px 14px;border:1px solid rgba(106,184,240,0.3);border-radius:2px;
+  background:rgba(106,184,240,0.06);}
+#bo-badge{position:absolute;right:40px;font-size:11px;letter-spacing:3px;
+  color:var(--muted);padding:3px 14px;border:1px solid rgba(40,80,160,0.25);border-radius:2px;}
+
+/* ── 主区域 ── */
+#main-area{flex:1;display:grid;grid-template-columns:580px 1fr 580px;position:relative;}
+
+/* ── 玩家面板 ── */
+.player-panel{display:flex;flex-direction:column;padding:24px 28px 28px;}
+
+/* 玩家名称栏 */
+.player-namebar{
+  display:flex;align-items:center;gap:12px;margin-bottom:20px;
+  padding-bottom:12px;border-bottom:1px solid rgba(40,80,160,0.2);
+}
+#p1-namebar{justify-content:flex-start;}
+#p2-namebar{justify-content:flex-end;}
+.p-logo{width:44px;height:44px;border-radius:3px;overflow:hidden;flex-shrink:0;
+  background:rgba(4,12,36,0.9);border:1px solid rgba(40,80,160,0.3);}
+.p-logo img{width:100%;height:100%;object-fit:cover;}
+.p-name-info{display:flex;flex-direction:column;gap:2px;}
+.p-name{font-family:'Oswald',sans-serif;font-size:26px;font-weight:700;letter-spacing:3px;line-height:1;}
+.p1 .p-name{color:var(--p1);text-shadow:0 0 16px var(--p1-glow);}
+.p2 .p-name{color:var(--p2);text-shadow:0 0 16px var(--p2-glow);}
+.p-sub{font-size:9px;letter-spacing:3px;color:var(--muted);}
+
+/* ── 角色卡片区域 ── */
+.cards-row{display:flex;gap:10px;flex:1;align-items:center;}
+#p2-panel .cards-row{flex-direction:row-reverse;}
+
+/* ── 角色卡 ── */
+.char-card{
+  flex:1;height:340px;border-radius:5px;overflow:hidden;
+  position:relative;cursor:default;
+  background:rgba(4,10,30,0.85);
+  border:1px solid rgba(40,80,160,0.2);
+  transition:transform 0.3s ease,box-shadow 0.3s ease;
+}
+.char-card:hover{transform:translateY(-3px);}
+#p1-panel .char-card{border-color:rgba(232,92,48,0.2);}
+#p2-panel .char-card{border-color:rgba(58,143,255,0.2);}
+#p1-panel .char-card.revealed{border-color:rgba(232,92,48,0.55);box-shadow:0 0 16px rgba(232,92,48,0.2),inset 0 0 30px rgba(232,92,48,0.04);}
+#p2-panel .char-card.revealed{border-color:rgba(58,143,255,0.55);box-shadow:0 0 16px rgba(58,143,255,0.2),inset 0 0 30px rgba(58,143,255,0.04);}
+
+/* Waiting placeholder */
+.card-placeholder{
+  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  background:rgba(4,10,30,0.9);
+  transition:opacity 0.5s;
+}
+.card-placeholder::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 40%,rgba(106,184,240,0.04) 50%,transparent 60%);
+  animation:shimmer 2.5s ease-in-out infinite;background-size:200% 200%;}
+@keyframes shimmer{0%{background-position:-200% 0%;}100%{background-position:200% 0%;}}
+.ph-icon{font-size:28px;opacity:0.15;animation:phpulse 2s ease-in-out infinite;}
+@keyframes phpulse{0%,100%{opacity:0.1;}50%{opacity:0.25;}}
+.ph-line{width:40px;height:1px;background:rgba(106,184,240,0.15);}
+
+/* Character artwork */
+.card-art{position:absolute;inset:0;opacity:0;transition:opacity 0.6s ease;}
+.card-art img{width:100%;height:100%;object-fit:cover;object-position:top center;}
+.card-art::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(2,6,20,0.1) 0%,transparent 35%,transparent 55%,rgba(2,6,20,0.85) 100%);}
+
+/* P1 side art overlay — warm left-edge glow */
+#p1-panel .card-art::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(232,92,48,0.12) 0%,transparent 40%);z-index:1;}
+#p2-panel .card-art::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(270deg,rgba(58,143,255,0.12) 0%,transparent 40%);z-index:1;}
+
+/* Pick number badge */
+.card-pick-num{
+  position:absolute;top:8px;right:8px;z-index:5;
+  font-family:'Oswald',sans-serif;font-size:10px;font-weight:700;
+  width:22px;height:22px;border-radius:2px;
+  display:flex;align-items:center;justify-content:center;
+  letter-spacing:0;opacity:0;transition:opacity 0.4s 0.3s;
+}
+#p1-panel .card-pick-num{background:rgba(232,92,48,0.7);color:#fff;border:1px solid rgba(232,92,48,0.9);}
+#p2-panel .card-pick-num{background:rgba(58,143,255,0.7);color:#fff;border:1px solid rgba(58,143,255,0.9);}
+
+/* Character name overlay */
+.card-name-bar{
+  position:absolute;bottom:0;left:0;right:0;z-index:5;
+  padding:8px 10px 10px;
+  opacity:0;transition:opacity 0.4s 0.2s;
+}
+.card-char-name{font-size:13px;font-weight:700;letter-spacing:2px;line-height:1;margin-bottom:3px;}
+.card-char-el{font-size:9px;letter-spacing:2px;display:flex;align-items:center;gap:4px;}
+.el-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.el-Fusion .el-dot,.el-name-Fusion{color:#ff7040;}.el-Fusion .el-dot{background:#ff7040;}
+.el-Glacio .el-dot,.el-name-Glacio{color:#60c8ff;}.el-Glacio .el-dot{background:#60c8ff;}
+.el-Electro .el-dot,.el-name-Electro{color:#b070ff;}.el-Electro .el-dot{background:#b070ff;}
+.el-Aero .el-dot,.el-name-Aero{color:#40d890;}.el-Aero .el-dot{background:#40d890;}
+.el-Spectro .el-dot,.el-name-Spectro{color:#ffe040;}.el-Spectro .el-dot{background:#ffe040;}
+.el-Havoc .el-dot,.el-name-Havoc{color:#d060d0;}.el-Havoc .el-dot{background:#d060d0;}
+
+/* Revealed state */
+.char-card.revealed .card-placeholder{opacity:0;pointer-events:none;}
+.char-card.revealed .card-art{opacity:1;}
+.char-card.revealed .card-name-bar{opacity:1;}
+.char-card.revealed .card-pick-num{opacity:1;}
+
+/* ── 中央区域 ── */
+#center-panel{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;position:relative;padding:20px;
+}
+
+/* 分隔竖线 */
+#center-panel::before,#center-panel::after{
+  content:'';position:absolute;top:80px;bottom:80px;width:1px;
+  background:linear-gradient(180deg,transparent,rgba(106,184,240,0.15) 30%,rgba(106,184,240,0.2) 50%,rgba(106,184,240,0.15) 70%,transparent);
+}
+#center-panel::before{left:0;}
+#center-panel::after{right:0;}
+
+/* 赛事信息 */
+#center-event{
+  display:flex;gap:28px;align-items:center;margin-bottom:32px;
+}
+.center-tag{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.center-tag-label{font-size:9px;letter-spacing:4px;color:rgba(168,216,247,0.35);text-transform:uppercase;}
+.center-tag-val{font-size:13px;font-weight:700;letter-spacing:3px;color:var(--ice1);}
+.center-div{width:1px;height:28px;background:linear-gradient(180deg,transparent,rgba(168,216,247,0.2),transparent);}
+
+/* VS 区 */
+#vs-wrap{display:flex;align-items:center;gap:24px;margin-bottom:28px;}
+.vs-pname{
+  font-family:'Oswald',sans-serif;font-size:32px;font-weight:700;letter-spacing:3px;
+  text-align:center;line-height:1;
+}
+#vs-p1-name{color:var(--p1);text-shadow:0 0 20px var(--p1-glow);}
+#vs-p2-name{color:var(--p2);text-shadow:0 0 20px var(--p2-glow);}
+#vs-text-center{
+  font-family:'Oswald',sans-serif;font-size:28px;font-weight:300;
+  color:rgba(168,216,247,0.18);letter-spacing:6px;padding:0 8px;
+}
+
+/* 分割线 */
+.h-line-gold{
+  width:280px;height:1px;margin:4px 0 24px;
+  background:linear-gradient(90deg,transparent,var(--gold) 20%,rgba(212,160,32,0.7) 50%,var(--gold) 80%,transparent);
+  box-shadow:0 0 8px rgba(212,160,32,0.3);
+}
+
+/* 比分 */
+#score-wrap{
+  display:flex;align-items:center;gap:20px;margin-bottom:24px;
+}
+.score-num{
+  font-family:'Oswald',sans-serif;font-size:72px;font-weight:700;line-height:1;
+}
+#s-p1{color:var(--p1);text-shadow:0 0 30px var(--p1-glow);}
+#s-p2{color:var(--p2);text-shadow:0 0 30px var(--p2-glow);}
+.score-sep{font-family:'Oswald',sans-serif;font-size:32px;font-weight:300;
+  color:rgba(168,216,247,0.2);letter-spacing:4px;}
+#bo-label{font-size:10px;letter-spacing:3px;color:rgba(168,216,247,0.3);
+  padding:2px 10px;border:1px solid rgba(40,80,160,0.2);border-radius:2px;}
+
+/* 状态提示 */
+#status-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;}
+#status-line{
+  font-size:11px;letter-spacing:5px;text-transform:uppercase;
+  padding:5px 20px;border-radius:2px;
+}
+#status-line.waiting{
+  color:rgba(168,216,247,0.4);
+  border:1px solid rgba(106,184,240,0.2);
+  background:rgba(106,184,240,0.04);
+  animation:statusblink 2s ease-in-out infinite;
+}
+@keyframes statusblink{0%,100%{opacity:0.5;}50%{opacity:1;}}
+#status-line.done{
+  color:var(--teal);
+  border:1px solid rgba(32,200,160,0.4);
+  background:rgba(32,200,160,0.06);
+  animation:none;
+}
+#status-dot-row{display:flex;gap:8px;margin-top:4px;}
+.status-dot{width:8px;height:8px;border-radius:50%;background:rgba(40,80,160,0.3);transition:all 0.4s;}
+.status-dot.lit-p1{background:var(--p1);box-shadow:0 0 8px var(--p1-glow);}
+.status-dot.lit-p2{background:var(--p2);box-shadow:0 0 8px var(--p2-glow);}
+
+/* ── 底部栏 ── */
+#bottom-bar{
+  height:68px;display:flex;align-items:center;justify-content:center;gap:40px;
+  background:linear-gradient(0deg,rgba(2,6,20,0.97) 0%,rgba(2,6,20,0.8) 100%);
+  border-top:1px solid rgba(106,184,240,0.12);
+  flex-shrink:0;position:relative;
+}
+#bottom-bar::before{content:'';position:absolute;top:0;left:8%;right:8%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(106,184,240,0.25),transparent);}
+.bottom-item{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:3px;}
+.bottom-label{color:rgba(168,216,247,0.3);}
+.bottom-val{color:var(--ice1);font-weight:700;}
+.bottom-div{width:1px;height:20px;background:rgba(40,80,160,0.3);}
+
+/* ── 揭晓动画 ── */
+@keyframes cardReveal{
+  0%{transform:translateY(28px) scale(0.95);opacity:0;filter:brightness(2);}
+  40%{transform:translateY(-4px) scale(1.02);opacity:1;filter:brightness(1.3);}
+  100%{transform:translateY(0) scale(1);opacity:1;filter:brightness(1);}
+}
+.char-card.animate-in{animation:cardReveal 0.65s cubic-bezier(0.2,0,0.2,1) both;}
+
+/* ── 全局揭晓闪光 ── */
+#reveal-flash{
+  position:fixed;inset:0;z-index:50;pointer-events:none;
+  background:radial-gradient(ellipse 1200px 800px at 50% 50%,rgba(168,216,247,0.12) 0%,transparent 70%);
+  opacity:0;transition:opacity 0.3s;
+}
+#reveal-flash.flash{animation:flashanim 0.8s ease-out forwards;}
+@keyframes flashanim{0%{opacity:1;}100%{opacity:0;}}
+
+/* ── 控制面板 ── */
+#ctrl{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:60;
+  background:rgba(2,6,20,0.97);border:1px solid rgba(106,184,240,0.22);
+  border-bottom:none;border-radius:6px 6px 0 0;
+  padding:12px 28px 8px;display:flex;gap:12px;align-items:center;
+  transition:transform 0.3s,opacity 0.3s;
+}
+#ctrl.hidden{transform:translateX(-50%) translateY(110%);opacity:0;pointer-events:none;}
+.cb{font-family:var(--font);font-size:10px;letter-spacing:2px;
+  padding:5px 16px;border-radius:2px;cursor:pointer;transition:all 0.12s;
+  border:1px solid rgba(106,184,240,0.32);color:var(--ice1);background:rgba(40,100,200,0.1);}
+.cb:hover{background:rgba(106,184,240,0.2);}
+.cb.gold{border-color:rgba(212,160,32,0.5);color:var(--gold);background:rgba(212,160,32,0.08);}
+.cb.gold:hover{background:rgba(212,160,32,0.2);}
+.cb.red{border-color:rgba(200,50,50,0.4);color:#e06060;background:rgba(180,20,20,0.1);}
+.cb.red:hover{background:rgba(200,50,50,0.2);}
+.cb.teal{border-color:rgba(32,200,160,0.4);color:var(--teal);background:rgba(32,200,160,0.07);}
+.cb.teal:hover{background:rgba(32,200,160,0.18);}
+.c-div{width:1px;height:24px;background:rgba(40,80,160,0.3);}
+.c-lbl{font-size:9px;letter-spacing:2px;color:rgba(168,216,247,0.3);}
+#ctrl-hint{position:fixed;bottom:4px;left:50%;transform:translateX(-50%);
+  font-size:9px;letter-spacing:3px;color:rgba(168,216,247,0.2);z-index:59;pointer-events:none;}
+</style>
+</head>
+<body>
+<div id="bg-art"></div>
+<div id="bg-dim"></div>
+<div id="scanlines"></div>
+<canvas id="pcanvas"></canvas>
+<div id="reveal-flash"></div>
+
+<!-- 边框 -->
+<div class="fl-top"></div><div class="fl-bottom"></div>
+<div class="fl-left"></div><div class="fl-right"></div>
+<div class="fc tl"></div><div class="fc tr"></div><div class="fc bl"></div><div class="fc br"></div>
+<div class="fd tl"></div><div class="fd tr"></div><div class="fd bl"></div><div class="fd br"></div>
+
+<div id="app">
+  <!-- 顶部 -->
+  <div id="top-bar">
+    <div id="phase-badge" id="phase-tag">小 组 赛</div>
+    <div id="event-title">旧 雨 杯 · 鸣 潮 娱 乐 赛</div>
+    <div id="bo-badge">BO3</div>
+  </div>
+
+  <!-- 主区域 -->
+  <div id="main-area">
+    <!-- P1 -->
+    <div class="player-panel" id="p1-panel">
+      <div class="player-namebar" id="p1-namebar">
+        <div class="p-logo"><img src="./images2/aw.jpg" onerror="this.parentNode.style.display='none'" alt=""></div>
+        <div class="p-name-info p1">
+          <div class="p-name" id="p1-name">玩家一</div>
+          <div class="p-sub" id="p1-sub">旧雨杯参赛选手</div>
+        </div>
+      </div>
+      <div class="cards-row" id="p1-cards">
+        <div class="char-card" id="p1-c0"><div class="card-placeholder"><div class="ph-icon">⚔</div><div class="ph-line"></div></div><div class="card-art"><img src="" alt=""></div><div class="card-pick-num">P1</div><div class="card-name-bar"><div class="card-char-name"></div><div class="card-char-el"><div class="el-dot"></div><span class="el-name"></span></div></div></div>
+        <div class="char-card" id="p1-c1"><div class="card-placeholder"><div class="ph-icon">⚔</div><div class="ph-line"></div></div><div class="card-art"><img src="" alt=""></div><div class="card-pick-num">P2</div><div class="card-name-bar"><div class="card-char-name"></div><div class="card-char-el"><div class="el-dot"></div><span class="el-name"></span></div></div></div>
+        <div class="char-card" id="p1-c2"><div class="card-placeholder"><div class="ph-icon">⚔</div><div class="ph-line"></div></div><div class="card-art"><img src="" alt=""></div><div class="card-pick-num">P3</div><div class="card-name-bar"><div class="card-char-name"></div><div class="card-char-el"><div class="el-dot"></div><span class="el-name"></span></div></div></div>
+      </div>
+    </div>
+
+    <!-- 中央 -->
+    <div id="center-panel">
+      <div id="center-event">
+        <div class="center-tag"><div class="center-tag-label">赛事</div><div class="center-tag-val">鸣潮娱乐赛</div></div>
+        <div class="center-div"></div>
+        <div class="center-tag"><div class="center-tag-label">阶段</div><div class="center-tag-val" id="c-stage">小组赛</div></div>
+        <div class="center-div"></div>
+        <div class="center-tag"><div class="center-tag-label">对局</div><div class="center-tag-val" id="c-bo">BO3</div></div>
+      </div>
+
+      <div id="vs-wrap">
+        <div class="vs-pname" id="vs-p1-name">玩家一</div>
+        <div id="vs-text-center">VS</div>
+        <div class="vs-pname" id="vs-p2-name">玩家二</div>
+      </div>
+
+      <div class="h-line-gold"></div>
+
+      <div id="score-wrap">
+        <div class="score-num" id="s-p1">0</div>
+        <div class="score-sep">:</div>
+        <div class="score-num" id="s-p2">0</div>
+      </div>
+      <div id="bo-label">BO3</div>
+
+      <div style="height:20px;"></div>
+
+      <div id="status-wrap">
+        <div id="status-line" class="waiting">阵 容 确 认 中</div>
+        <div id="status-dot-row">
+          <div class="status-dot" id="sd0"></div>
+          <div class="status-dot" id="sd1"></div>
+          <div class="status-dot" id="sd2"></div>
+          <div class="status-dot" id="sd3"></div>
+          <div class="status-dot" id="sd4"></div>
+          <div class="status-dot" id="sd5"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- P2 -->
+    <div class="player-panel" id="p2-panel">
+      <div class="player-namebar" id="p2-namebar">
+        <div class="p-name-info p2" style="align-items:flex-end;">
+          <div class="p-name" id="p2-name">玩家二</div>
+          <div class="p-sub" id="p2-sub">旧雨杯参赛选手</div>
+        </div>
+        <div class="p-logo"><img src="./images2/aw.jpg" onerror="this.parentNode.style.display='none'" alt=""></div>
+      </div>
+      <div class="cards-row" id="p2-cards">
+        <div class="char-card" id="p2-c0"><div class="card-placeholder"><div class="ph-icon">⚔</div><div class="ph-line"></div></div><div class="card-art"><img src="" alt=""></div><div class="card-pick-num">P1</div><div class="card-name-bar"><div class="card-char-name"></div><div class="card-char-el"><div class="el-dot"></div><span class="el-name"></span></div></div></div>
+        <div class="char-card" id="p2-c1"><div class="card-placeholder"><div class="ph-icon">⚔</div><div class="ph-line"></div></div><div class="card-art"><img src="" alt=""></div><div class="card-pick-num">P2</div><div class="card-name-bar"><div class="card-char-name"></div><div class="card-char-el"><div class="el-dot"></div><span class="el-name"></span></div></div></div>
+        <div class="char-card" id="p2-c2"><div class="card-placeholder"><div class="ph-icon">⚔</div><div class="ph-line"></div></div><div class="card-art"><img src="" alt=""></div><div class="card-pick-num">P3</div><div class="card-name-bar"><div class="card-char-name"></div><div class="card-char-el"><div class="el-dot"></div><span class="el-name"></span></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部 -->
+  <div id="bottom-bar">
+    <div class="bottom-item"><span class="bottom-label">主办</span><span class="bottom-val">旧雨杯</span></div>
+    <div class="bottom-div"></div>
+    <div class="bottom-item"><span class="bottom-label">赛事</span><span class="bottom-val">鸣潮娱乐赛</span></div>
+    <div class="bottom-div"></div>
+    <div class="bottom-item"><span class="bottom-label">WUTHERING WAVES ENTERTAINMENT</span></div>
+    <div class="bottom-div"></div>
+    <div class="bottom-item"><span class="bottom-label">状态</span><span class="bottom-val" id="bottom-status">等待阵容</span></div>
+  </div>
+</div>
+
+<!-- 控制面板 (C键切换) -->
+<div id="ctrl">
+  <span class="c-lbl">阵容展示</span>
+  <button class="cb gold" onclick="manualReveal()">✦ 揭晓阵容</button>
+  <button class="cb teal" onclick="manualRevealStagger()">✦ 逐一揭晓</button>
+  <div class="c-div"></div>
+  <button class="cb" onclick="loadState()">同步数据</button>
+  <button class="cb red" onclick="resetAll()">重置</button>
+</div>
+<div id="ctrl-hint">按 C 键显示控制面板</div>
+
+<script>
+// 粒子
+(function(){
+  const c=document.getElementById('pcanvas'),x=c.getContext('2d');
+  c.width=1920;c.height=1080;
+  const pts=Array.from({length:45},()=>({
+    px:Math.random()*1920,py:Math.random()*1080,
+    r:Math.random()*1.8+0.4,
+    vx:(Math.random()-0.5)*0.18,vy:-(Math.random()*0.32+0.04),
+    a:Math.random()*0.32+0.06,
+    col:['rgba(168,216,247,','rgba(106,184,240,','rgba(200,236,255,'][Math.floor(Math.random()*3)]
+  }));
+  function draw(){
+    x.clearRect(0,0,1920,1080);
+    pts.forEach(p=>{
+      x.beginPath();x.arc(p.px,p.py,p.r,0,Math.PI*2);
+      x.fillStyle=p.col+p.a+')';x.fill();
+      p.px+=p.vx;p.py+=p.vy;
+      if(p.py<-10){p.py=1090;p.px=Math.random()*1920;}
+      if(p.px<-10)p.px=1930;if(p.px>1930)p.px=-10;
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+const EL_ZH={Fusion:'热熔',Glacio:'冷凝',Electro:'导电',Aero:'气动',Spectro:'衍射',Havoc:'湮灭'};
+
+let revealed=false;
+let lastDoneState=false;
+let ctrlVisible=false;
+
+// 按C键显示/隐藏控制面板
+document.addEventListener('keydown',e=>{
+  if(e.key==='c'||e.key==='C'){
+    ctrlVisible=!ctrlVisible;
+    document.getElementById('ctrl').classList.toggle('hidden',!ctrlVisible);
+  }
+});
+document.getElementById('ctrl').classList.add('hidden');
+
+function loadState(){
+  try{
+    const raw=localStorage.getItem('wuwa_bp_state');
+    if(!raw)return;
+    const S=JSON.parse(raw);
+    // 更新名字
+    if(S.p1name){
+      document.getElementById('p1-name').textContent=S.p1name;
+      document.getElementById('vs-p1-name').textContent=S.p1name;
+      document.getElementById('p1-sub').textContent=S.p1sub||'旧雨杯参赛选手';
+    }
+    if(S.p2name){
+      document.getElementById('p2-name').textContent=S.p2name;
+      document.getElementById('vs-p2-name').textContent=S.p2name;
+      document.getElementById('p2-sub').textContent=S.p2sub||'旧雨杯参赛选手';
+    }
+    // 比分
+    document.getElementById('s-p1').textContent=S.scoreP1??0;
+    document.getElementById('s-p2').textContent=S.scoreP2??0;
+    // 自动揭晓
+    if(S.done&&!revealed){
+      setTimeout(()=>doReveal(S),600);
+    } else if(S.done&&revealed){
+      // 静默更新picks数据（已揭晓状态下BP重置后数据同步）
+      renderCards(S.p1picks||[],'p1');
+      renderCards(S.p2picks||[],'p2');
+    }
+    // 状态点（picks进度）
+    updateDots(S);
+    lastDoneState=S.done||false;
+  }catch(e){console.error(e);}
+}
+
+function updateDots(S){
+  const picks=[...(S.p1picks||[]),...(S.p2picks||[])];
+  for(let i=0;i<6;i++){
+    const dot=document.getElementById('sd'+i);
+    if(!dot)continue;
+    // Determine which player's pick
+    const isP1Pick=i<(S.p1picks||[]).length;
+    const isP2Pick=i>=(6-(S.p2picks||[]).length);
+    // Just show progress - first 3 are p1, last 3 are p2 conceptually
+    // But picks order may vary, so just light them sequentially
+    const total=(S.p1picks||[]).length+(S.p2picks||[]).length;
+    if(i<total){
+      // Alternate p1/p2 coloring based on pick order
+      dot.className='status-dot lit-p'+(i%2===0?'1':'2');
+    } else {
+      dot.className='status-dot';
+    }
+  }
+}
+
+function renderCards(picks,player){
+  for(let i=0;i<3;i++){
+    const card=document.getElementById(player+'-c'+i);
+    if(!card)continue;
+    const pick=picks[i];
+    if(!pick){
+      card.classList.remove('revealed');
+      continue;
+    }
+    const art=card.querySelector('.card-art img');
+    art.src=pick.img||'';
+    const nameEl=card.querySelector('.card-char-name');
+    nameEl.textContent=pick.name||'';
+    const elRow=card.querySelector('.card-char-el');
+    elRow.className='card-char-el el-'+(pick.el||'');
+    elRow.querySelector('.el-dot').style.background='';
+    elRow.querySelector('.el-name').textContent=EL_ZH[pick.el]||pick.el||'';
+    card.classList.add('revealed');
+  }
+}
+
+function doReveal(S,stagger=false){
+  revealed=true;
+  // Flash effect
+  const flash=document.getElementById('reveal-flash');
+  flash.classList.add('flash');
+  setTimeout(()=>flash.classList.remove('flash'),900);
+  // Update status
+  document.getElementById('status-line').textContent='阵 容 已 确 定';
+  document.getElementById('status-line').className='done';
+  document.getElementById('bottom-status').textContent='阵容已揭晓';
+  // All 6 dots lit
+  for(let i=0;i<3;i++){
+    document.getElementById('sd'+i).className='status-dot lit-p1';
+    document.getElementById('sd'+(i+3)).className='status-dot lit-p2';
+  }
+  // Render and animate cards
+  const p1picks=S.p1picks||[];
+  const p2picks=S.p2picks||[];
+  const baseDelay=stagger?0:0;
+  const cardDelay=stagger?200:80;
+  // P1 cards
+  p1picks.forEach((pick,i)=>{
+    setTimeout(()=>{
+      const card=document.getElementById('p1-c'+i);
+      if(!card||!pick)return;
+      card.querySelector('.card-art img').src=pick.img||'';
+      card.querySelector('.card-char-name').textContent=pick.name||'';
+      const elRow=card.querySelector('.card-char-el');
+      elRow.className='card-char-el el-'+(pick.el||'');
+      elRow.querySelector('.el-name').textContent=EL_ZH[pick.el]||pick.el||'';
+      card.classList.add('revealed','animate-in');
+      setTimeout(()=>card.classList.remove('animate-in'),700);
+    },baseDelay+i*cardDelay);
+  });
+  // P2 cards (slight offset for stagger)
+  p2picks.forEach((pick,i)=>{
+    setTimeout(()=>{
+      const card=document.getElementById('p2-c'+i);
+      if(!card||!pick)return;
+      card.querySelector('.card-art img').src=pick.img||'';
+      card.querySelector('.card-char-name').textContent=pick.name||'';
+      const elRow=card.querySelector('.card-char-el');
+      elRow.className='card-char-el el-'+(pick.el||'');
+      elRow.querySelector('.el-name').textContent=EL_ZH[pick.el]||pick.el||'';
+      card.classList.add('revealed','animate-in');
+      setTimeout(()=>card.classList.remove('animate-in'),700);
+    },baseDelay+(stagger?300:0)+i*cardDelay);
+  });
+}
+
+function manualReveal(){
+  try{
+    const S=JSON.parse(localStorage.getItem('wuwa_bp_state')||'{}');
+    doReveal(S,false);
+  }catch(e){}
+}
+
+function manualRevealStagger(){
+  try{
+    const S=JSON.parse(localStorage.getItem('wuwa_bp_state')||'{}');
+    doReveal(S,true);
+  }catch(e){}
+}
+
+function resetAll(){
+  revealed=false;
+  for(let p of['p1','p2']){
+    for(let i=0;i<3;i++){
+      const card=document.getElementById(p+'-c'+i);
+      if(!card)continue;
+      card.classList.remove('revealed','animate-in');
+      card.querySelector('.card-art img').src='';
+      card.querySelector('.card-char-name').textContent='';
+    }
+  }
+  document.getElementById('status-line').textContent='阵 容 确 认 中';
+  document.getElementById('status-line').className='waiting';
+  document.getElementById('bottom-status').textContent='等待阵容';
+  for(let i=0;i<6;i++)document.getElementById('sd'+i).className='status-dot';
+}
+
+// 轮询同步
+loadState();
+setInterval(()=>{
+  try{
+    const raw=localStorage.getItem('wuwa_bp_state');
+    if(!raw)return;
+    const S=JSON.parse(raw);
+    // 名字和比分实时更新
+    if(S.p1name)document.getElementById('p1-name').textContent=S.p1name;
+    if(S.p2name)document.getElementById('p2-name').textContent=S.p2name;
+    if(S.p1name)document.getElementById('vs-p1-name').textContent=S.p1name;
+    if(S.p2name)document.getElementById('vs-p2-name').textContent=S.p2name;
+    document.getElementById('s-p1').textContent=S.scoreP1??0;
+    document.getElementById('s-p2').textContent=S.scoreP2??0;
+    updateDots(S);
+    // 新完成时触发揭晓
+    if(S.done&&!lastDoneState&&!revealed){
+      setTimeout(()=>doReveal(S),500);
+    }
+    lastDoneState=S.done||false;
+  }catch(e){}
+},800);
+</script>
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>旧雨杯 · 赛事角色统计</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Oswald:wght@400;600;700&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ice1:#a8d8f7;--ice2:#6ab8f0;--ice3:#c8ecff;
+  --ice-glow:rgba(168,216,247,0.65);--ice-shadow:rgba(80,160,230,0.45);
+  --ban:#cc2020;--pick:#d4a020;--teal:#20c8a0;
+  --bg:#020810;--panel:rgba(4,10,30,0.92);
+  --font:'Noto Sans SC','Oswald',sans-serif;
+  --text:#d8eeff;--muted:#4a7090;
+}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--bg);font-family:var(--font);color:var(--text);}
+
+#bg{position:fixed;inset:0;z-index:0;
+  background:radial-gradient(ellipse 1400px 800px at 50% 30%,rgba(8,20,60,0.75) 0%,transparent 70%),var(--bg);}
+#bg::before{content:'';position:absolute;inset:0;
+  background-image:linear-gradient(rgba(30,80,180,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(30,80,180,0.05) 1px,transparent 1px);
+  background-size:60px 60px;}
+
+.fl-top,.fl-bottom{position:fixed;left:0;right:0;height:2px;z-index:25;pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--ice2) 14%,var(--ice3) 38%,#fff 50%,var(--ice3) 62%,var(--ice2) 86%,transparent);
+  box-shadow:0 0 14px var(--ice-glow),0 0 36px var(--ice-shadow);}
+.fl-top{top:0;}.fl-bottom{bottom:0;}
+.fl-left,.fl-right{position:fixed;top:0;bottom:0;width:2px;z-index:25;pointer-events:none;
+  background:linear-gradient(180deg,transparent,var(--ice2) 20%,var(--ice1) 50%,var(--ice2) 80%,transparent);
+  box-shadow:0 0 14px var(--ice-glow);}
+.fl-left{left:0;}.fl-right{right:0;}
+.fc{position:fixed;z-index:26;pointer-events:none;}
+.fc.tl{top:0;left:0;width:50px;height:50px;border-top:2px solid var(--ice1);border-left:2px solid var(--ice1);box-shadow:0 0 18px var(--ice-glow);}
+.fc.tr{top:0;right:0;width:50px;height:50px;border-top:2px solid var(--ice1);border-right:2px solid var(--ice1);box-shadow:0 0 18px var(--ice-glow);}
+.fc.bl{bottom:0;left:0;width:50px;height:50px;border-bottom:2px solid var(--ice1);border-left:2px solid var(--ice1);box-shadow:0 0 18px var(--ice-glow);}
+.fc.br{bottom:0;right:0;width:50px;height:50px;border-bottom:2px solid var(--ice1);border-right:2px solid var(--ice1);box-shadow:0 0 18px var(--ice-glow);}
+
+#app{position:relative;z-index:10;width:1920px;height:1080px;display:flex;flex-direction:column;padding:22px 56px 52px;}
+
+/* Header */
+#stat-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:10px;padding-bottom:10px;
+  border-bottom:1px solid rgba(106,184,240,0.2);}
+#header-left{}
+#stat-title{font-family:'Oswald',sans-serif;font-size:30px;font-weight:700;letter-spacing:10px;color:#d8eeff;
+  text-shadow:0 0 22px var(--ice-glow);text-transform:uppercase;}
+#stat-sub{font-size:10px;letter-spacing:5px;color:rgba(168,216,247,0.35);margin-top:2px;}
+#header-right{display:flex;align-items:center;gap:16px;}
+#game-badge{font-size:12px;letter-spacing:3px;color:var(--teal);padding:5px 16px;
+  border:1px solid rgba(32,200,160,0.35);border-radius:2px;background:rgba(32,200,160,0.06);}
+#event-badge{font-size:11px;letter-spacing:3px;color:rgba(168,216,247,0.4);padding:5px 16px;
+  border:1px solid rgba(106,184,240,0.2);border-radius:2px;}
+
+/* Toolbar */
+#toolbar{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:2px;color:var(--muted);}
+.leg-dot{width:16px;height:5px;border-radius:2px;}
+.leg-pick{background:linear-gradient(90deg,#c08010,var(--pick));}
+.leg-ban{background:linear-gradient(90deg,#a01010,var(--ban));}
+.leg-div{width:1px;height:16px;background:rgba(40,80,160,0.3);margin:0 4px;}
+#sort-btns{display:flex;gap:5px;margin-left:auto;}
+.sort-btn{font-size:9px;letter-spacing:2px;padding:3px 12px;border-radius:2px;cursor:pointer;
+  background:transparent;color:var(--muted);border:1px solid rgba(40,80,160,0.28);
+  font-family:var(--font);transition:all 0.12s;}
+.sort-btn.active,.sort-btn:hover{color:var(--ice1);border-color:var(--ice2);background:rgba(106,184,240,0.08);}
+
+/* Character grid */
+#char-stats-grid{
+  flex:1;overflow:hidden;
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  gap:8px;
+  align-content:start;
+}
+
+/* Stat card */
+.stat-card{
+  background:rgba(4,10,30,0.88);
+  border:1px solid rgba(40,80,160,0.22);
+  border-radius:3px;padding:8px;
+  display:flex;flex-direction:column;gap:6px;
+  transition:border-color 0.2s,background 0.2s;
+}
+.stat-card:hover{border-color:rgba(106,184,240,0.45);background:rgba(6,14,40,0.95);}
+.stat-card.top-pick{border-color:rgba(212,160,32,0.5);box-shadow:0 0 10px rgba(212,160,32,0.1);}
+.stat-card.top-ban{border-color:rgba(204,32,32,0.5);box-shadow:0 0 10px rgba(204,32,32,0.1);}
+.sc-top{display:flex;align-items:center;gap:7px;}
+.sc-avatar{width:42px;height:42px;border-radius:2px;overflow:hidden;flex-shrink:0;background:rgba(4,12,36,0.9);}
+.sc-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;}
+.sc-info{flex:1;min-width:0;}
+.sc-name{font-size:11px;font-weight:700;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sc-el{font-size:8px;letter-spacing:1px;margin-top:1px;}
+.el-Fusion{color:#ff7040;}.el-Glacio{color:#60c8ff;}.el-Electro{color:#b070ff;}
+.el-Aero{color:#40d890;}.el-Spectro{color:#ffe040;}.el-Havoc{color:#d060d0;}
+.sc-pct{font-size:9px;color:rgba(168,216,247,0.35);margin-top:2px;letter-spacing:0.5px;}
+.sc-bars{display:flex;flex-direction:column;gap:3px;}
+.bar-row{display:flex;align-items:center;gap:5px;}
+.bar-type{font-size:7px;letter-spacing:1px;width:22px;flex-shrink:0;text-align:right;}
+.bt-pick{color:var(--pick);}.bt-ban{color:var(--ban);}
+.bar-bg{flex:1;height:5px;background:rgba(15,35,90,0.7);border-radius:2px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:2px;transition:width 0.6s cubic-bezier(0.4,0,0.2,1);}
+.bf-pick{background:linear-gradient(90deg,#b07010,var(--pick),#ffcc40);}
+.bf-ban{background:linear-gradient(90deg,#9a0f0f,var(--ban),#ff4444);}
+.bar-num{font-size:9px;font-weight:700;width:14px;text-align:right;flex-shrink:0;}
+.bn-pick{color:var(--pick);}.bn-ban{color:var(--ban);}
+
+/* Empty state */
+#empty-state{display:none;flex-direction:column;align-items:center;justify-content:center;
+  flex:1;gap:16px;}
+#empty-state.show{display:flex;}
+#empty-icon{font-size:52px;opacity:0.25;filter:grayscale(1);}
+#empty-text{font-size:13px;letter-spacing:4px;color:var(--muted);}
+
+/* Summary bar */
+#summary-bar{
+  display:flex;gap:0;align-items:stretch;
+  margin-top:10px;padding-top:10px;
+  border-top:1px solid rgba(40,80,160,0.2);
+  flex-shrink:0;height:52px;
+}
+.sum-item{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:0 24px;}
+.sum-label{font-size:8px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;}
+.sum-val{font-size:13px;font-weight:700;letter-spacing:2px;color:var(--ice1);}
+.sum-val.gold{color:var(--pick);}
+.sum-val.red{color:#e06060;}
+.sum-div{width:1px;background:rgba(40,80,160,0.25);margin:4px 0;}
+
+/* Control panel */
+#ctrl{position:fixed;bottom:10px;right:20px;z-index:50;
+  display:flex;gap:8px;align-items:center;
+  background:rgba(2,6,20,0.94);border:1px solid rgba(106,184,240,0.2);
+  border-radius:4px;padding:7px 14px;}
+.c-btn{font-family:var(--font);font-size:10px;letter-spacing:2px;
+  padding:4px 12px;border-radius:2px;cursor:pointer;
+  border:1px solid rgba(106,184,240,0.35);color:var(--ice1);background:rgba(40,100,200,0.1);}
+.c-btn:hover{background:rgba(106,184,240,0.2);}
+.c-btn.red{border-color:rgba(200,50,50,0.4);color:#e06060;background:rgba(180,20,20,0.1);}
+.c-btn.red:hover{background:rgba(200,50,50,0.2);}
+.c-lbl{font-size:9px;letter-spacing:2px;color:rgba(168,216,247,0.35);}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div class="fl-top"></div><div class="fl-bottom"></div>
+<div class="fl-left"></div><div class="fl-right"></div>
+<div class="fc tl"></div><div class="fc tr"></div><div class="fc bl"></div><div class="fc br"></div>
+
+<div id="app">
+  <div id="stat-header">
+    <div id="header-left">
+      <div id="stat-title">赛 事 角 色 统 计</div>
+      <div id="stat-sub">CHARACTER PICK &amp; BAN STATISTICS · 旧雨杯 · 鸣潮娱乐赛</div>
+    </div>
+    <div id="header-right">
+      <div id="event-badge">旧 雨 杯</div>
+      <div id="game-badge">已记录 <span id="total-games">0</span> 局</div>
+    </div>
+  </div>
+
+  <div id="toolbar">
+    <div class="leg-item"><div class="leg-dot leg-pick"></div><span>PICK 选用率</span></div>
+    <div class="leg-div"></div>
+    <div class="leg-item"><div class="leg-dot leg-ban"></div><span>BAN 禁用率</span></div>
+    <div id="sort-btns">
+      <button class="sort-btn active" id="sb-total" onclick="setSort('total')">综合热度</button>
+      <button class="sort-btn" id="sb-pick" onclick="setSort('pick')">PICK 率</button>
+      <button class="sort-btn" id="sb-ban" onclick="setSort('ban')">BAN 率</button>
+    </div>
+  </div>
+
+  <div id="empty-state" class="show">
+    <div id="empty-icon">📊</div>
+    <div id="empty-text">— 暂无赛事数据 · 完成一局 BP 后自动记录 —</div>
+  </div>
+
+  <div id="char-stats-grid"></div>
+
+  <div id="summary-bar">
+    <div class="sum-item"><div class="sum-label">总局数</div><div class="sum-val" id="sum-total">0</div></div>
+    <div class="sum-div"></div>
+    <div class="sum-item"><div class="sum-label">最高 Pick 率</div><div class="sum-val gold" id="sum-top-pick">—</div></div>
+    <div class="sum-div"></div>
+    <div class="sum-item"><div class="sum-label">最高 Ban 率</div><div class="sum-val red" id="sum-top-ban">—</div></div>
+    <div class="sum-div"></div>
+    <div class="sum-item"><div class="sum-label">出场角色数</div><div class="sum-val" id="sum-chars">0</div></div>
+    <div class="sum-div"></div>
+    <div class="sum-item"><div class="sum-label">最后更新</div><div class="sum-val" id="sum-time">—</div></div>
+  </div>
+</div>
+
+<div id="ctrl">
+  <span class="c-lbl">统计</span>
+  <button class="c-btn" onclick="loadStats()">刷 新</button>
+  <button class="c-btn red" onclick="clearStats()">清空数据</button>
+</div>
+
+<script>
+const CHARS_INFO=[
+  {name:'今汐',el:'Spectro',img:'./images/jx.jpg'},
+  {name:'珂莱塔',el:'Glacio',img:'./images/klt.jpg'},
+  {name:'椿',el:'Havoc',img:'./images/c.jpg'},
+  {name:'漂泊者·衍射',el:'Spectro',img:'./images/manys.jpg'},
+  {name:'漂泊者·湮灭',el:'Havoc',img:'./images/manym.jpg'},
+  {name:'吟霖',el:'Electro',img:'./images/ys.jpg'},
+  {name:'维里奈',el:'Spectro',img:'./images/wln.jpg'},
+  {name:'相里要',el:'Electro',img:'./images/xly.jpg'},
+  {name:'长离',el:'Fusion',img:'./images/cl.jpg'},
+  {name:'布兰特',el:'Fusion',img:'./images/blt.jpg'},
+  {name:'折枝',el:'Glacio',img:'./images/zz.jpg'},
+  {name:'卡卡罗',el:'Electro',img:'./images/kkl.jpg'},
+  {name:'凌阳',el:'Glacio',img:'./images/ly.jpg'},
+  {name:'安可',el:'Fusion',img:'./images/ak.jpg'},
+  {name:'守岸人',el:'Spectro',img:'./images/sar.jpg'},
+  {name:'菲比',el:'Spectro',img:'./images/fb.jpg'},
+  {name:'忌炎',el:'Aero',img:'./images/jy.jpg'},
+  {name:'坎特蕾拉',el:'Havoc',img:'./images/ll.jpg'},
+  {name:'赞妮',el:'Spectro',img:'./images/zn.jpg'},
+  {name:'夏空',el:'Aero',img:'./images/xk.jpg'},
+  {name:'卡提希娅',el:'Aero',img:'./images/kt.jpg'},
+  {name:'露帕',el:'Fusion',img:'./images/lp.jpg'},
+  {name:'琳奈',el:'Spectro',img:'./images/ln.jpg'},
+  {name:'莫宁',el:'Fusion',img:'./images/mn.jpg'},
+  {name:'爱弥斯',el:'Fusion',img:'./images/am.jpg'},
+  {name:'陆·赫斯',el:'Spectro',img:'./images/lh.jpg'},
+  {name:'西格莉卡',el:'Aero',img:'./images/SG.jpg'},
+  {name:'洛可可',el:'Havoc',img:'./images/lkk.jpg'},
+  {name:'奥古斯塔',el:'Electro',img:'./images/ag.jpg'},
+  {name:'尤诺',el:'Glacio',img:'./images/yn.jpg'},
+  {name:'仇远',el:'Aero',img:'./images/cy.jpg'},
+  {name:'弗洛洛',el:'Havoc',img:'./images/fll.jpg'},
+  {name:'千咲',el:'Havoc',img:'./images/qx.jpg'},
+  {name:'秧秧',el:'Aero',img:'./images/yy.jpg'},
+  {name:'白芷',el:'Glacio',img:'./images/bz.jpg'},
+  {name:'炽霞',el:'Fusion',img:'./images/cx.jpg'},
+  {name:'散华',el:'Glacio',img:'./images/sh.jpg'},
+  {name:'釉瑚',el:'Glacio',img:'./images/yh.jpg'},
+  {name:'丹瑾',el:'Havoc',img:'./images/dj.jpg'},
+  {name:'莫特斐',el:'Fusion',img:'./images/mtf.jpg'},
+  {name:'渊武',el:'Electro',img:'./images/yw.jpg'},
+  {name:'秋水',el:'Aero',img:'./images/qs.jpg'},
+  {name:'桃祈',el:'Havoc',img:'./images/tq.jpg'},
+  {name:'灯灯',el:'Electro',img:'./images/dd.jpg'},
+  {name:'卜灵',el:'Electro',img:'./images/bl.jpg'},
+  {name:'鉴心',el:'Aero',img:'./images/jx1.jpg'},
+];
+const EL_ZH={Fusion:'热熔',Glacio:'冷凝',Electro:'导电',Aero:'气动',Spectro:'衍射',Havoc:'湮灭'};
+const CHAR_MAP={};CHARS_INFO.forEach(c=>CHAR_MAP[c.name]=c);
+
+let sortMode='total';
+let statsData={totalGames:0,chars:{},lastUpdate:null};
+
+function setSort(mode){
+  sortMode=mode;
+  ['total','pick','ban'].forEach(m=>document.getElementById('sb-'+m).classList.toggle('active',m===mode));
+  renderStats();
+}
+
+function loadStats(){
+  try{
+    const raw=localStorage.getItem('wuwa_tour_stats');
+    statsData=raw?JSON.parse(raw):{totalGames:0,chars:{},lastUpdate:null};
+  }catch(e){statsData={totalGames:0,chars:{},lastUpdate:null};}
+  renderStats();
+}
+
+function clearStats(){
+  if(!confirm('确定清空所有赛事统计数据？此操作不可撤销。'))return;
+  localStorage.removeItem('wuwa_tour_stats');
+  statsData={totalGames:0,chars:{},lastUpdate:null};
+  renderStats();
+}
+
+function renderStats(){
+  const total=statsData.totalGames||0;
+  document.getElementById('total-games').textContent=total;
+  document.getElementById('sum-total').textContent=total;
+
+  const entries=Object.entries(statsData.chars||{});
+  const empty=document.getElementById('empty-state');
+  const grid=document.getElementById('char-stats-grid');
+
+  if(entries.length===0){
+    empty.classList.add('show');grid.innerHTML='';
+    ['sum-top-pick','sum-top-ban','sum-chars','sum-time'].forEach(id=>{
+      document.getElementById(id).textContent='—';
+    });
+    return;
+  }
+  empty.classList.remove('show');
+
+  const maxPick=Math.max(1,...entries.map(e=>e[1].picks||0));
+  const maxBan=Math.max(1,...entries.map(e=>e[1].bans||0));
+
+  // Summary
+  const byPick=[...entries].sort((a,b)=>(b[1].picks||0)-(a[1].picks||0));
+  const byBan=[...entries].sort((a,b)=>(b[1].bans||0)-(a[1].bans||0));
+  const tp=byPick[0],tb=byBan[0];
+  document.getElementById('sum-top-pick').textContent=
+    tp?`${tp[0]} · ${total>0?Math.round((tp[1].picks/total)*100):0}%`:'—';
+  document.getElementById('sum-top-ban').textContent=
+    tb?`${tb[0]} · ${total>0?Math.round((tb[1].bans/total)*100):0}%`:'—';
+  document.getElementById('sum-chars').textContent=entries.length;
+  document.getElementById('sum-time').textContent=
+    statsData.lastUpdate?new Date(statsData.lastUpdate).toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}):'—';
+
+  // Sort
+  const sorted=[...entries].sort((a,b)=>{
+    if(sortMode==='pick')return(b[1].picks||0)-(a[1].picks||0);
+    if(sortMode==='ban')return(b[1].bans||0)-(a[1].bans||0);
+    return((b[1].picks||0)+(b[1].bans||0))-((a[1].picks||0)+(a[1].bans||0));
+  });
+
+  // Top pick/ban names for highlight
+  const topPickName=tp?tp[0]:'';
+  const topBanName=tb?tb[0]:'';
+
+  grid.innerHTML=sorted.map(([name,data])=>{
+    const ci=CHAR_MAP[name]||{el:'',img:''};
+    const picks=data.picks||0,bans=data.bans||0;
+    const pickPct=total>0?Math.round((picks/total)*100):0;
+    const banPct=total>0?Math.round((bans/total)*100):0;
+    const pickW=Math.round((picks/maxPick)*100);
+    const banW=Math.round((bans/maxBan)*100);
+    const highlight=name===topPickName?'top-pick':name===topBanName?'top-ban':'';
+    return `<div class="stat-card ${highlight}">
+      <div class="sc-top">
+        <div class="sc-avatar"><img src="${ci.img||''}" onerror="this.style.display='none'" alt="${name}"></div>
+        <div class="sc-info">
+          <div class="sc-name">${name}</div>
+          <div class="sc-el el-${ci.el}">${EL_ZH[ci.el]||ci.el}</div>
+          <div class="sc-pct">${pickPct}%出场 / ${banPct}%被禁</div>
+        </div>
+      </div>
+      <div class="sc-bars">
+        <div class="bar-row">
+          <span class="bar-type bt-pick">PICK</span>
+          <div class="bar-bg"><div class="bar-fill bf-pick" style="width:${pickW}%"></div></div>
+          <span class="bar-num bn-pick">${picks}</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-type bt-ban">BAN</span>
+          <div class="bar-bg"><div class="bar-fill bf-ban" style="width:${banW}%"></div></div>
+          <span class="bar-num bn-ban">${bans}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+loadStats();
+setInterval(loadStats,3000);
+</script>
+</body>
+</html>
