@@ -238,12 +238,17 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   background:var(--ice2);box-shadow:0 0 6px var(--ice2);
 }
 
-/* ── BAN cards row ── */
+/* ── BAN cards (2×3 grid) ── */
 .ban-section{flex-shrink:0;position:relative;z-index:2;}
-.ban-cards-row{display:flex;gap:4px;padding:5px 6px;}
+.ban-cards-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  column-gap:3px;row-gap:5px;
+  padding:4px 6px;
+}
 
 .ban-card{
-  flex:1;height:76px;
+  height:54px;
   position:relative;overflow:hidden;border-radius:3px;
   background:rgba(5,10,32,0.95);
   border:1px solid rgba(60,100,180,0.18);
@@ -295,6 +300,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   display:grid;
   grid-template-columns:repeat(3,1fr);
   grid-template-rows:repeat(3,1fr);
+  grid-auto-flow:column;
   gap:3px;
   padding:4px 5px;
 }
@@ -379,6 +385,10 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .el-Fusion{color:#ff7040;}.el-Glacio{color:#60c8ff;}.el-Electro{color:#b070ff;}
 .el-Aero{color:#40d890;}.el-Spectro{color:#ffe040;}.el-Havoc{color:#d060d0;}
 
+/* ── 24进16 仅PICK 模式 ── */
+.mode-pick-only .ban-section{display:none;}
+.mode-pick-only #ban-row{display:none;}
+
 /* ══════════════════════════════════════
    CENTER COLUMN
 ══════════════════════════════════════ */
@@ -398,11 +408,10 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   border-bottom:1px solid rgba(106,184,240,0.12);
 }
 .seq-block{
-  flex:1;max-width:118px;height:28px;
+  flex:1;max-width:52px;min-width:28px;height:26px;
   border-radius:2px;
   display:flex;align-items:center;justify-content:center;
-  gap:5px;
-  font-size:8px;letter-spacing:2px;font-weight:700;
+  gap:4px;
   position:relative;overflow:hidden;
   transition:background 0.3s,border-color 0.3s,box-shadow 0.3s;
 }
@@ -914,14 +923,46 @@ function startCountdown(){
 
 /* ── constants ── */
 const EL_ZH={Fusion:'热熔',Glacio:'冷凝',Electro:'导电',Aero:'气动',Spectro:'衍射',Havoc:'湮灭'};
-const BANS_EACH=2,PICKS_EACH=9;
-const SEQ=[
+const SEQ_BAN_PICK=[
+  // 第1轮BAN
   {phase:'ban',player:1},{phase:'ban',player:2},
-  {phase:'ban',player:1},{phase:'ban',player:2},
+  {phase:'ban',player:1},{phase:'ban',player:1},
+  {phase:'ban',player:2},{phase:'ban',player:2},
+  // 第1组PICK：2号先手
+  {phase:'pick',player:2},{phase:'pick',player:1},
+  {phase:'pick',player:2},{phase:'pick',player:2},
+  {phase:'pick',player:1},{phase:'pick',player:1},
+  // 第2轮BAN：2号先手
+  {phase:'ban',player:2},{phase:'ban',player:1},
+  {phase:'ban',player:2},{phase:'ban',player:1},
+  {phase:'ban',player:2},{phase:'ban',player:1},
+  // 第2组PICK：1号先手
+  {phase:'pick',player:1},{phase:'pick',player:2},
+  {phase:'pick',player:2},{phase:'pick',player:1},
+  {phase:'pick',player:1},{phase:'pick',player:2},
+  // 第3组PICK：2号先手（反转）
   {phase:'pick',player:2},{phase:'pick',player:1},
   {phase:'pick',player:1},{phase:'pick',player:2},
   {phase:'pick',player:2},{phase:'pick',player:1},
 ];
+const SEQ_PICK_ONLY=[
+  // 第1组：2号先手
+  {phase:'pick',player:2},{phase:'pick',player:1},
+  {phase:'pick',player:2},{phase:'pick',player:2},
+  {phase:'pick',player:1},{phase:'pick',player:1},
+  // 第2组：1号先手
+  {phase:'pick',player:1},{phase:'pick',player:2},
+  {phase:'pick',player:2},{phase:'pick',player:1},
+  {phase:'pick',player:1},{phase:'pick',player:2},
+  // 第3组：2号先手（反转）
+  {phase:'pick',player:2},{phase:'pick',player:1},
+  {phase:'pick',player:1},{phase:'pick',player:2},
+  {phase:'pick',player:2},{phase:'pick',player:1},
+];
+let SEQ=SEQ_BAN_PICK;
+let BANS_EACH=6;
+const PICKS_EACH=9;
+let _obsMode='ban_pick';
 
 function loadState(){try{return JSON.parse(localStorage.getItem('wuwa_bp_state'))||null;}catch{return null;}}
 function imgErr(img,n){
@@ -1017,8 +1058,11 @@ function renderBanRow(id,slots,cls,count){
 
 /* render BP sequence bar */
 function renderSeqBar(step,done){
+  const seps=_obsMode==='pick_only'?[6,12]:[6,12,18,24];
+  const sep=`<div style="width:1px;height:20px;flex-shrink:0;background:linear-gradient(180deg,transparent,rgba(168,216,247,0.28),transparent);margin:0 1px;"></div>`;
   let h='';
   SEQ.forEach((s,i)=>{
+    if(seps.includes(i))h+=sep;
     const isBan=s.phase==='ban';
     const isDone=i<step;
     const isCur=i===step&&!done;
@@ -1030,8 +1074,7 @@ function renderSeqBar(step,done){
       if(isBan)cls+=' sb-ban';
       else cls+=s.player===1?' sb-pick-p1':' sb-pick-p2';
     }
-    const dotCls=`sb-dot sb-p${s.player}-dot`;
-    h+=`<div class="${cls}"><span class="${dotCls}"></span>${isBan?'BAN':'PICK'}</div>`;
+    h+=`<div class="${cls}"><span class="sb-dot sb-p${s.player}-dot"></span></div>`;
   });
   document.getElementById('bp-seq-bar').innerHTML=h;
 }
@@ -1090,9 +1133,19 @@ function checkSpotlight(S){
   prevCounts={p1bans:p1b,p2bans:p2b,p1picks:p1p,p2picks:p2p};
 }
 
+/* ── mode switch ── */
+function applyMode(mode){
+  if(_obsMode===mode)return;
+  _obsMode=mode;
+  SEQ=mode==='pick_only'?SEQ_PICK_ONLY:SEQ_BAN_PICK;
+  BANS_EACH=mode==='pick_only'?0:6;
+  document.body.classList.toggle('mode-pick-only',mode==='pick_only');
+}
+
 /* ── main render ── */
 function renderFromState(S){
   if(!S)return;
+  applyMode(S.mode||'ban_pick');
   const p1n=S.p1name||'玩家一',p2n=S.p2name||'玩家二';
   document.getElementById('hdr-p1-name').textContent=p1n;
   document.getElementById('hdr-p2-name').textContent=p2n;
@@ -1165,8 +1218,18 @@ function renderStatus(S){
     wo.textContent='BP 完成';wo.style.color='var(--gold)';ph.textContent='';
   } else {
     const cur=SEQ[step];
-    document.getElementById('phase-tag').textContent=
-      cur.phase==='ban'?`BAN ${Math.min(step+1,4)}/4`:`PICK ${step-3}/6`;
+    let tag;
+    if(cur.phase==='ban'){
+      const r=step<6?1:2;
+      const n=step<6?step+1:step-11;
+      tag=`禁用第${r}轮 ${n}/6`;
+    } else {
+      const g=_obsMode==='pick_only'
+        ?(step<6?1:step<12?2:3)
+        :(step<12?1:step<24?2:3);
+      tag=`第${g}组 PICK`;
+    }
+    document.getElementById('phase-tag').textContent=tag;
     wo.textContent=`玩家${cur.player}`;
     wo.style.color=cur.player===1?'var(--p1)':'var(--p2)';
     ph.textContent=cur.phase==='ban'?'▸ 禁用阶段':'▸ 选择阶段';

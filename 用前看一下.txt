@@ -1,0 +1,28 @@
+PS：飞娅是GAY
+
+开始介绍：回放的正确工作流
+关键问题：OBS 自带浏览器源（CEF内核）的 localStorage 和 Chrome 是隔离的。如果 control.html 在 Chrome 里开，replay.html 在 OBS 浏览器源里，数据读不到对方。
+
+推荐方案：全用 Chrome，OBS 用「窗口捕获」
+[ 电脑屏幕 ]
+├── Chrome 标签1：control.html     ← 主播操作用，不被捕获
+├── Chrome 标签2：index.html (BP)  ← OBS 窗口捕获 → 推流
+├── Chrome 标签3：replay.html      ← OBS 窗口捕获 → 推流
+└── Chrome 标签4：stats.html       ← OBS 窗口捕获 → 推流
+
+因为都在同一个 Chrome 进程 → localStorage 完全共享 
+
+OBS 操作：
+
+添加来源 → 窗口捕获 → 选 Chrome
+勾选「捕获特定标签页」→ 选对应页面
+不同场景切不同标签页即可
+备选方案：全用 OBS 浏览器源（也可以共享）
+OBS 的多个浏览器源之间 localStorage 是共享的（都跑在同一个 CEF 实例里）。所以：
+
+把 control.html 也加到 OBS 作为浏览器源，勾选「允许页面互动」
+这样 control.html 和 replay.html 在同一个 OBS CEF 里 → localStorage 共享
+
+
+
+该TXT文档归雨所有
