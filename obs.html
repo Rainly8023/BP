@@ -665,6 +665,20 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 #holo-score-num{font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;color:var(--teal);
   text-shadow:0 0 12px rgba(30,200,150,0.5);}
 
+/* ── BP countdown timer ── */
+#bp-timer{
+  position:absolute;bottom:14px;right:14px;z-index:15;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  opacity:0;transition:opacity 0.4s ease;
+  pointer-events:none;
+}
+#bp-timer.t-show{opacity:1;}
+#bp-timer-sub{
+  font-size:8px;letter-spacing:3px;font-weight:700;
+  color:rgba(106,184,240,0.55);
+  text-shadow:0 0 8px rgba(106,184,240,0.3);
+}
+
 /* ── floating score + death flash ── */
 .score-float{
   position:fixed;z-index:50;
@@ -810,6 +824,20 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
       <div class="vc bl"></div><div class="vc br"></div>
       <div class="vf-l"></div><div class="vf-r"></div>
       <div class="vf-t"></div>
+      <!-- BP countdown timer -->
+      <div id="bp-timer">
+        <svg width="110" height="110" viewBox="0 0 110 110">
+          <circle cx="55" cy="55" r="50" fill="rgba(2,6,20,0.68)"/>
+          <circle cx="55" cy="55" r="46" fill="none" stroke="rgba(40,80,160,0.12)" stroke-width="5"/>
+          <circle id="bp-timer-arc" cx="55" cy="55" r="46" fill="none"
+            stroke="#3a8fff" stroke-width="5" stroke-linecap="round"
+            stroke-dasharray="289.0" stroke-dashoffset="0"
+            transform="rotate(-90,55,55)"/>
+          <text id="bp-timer-num" x="55" y="64" text-anchor="middle"
+            fill="#d8eeff" font-family="Oswald" font-size="32" font-weight="700">—</text>
+        </svg>
+        <div id="bp-timer-sub">P1 · PICK</div>
+      </div>
       <!-- character spotlight -->
       <div id="spotlight">
         <div id="spot-card">
@@ -1168,6 +1196,7 @@ function renderFromState(S){
   renderSeqBar(S.step||0,S.done||false);
   renderHolo(S);
   renderStatus(S);
+  updateBPTimer(S);
 }
 
 function renderHolo(S){
@@ -1240,6 +1269,84 @@ function renderStatus(S){
     if(i===step&&!done)cls+=' cur-dot';
     return `<div class="${cls}"></div>`;
   }).join('');
+}
+
+/* ── BP countdown timer ── */
+let _bpTimerRaf=null;
+let _bpTS=null,_bpTD=0,_bpPlayer=1,_bpPhase='pick';
+
+function _bpTimerFrac(){
+  if(!_bpTS||!_bpTD)return 1;
+  return Math.max(0,1-(Date.now()-_bpTS)/(_bpTD*1000));
+}
+
+function _bpTimerRender(){
+  const el=document.getElementById('bp-timer');
+  const arc=document.getElementById('bp-timer-arc');
+  const num=document.getElementById('bp-timer-num');
+  const sub=document.getElementById('bp-timer-sub');
+  if(!el||!arc||!num)return;
+
+  if(!_bpTS){el.classList.remove('t-show');return;}
+  el.classList.add('t-show');
+
+  // sub label
+  if(sub){
+    const pColor=_bpPlayer===1?'var(--p1)':'var(--p2)';
+    sub.style.color=pColor;
+    sub.textContent=`P${_bpPlayer} · ${_bpPhase==='ban'?'BAN':'PICK'}`;
+  }
+
+  if(!_bpTD){
+    // infinite
+    arc.setAttribute('stroke','rgba(106,184,240,0.28)');
+    arc.style.strokeDashoffset='0';
+    num.textContent='∞';
+    num.setAttribute('fill','rgba(106,184,240,0.4)');
+    return;
+  }
+
+  const frac=_bpTimerFrac();
+  const C=2*Math.PI*46;
+  arc.style.strokeDashoffset=C*(1-frac);
+  const col=frac>0.5?'#3a8fff':frac>0.2?'#d4a020':'#cc2020';
+  arc.setAttribute('stroke',col);
+  const rem=Math.max(0,_bpTD-(Date.now()-_bpTS)/1000);
+  num.textContent=Math.ceil(rem);
+  num.setAttribute('fill',frac<0.2?'#ff8888':frac<0.5?'#ffd060':'#a8d8f7');
+}
+
+function _bpTimerRunRaf(){
+  if(_bpTimerRaf){cancelAnimationFrame(_bpTimerRaf);_bpTimerRaf=null;}
+  if(!_bpTS)return;
+  if(!_bpTD){_bpTimerRender();return;} // infinite: static render
+  function tick(){
+    _bpTimerRender();
+    if(_bpTS&&_bpTimerFrac()>0){
+      _bpTimerRaf=requestAnimationFrame(tick);
+    } else {
+      _bpTimerRaf=null;
+      _bpTimerRender();
+    }
+  }
+  _bpTimerRaf=requestAnimationFrame(tick);
+}
+
+function updateBPTimer(S){
+  const newTS=S.timerStart||null;
+  const newTD=typeof S.timerDuration==='number'?S.timerDuration:0;
+  const step=S.step||0;
+  if(step<SEQ.length&&!S.done&&newTS){
+    _bpPlayer=SEQ[step].player;
+    _bpPhase=SEQ[step].phase;
+  }
+  const changed=newTS!==_bpTS||newTD!==_bpTD;
+  _bpTS=newTS;_bpTD=newTD;
+  if(changed){
+    if(_bpTimerRaf){cancelAnimationFrame(_bpTimerRaf);_bpTimerRaf=null;}
+    if(newTS)_bpTimerRunRaf();
+    else _bpTimerRender();
+  }
 }
 
 /* ── init ── */
