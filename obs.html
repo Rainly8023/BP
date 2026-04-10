@@ -665,6 +665,22 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 #holo-score-num{font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;color:var(--teal);
   text-shadow:0 0 12px rgba(30,200,150,0.5);}
 
+/* ── 音效解锁提示 ── */
+#sfx-unlock{
+  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+  z-index:200;cursor:pointer;
+  padding:7px 22px;border-radius:3px;
+  background:rgba(2,6,20,0.88);
+  border:1px solid rgba(168,216,247,0.35);
+  color:rgba(168,216,247,0.7);
+  font-family:'Noto Sans SC',sans-serif;font-size:11px;letter-spacing:3px;
+  box-shadow:0 0 18px rgba(106,184,240,0.18);
+  transition:opacity 0.5s;
+  animation:sfxpulse 2s ease-in-out infinite;
+}
+@keyframes sfxpulse{0%,100%{box-shadow:0 0 12px rgba(106,184,240,0.15);}50%{box-shadow:0 0 24px rgba(106,184,240,0.35);}}
+#sfx-unlock.hidden{opacity:0;pointer-events:none;}
+
 /* ── BP countdown timer ── */
 #bp-timer{
   position:absolute;bottom:14px;right:14px;z-index:15;
@@ -744,6 +760,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   </div>
 </div>
 
+<div id="sfx-unlock">🔊 点击此处启用音效</div>
 <div id="death-flash"></div>
 <div id="death-text">角色阵亡！</div>
 
@@ -1113,6 +1130,7 @@ let prevCounts={p1bans:0,p2bans:0,p1picks:0,p2picks:0};
 
 function showSpotlight(char,type){
   // type: 'ban' | 'pick-p1' | 'pick-p2'
+  if(type==='ban')playBanSFX();else playPickSFX();
   if(spotTimer)clearTimeout(spotTimer);
   const sp=document.getElementById('spotlight');
   sp.classList.remove('show');
@@ -1269,6 +1287,96 @@ function renderStatus(S){
     if(i===step&&!done)cls+=' cur-dot';
     return `<div class="${cls}"></div>`;
   }).join('');
+}
+
+/* ── 音效解锁 ── */
+(function(){
+  const btn=document.getElementById('sfx-unlock');
+  function unlock(){
+    _sfxCtxGet();
+    btn.classList.add('hidden');
+    setTimeout(()=>btn.remove(),600);
+    document.removeEventListener('click',unlock);
+    document.removeEventListener('keydown',unlock);
+  }
+  document.addEventListener('click',unlock);
+  document.addEventListener('keydown',unlock);
+  btn.addEventListener('click',e=>{e.stopPropagation();unlock();});
+})();
+
+/* ── Sound Effects ── */
+let _sfxCtx=null;
+function _sfxCtxGet(){
+  if(!_sfxCtx)_sfxCtx=new(window.AudioContext||window.webkitAudioContext)();
+  if(_sfxCtx.state==='suspended')_sfxCtx.resume();
+  return _sfxCtx;
+}
+function _makeReverb(ctx,dur,decay){
+  const len=ctx.sampleRate*dur;
+  const buf=ctx.createBuffer(2,len,ctx.sampleRate);
+  for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
+  const c=ctx.createConvolver();c.buffer=buf;return c;
+}
+
+function playBanSFX(){
+  const ctx=_sfxCtxGet();const t=ctx.currentTime;
+  const master=ctx.createGain();master.gain.value=0.82;master.connect(ctx.destination);
+  const rev=_makeReverb(ctx,0.55,3.2);rev.connect(master);
+
+  // ① 低沉下滑冲击
+  const o1=ctx.createOscillator();const g1=ctx.createGain();
+  o1.type='sine';
+  o1.frequency.setValueAtTime(210,t);
+  o1.frequency.exponentialRampToValueAtTime(40,t+0.38);
+  g1.gain.setValueAtTime(0.95,t);
+  g1.gain.exponentialRampToValueAtTime(0.001,t+0.46);
+  o1.connect(g1);g1.connect(rev);g1.connect(master);
+  o1.start(t);o1.stop(t+0.52);
+
+  // ② 金属质感噪声 + bandpass
+  const nLen=Math.floor(ctx.sampleRate*0.2);
+  const nBuf=ctx.createBuffer(1,nLen,ctx.sampleRate);
+  const nd=nBuf.getChannelData(0);
+  for(let i=0;i<nLen;i++)nd[i]=(Math.random()*2-1)*Math.pow(1-i/nLen,2.2);
+  const ns=ctx.createBufferSource();ns.buffer=nBuf;
+  const nf=ctx.createBiquadFilter();nf.type='bandpass';nf.frequency.value=260;nf.Q.value=1.1;
+  const ng=ctx.createGain();ng.gain.setValueAtTime(0.5,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+  ns.connect(nf);nf.connect(ng);ng.connect(rev);ng.connect(master);ns.start(t);
+
+  // ③ 短促高频刮擦
+  const s2Len=Math.floor(ctx.sampleRate*0.055);
+  const s2Buf=ctx.createBuffer(1,s2Len,ctx.sampleRate);
+  const s2d=s2Buf.getChannelData(0);
+  for(let i=0;i<s2Len;i++)s2d[i]=(Math.random()*2-1)*Math.pow(1-i/s2Len,1.4);
+  const s2=ctx.createBufferSource();s2.buffer=s2Buf;
+  const sf2=ctx.createBiquadFilter();sf2.type='highpass';sf2.frequency.value=2600;
+  const sg2=ctx.createGain();sg2.gain.value=0.2;
+  s2.connect(sf2);sf2.connect(sg2);sg2.connect(master);s2.start(t);
+}
+
+function playPickSFX(){
+  const ctx=_sfxCtxGet();const t=ctx.currentTime;
+  const master=ctx.createGain();master.gain.value=0.78;master.connect(ctx.destination);
+  const rev=_makeReverb(ctx,1.4,2.4);rev.connect(master);
+
+  [{freq:587.3,dt:0},{freq:880,dt:0.15}].forEach(({freq,dt})=>{
+    const nt=t+dt;
+    const o=ctx.createOscillator();const g=ctx.createGain();
+    o.type='sine';o.frequency.value=freq;
+    g.gain.setValueAtTime(0,nt);g.gain.linearRampToValueAtTime(0.48,nt+0.008);
+    g.gain.exponentialRampToValueAtTime(0.001,nt+1.0);
+    o.connect(g);g.connect(rev);g.connect(master);o.start(nt);o.stop(nt+1.1);
+    const o2=ctx.createOscillator();const g2=ctx.createGain();
+    o2.type='sine';o2.frequency.value=freq*2.756;
+    g2.gain.setValueAtTime(0,nt);g2.gain.linearRampToValueAtTime(0.14,nt+0.005);
+    g2.gain.exponentialRampToValueAtTime(0.001,nt+0.22);
+    o2.connect(g2);g2.connect(rev);g2.connect(master);o2.start(nt);o2.stop(nt+0.28);
+    const o3=ctx.createOscillator();const g3=ctx.createGain();
+    o3.type='sine';o3.frequency.value=freq*5.4;
+    g3.gain.setValueAtTime(0,nt);g3.gain.linearRampToValueAtTime(0.06,nt+0.003);
+    g3.gain.exponentialRampToValueAtTime(0.001,nt+0.08);
+    o3.connect(g3);g3.connect(master);o3.start(nt);o3.stop(nt+0.1);
+  });
 }
 
 /* ── BP countdown timer ── */

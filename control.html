@@ -117,6 +117,19 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
   box-shadow:0 0 10px rgba(200,30,30,0.2);
 }
 
+/* 倒计时 */
+#timer-box{display:flex;align-items:center;gap:10px;padding:3px 0;}
+.timer-dur-btns{display:flex;gap:4px;}
+.timer-dur-btn{
+  padding:3px 8px;border-radius:2px;font-family:var(--font);font-size:10px;font-weight:700;
+  letter-spacing:1px;cursor:pointer;
+  background:rgba(10,20,50,0.4);color:var(--muted);
+  border:1px solid rgba(40,80,160,0.28);transition:all 0.15s;
+}
+.timer-dur-btn:hover{color:var(--text);border-color:rgba(100,160,255,0.4);}
+.timer-dur-btn.t-active{background:rgba(58,143,255,0.15);border-color:rgba(58,143,255,0.5);color:var(--p2);}
+.g-card{user-select:none;}
+
 /* 玩家名称 */
 #player-names{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .name-block{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:10px 14px;display:flex;flex-direction:column;gap:5px;}
@@ -299,8 +312,29 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
       <div class="bp-action-box">
         <div class="action-lbl" id="action-label">玩家一 · 禁用阶段</div>
         <div class="action-sel" id="action-selected">— 请在右侧选择角色 —</div>
+        <div id="timer-box">
+          <svg id="timer-ring-ctrl" width="52" height="52" viewBox="0 0 52 52">
+            <circle cx="26" cy="26" r="21" fill="none" stroke="rgba(40,80,160,0.14)" stroke-width="3"/>
+            <circle id="timer-arc-ctrl" cx="26" cy="26" r="21" fill="none"
+              stroke="#3a8fff" stroke-width="3" stroke-linecap="round"
+              stroke-dasharray="131.9" stroke-dashoffset="0"
+              transform="rotate(-90,26,26)"/>
+            <text id="timer-num-ctrl" x="26" y="31" text-anchor="middle"
+              fill="rgba(100,140,200,0.4)" font-family="Oswald,sans-serif" font-size="14" font-weight="700">—</text>
+          </svg>
+          <div style="flex:1">
+            <div class="action-lbl" style="margin-bottom:4px;">思考时限 <span id="timer-kb-hint" style="color:rgba(80,120,180,0.45);font-size:8px;letter-spacing:1px;">Enter确认 · Esc取消</span></div>
+            <div class="timer-dur-btns" id="timer-dur-btns">
+              <button class="timer-dur-btn" data-dur="30" onclick="setTimerDur(30)">30s</button>
+              <button class="timer-dur-btn t-active" data-dur="60" onclick="setTimerDur(60)">60s</button>
+              <button class="timer-dur-btn" data-dur="90" onclick="setTimerDur(90)">90s</button>
+              <button class="timer-dur-btn" data-dur="0" onclick="setTimerDur(0)">∞</button>
+            </div>
+          </div>
+        </div>
         <div class="btn-row">
           <button class="btn btn-primary" id="confirm-btn" onclick="confirmAction()" disabled>确 认</button>
+          <button class="btn btn-teal" id="random-btn" onclick="randomPick()">随 机</button>
           <button class="btn btn-ghost" onclick="resetBP()">重 置 BP</button>
         </div>
       </div>
@@ -505,6 +539,7 @@ let S={
   holoEnemies:['飞廉之猩','燎照之骑','无冠者','芙露德莉斯','赫卡忒','罗蕾莱'],
   holoCurrentEnemy:0,holoScore:0,
   mode:'ban_pick',
+  timerStart:null,timerDuration:60,
 };
 
 function setMode(mode){
@@ -517,6 +552,7 @@ function setMode(mode){
   document.getElementById('mode-badge').textContent=mode==='pick_only'?'24进16 · 仅选角色':'16强 · BAN/PICK';
   document.getElementById('mode-badge').style.color=mode==='pick_only'?'var(--p2)':'#ff9999';
   // 重置BP并同步
+  S.timerStart=null;_timerStop();
   S.step=0;S.p1bans=[];S.p2bans=[];S.p1picks=[];S.p2picks=[];
   S.selected=null;S.done=false;S.statsRecorded=false;S.bpTimeline=[];
   saveState();renderAll();toast(mode==='pick_only'?'已切换：24进16 仅选角色':'已切换：16强 BAN/PICK',2500);
@@ -582,7 +618,7 @@ function renderGrid(){
   document.getElementById('char-grid').innerHTML=list.map(c=>{
     const na=isUnavail(c.name);
     let cls='g-card';if(na)cls+=' g-na';else if(S.selected&&S.selected.name===c.name)cls+=' g-sel';
-    return `<div class="${cls}" data-name="${c.name}" onclick="${na?'':'selectChar(\''+c.name+'\')'}">
+    return `<div class="${cls}" data-name="${c.name}" onmousedown="${na?'':'selectChar(\''+c.name+'\')'}">
       <div class="g-avatar"><img src="${c.img}" onerror="imgErr(this,'${c.name}')" alt="${c.name}"></div>
       <div class="g-name">${c.name}</div>
       <div class="g-el el-${c.el}">${EL_ZH[c.el]}</div>
@@ -592,12 +628,15 @@ function renderGrid(){
 
 function selectChar(name){
   if(isUnavail(name))return;
+  const prev=S.selected?S.selected.name:null;
   S.selected=CHARS.find(c=>c.name===name);
+  if(prev!==name)_timerStart();
   renderGrid();renderActionBar();
 }
 
 function confirmAction(){
   if(!S.selected||S.done||S.step>=SEQ.length)return;
+  S.timerStart=null;_timerStop();
   const cur=SEQ[S.step];const c=S.selected;
   S.bpTimeline.push({step:S.step,phase:cur.phase,player:cur.player,char:{name:c.name,img:c.img,el:c.el},ts:Date.now()});
   if(cur.phase==='ban'){if(cur.player===1)S.p1bans.push(c);else S.p2bans.push(c);}
@@ -622,9 +661,99 @@ function recordBPStats(){
 }
 
 function resetBP(){
+  S.timerStart=null;_timerStop();
   S.step=0;S.p1bans=[];S.p2bans=[];S.p1picks=[];S.p2picks=[];S.selected=null;S.done=false;S.statsRecorded=false;S.bpTimeline=[];
   saveState();renderAll();toast('BP 已重置');
 }
+/* ── 倒计时 ── */
+let _timerRaf=null;
+
+function setTimerDur(secs){
+  S.timerDuration=secs;
+  document.querySelectorAll('.timer-dur-btn').forEach(b=>{
+    b.classList.toggle('t-active',parseInt(b.dataset.dur)===secs);
+  });
+}
+
+function _timerStart(){
+  if(S.done||S.step>=SEQ.length)return;
+  S.timerStart=Date.now();
+  saveState();
+  _timerRun();
+}
+
+function _timerStop(){
+  if(_timerRaf){cancelAnimationFrame(_timerRaf);_timerRaf=null;}
+  _timerDraw(1);
+}
+
+function _timerFrac(){
+  if(!S.timerStart||!S.timerDuration)return 1;
+  return Math.max(0,1-(Date.now()-S.timerStart)/(S.timerDuration*1000));
+}
+
+function _timerDraw(frac){
+  const arc=document.getElementById('timer-arc-ctrl');
+  const num=document.getElementById('timer-num-ctrl');
+  if(!arc||!num)return;
+  const C=2*Math.PI*21; // r=21
+  if(!S.timerDuration){
+    arc.style.strokeDashoffset=0;
+    arc.setAttribute('stroke','rgba(58,143,255,0.28)');
+    num.textContent='∞';num.setAttribute('fill','rgba(80,130,200,0.45)');
+    return;
+  }
+  arc.style.strokeDashoffset=C*(1-frac);
+  const col=frac>0.5?'#3a8fff':frac>0.2?'#d4a020':'#cc2020';
+  arc.setAttribute('stroke',col);
+  if(!S.timerStart){
+    num.textContent='—';num.setAttribute('fill','rgba(100,140,200,0.4)');
+  } else {
+    const rem=Math.max(0,S.timerDuration-(Date.now()-S.timerStart)/1000);
+    num.textContent=Math.ceil(rem);
+    num.setAttribute('fill',col);
+  }
+}
+
+function _timerRun(){
+  if(_timerRaf){cancelAnimationFrame(_timerRaf);_timerRaf=null;}
+  function tick(){
+    const frac=_timerFrac();
+    _timerDraw(frac);
+    if(S.timerStart&&(!S.timerDuration||frac>0)){
+      _timerRaf=requestAnimationFrame(tick);
+    } else {
+      _timerRaf=null;
+    }
+  }
+  _timerRaf=requestAnimationFrame(tick);
+}
+
+/* ── 随机选角色 ── */
+function randomPick(){
+  if(S.done||S.step>=SEQ.length)return;
+  const avail=CHARS.filter(c=>!isUnavail(c.name));
+  if(!avail.length){toast('没有可选角色');return;}
+  const pick=avail[Math.floor(Math.random()*avail.length)];
+  selectChar(pick.name);
+  toast(`随机：${pick.name}`,1500);
+}
+
+/* ── 快捷键 ── */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  if(e.key==='Enter'||e.code==='NumpadEnter'){
+    e.preventDefault();
+    if(!document.getElementById('confirm-btn').disabled)confirmAction();
+  } else if(e.key==='Escape'){
+    e.preventDefault();
+    if(S.selected){
+      S.selected=null;S.timerStart=null;_timerStop();
+      saveState();renderGrid();renderActionBar();
+    }
+  }
+});
+
 function renderScores(){
   document.getElementById('sc1').textContent=S.scoreP1;
   document.getElementById('sc2').textContent=S.scoreP2;
@@ -699,7 +828,7 @@ function resetHolo(){
   grid.addEventListener('mouseleave',()=>tip.classList.remove('show'));
 })();
 
-buildFilterBtns();renderAll();saveState();
+buildFilterBtns();renderAll();saveState();_timerDraw(1);
 </script>
 </body>
 </html>
