@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta charset="UTF-8"><title>旧雨杯 · 鸣潮娱乐赛</title>
+<meta charset="UTF-8">
+<title>旧雨杯 · 鸣潮娱乐赛</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Oswald:wght@400;600;700&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -9,52 +10,95 @@
   --p1:#e85c30;--p2:#3a8fff;
   --ban:#cc2020;--gold:#d4a020;--teal:#20c8a0;
   --text:#d8eeff;--muted:#4a7090;
-  --ice1:#a8d8f7;--ice2:#6ab8f0;--ice3:#c8ecff;
+  /* 卡提希娅冰蓝色系 */
+  --ice1:#a8d8f7;    /* 浅冰蓝 */
+  --ice2:#6ab8f0;    /* 中冰蓝 */
+  --ice3:#c8ecff;    /* 极浅冰白 */
   --ice-glow:rgba(168,216,247,0.65);
   --ice-shadow:rgba(80,160,230,0.45);
+  --ice-deep:rgba(40,100,200,0.35);
   --font:'Noto Sans SC','Oswald',sans-serif;
 }
 html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font-family:var(--font);color:var(--text);}
 
-/* ── backgrounds ── */
-#bg-main{position:fixed;inset:0;z-index:0;background:url('./3.jpg') center/cover no-repeat;}
-#bg-dim{position:fixed;inset:0;z-index:1;
+/* ══════════════════════════════════════
+   背景层 - 3.jpg卡提希娅为主背景
+══════════════════════════════════════ */
+#bg-main{
+  position:fixed;inset:0;z-index:0;
+  background:url('./3.jpg') center/cover no-repeat;
+}
+/* 全局遮罩：全面压暗，中间留透明给游戏画面 */
+#bg-dim{
+  position:fixed;inset:0;z-index:1;
   background:
     linear-gradient(90deg,
-      rgba(2,6,20,0.98) 0%,rgba(2,6,20,0.98) 14.8%,
-      rgba(4,10,30,0.88) 19%,rgba(4,10,30,0.76) 25%,
-      rgba(4,10,30,0.76) 75%,rgba(4,10,30,0.88) 81%,
-      rgba(2,6,20,0.98) 85.2%,rgba(2,6,20,0.98) 100%),
+      rgba(2,6,20,0.98) 0%,rgba(2,6,20,0.98) 11.4%,
+      rgba(4,10,30,0.88) 17%,rgba(4,10,30,0.82) 22%,
+      rgba(4,10,30,0.78) 26%,rgba(4,10,30,0.78) 74%,
+      rgba(4,10,30,0.82) 78%,rgba(4,10,30,0.88) 83%,
+      rgba(2,6,20,0.98) 88.6%,rgba(2,6,20,0.98) 100%
+    ),
     linear-gradient(180deg,
-      rgba(2,6,20,0.99) 0%,rgba(2,6,20,0.9) 8%,
-      rgba(2,6,20,0.72) 13%,rgba(2,6,20,0.68) 17%,
-      rgba(2,6,20,0.68) 80%,rgba(2,6,20,0.9) 87%,
-      rgba(2,6,20,1) 100%);}
-#bg-side-l{position:fixed;left:0;top:130px;bottom:100px;width:284px;z-index:2;pointer-events:none;
-  background:url('./1.jpg') right center/cover no-repeat;opacity:0.12;
+      rgba(2,6,20,0.99) 0%,rgba(2,6,20,0.9) 8.3%,
+      rgba(2,6,20,0.75) 13%,rgba(2,6,20,0.7) 16%,
+      rgba(2,6,20,0.7) 80%,rgba(2,6,20,0.9) 87%,
+      rgba(2,6,20,0.99) 93%,rgba(2,6,20,1) 100%
+    );
+}
+/* 侧边用1.jpg（守护者龙）做氛围 */
+#bg-side-l{
+  position:fixed;left:0;top:130px;bottom:100px;width:240px;z-index:2;pointer-events:none;
+  background:url('./1.jpg') right center/cover no-repeat;
+  opacity:0.15;
   -webkit-mask:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.5) 55%,transparent 100%);
-  mask:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.5) 55%,transparent 100%);}
-#bg-side-r{position:fixed;right:0;top:130px;bottom:100px;width:284px;z-index:2;pointer-events:none;
-  background:url('./1.jpg') left center/cover no-repeat;opacity:0.12;transform:scaleX(-1);
+  mask:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.5) 55%,transparent 100%);
+}
+#bg-side-r{
+  position:fixed;right:0;top:130px;bottom:100px;width:240px;z-index:2;pointer-events:none;
+  background:url('./1.jpg') left center/cover no-repeat;
+  opacity:0.15;transform:scaleX(-1);
   -webkit-mask:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.5) 55%,transparent 100%);
-  mask:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.5) 55%,transparent 100%);}
+  mask:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.5) 55%,transparent 100%);
+}
 #scanlines{position:fixed;inset:0;z-index:3;pointer-events:none;
   background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,8,30,0.04) 2px,rgba(0,8,30,0.04) 4px);}
 #pcanvas{position:fixed;inset:0;z-index:3;pointer-events:none;}
 
-/* ── ice border ── */
+/* ══════════════════════════════════════
+   冰蓝边框系统 - 卡提希娅风格
+══════════════════════════════════════ */
+/* 四边主线 - 冰蓝白 */
 .fl-top{position:fixed;top:0;left:0;right:0;height:3px;z-index:25;pointer-events:none;
-  background:linear-gradient(90deg,transparent 0%,rgba(80,140,220,0.3) 4%,var(--ice2) 14%,var(--ice3) 38%,#fff 50%,var(--ice3) 62%,var(--ice2) 86%,rgba(80,140,220,0.3) 96%,transparent 100%);
+  background:linear-gradient(90deg,
+    transparent 0%,rgba(80,140,220,0.3) 4%,
+    var(--ice2) 14%,var(--ice3) 38%,
+    #fff 50%,
+    var(--ice3) 62%,var(--ice2) 86%,
+    rgba(80,140,220,0.3) 96%,transparent 100%);
   box-shadow:0 0 16px var(--ice-glow),0 0 40px var(--ice-shadow),0 3px 80px rgba(60,130,220,0.15);}
 .fl-bottom{position:fixed;bottom:0;left:0;right:0;height:3px;z-index:25;pointer-events:none;
-  background:linear-gradient(90deg,transparent 0%,rgba(80,140,220,0.3) 4%,var(--ice2) 14%,var(--ice3) 38%,#fff 50%,var(--ice3) 62%,var(--ice2) 86%,rgba(80,140,220,0.3) 96%,transparent 100%);
+  background:linear-gradient(90deg,
+    transparent 0%,rgba(80,140,220,0.3) 4%,
+    var(--ice2) 14%,var(--ice3) 38%,
+    #fff 50%,
+    var(--ice3) 62%,var(--ice2) 86%,
+    rgba(80,140,220,0.3) 96%,transparent 100%);
   box-shadow:0 0 16px var(--ice-glow),0 0 40px var(--ice-shadow),0 -3px 80px rgba(60,130,220,0.15);}
 .fl-left{position:fixed;left:0;top:0;bottom:0;width:3px;z-index:25;pointer-events:none;
-  background:linear-gradient(180deg,transparent 0%,rgba(80,140,220,0.3) 4%,var(--ice2) 14%,var(--ice1) 50%,var(--ice2) 86%,rgba(80,140,220,0.3) 96%,transparent 100%);
+  background:linear-gradient(180deg,
+    transparent 0%,rgba(80,140,220,0.3) 4%,
+    var(--ice2) 14%,var(--ice1) 50%,
+    var(--ice2) 86%,rgba(80,140,220,0.3) 96%,transparent 100%);
   box-shadow:0 0 16px var(--ice-glow),0 0 40px var(--ice-shadow),3px 0 80px rgba(60,130,220,0.12);}
 .fl-right{position:fixed;right:0;top:0;bottom:0;width:3px;z-index:25;pointer-events:none;
-  background:linear-gradient(180deg,transparent 0%,rgba(80,140,220,0.3) 4%,var(--ice2) 14%,var(--ice1) 50%,var(--ice2) 86%,rgba(80,140,220,0.3) 96%,transparent 100%);
+  background:linear-gradient(180deg,
+    transparent 0%,rgba(80,140,220,0.3) 4%,
+    var(--ice2) 14%,var(--ice1) 50%,
+    var(--ice2) 86%,rgba(80,140,220,0.3) 96%,transparent 100%);
   box-shadow:0 0 16px var(--ice-glow),0 0 40px var(--ice-shadow),-3px 0 80px rgba(60,130,220,0.12);}
+
+/* 内层细线 */
 .fl-ti{position:fixed;top:6px;left:55px;right:55px;height:1px;z-index:24;pointer-events:none;
   background:linear-gradient(90deg,transparent,rgba(120,190,255,0.2) 15%,rgba(120,190,255,0.2) 85%,transparent);}
 .fl-bi{position:fixed;bottom:6px;left:55px;right:55px;height:1px;z-index:24;pointer-events:none;
@@ -63,30 +107,56 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   background:linear-gradient(180deg,transparent,rgba(120,190,255,0.18) 15%,rgba(120,190,255,0.18) 85%,transparent);}
 .fl-ri{position:fixed;right:6px;top:55px;bottom:55px;width:1px;z-index:24;pointer-events:none;
   background:linear-gradient(180deg,transparent,rgba(120,190,255,0.18) 15%,rgba(120,190,255,0.18) 85%,transparent);}
+
+/* 四角L形粗线 */
 .fc{position:fixed;z-index:26;pointer-events:none;}
-.fc.tl{top:0;left:0;width:80px;height:80px;border-top:3px solid var(--ice1);border-left:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),-6px -6px 40px var(--ice-shadow);}
-.fc.tr{top:0;right:0;width:80px;height:80px;border-top:3px solid var(--ice1);border-right:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),6px -6px 40px var(--ice-shadow);}
-.fc.bl{bottom:0;left:0;width:80px;height:80px;border-bottom:3px solid var(--ice1);border-left:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),-6px 6px 40px var(--ice-shadow);}
-.fc.br{bottom:0;right:0;width:80px;height:80px;border-bottom:3px solid var(--ice1);border-right:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),6px 6px 40px var(--ice-shadow);}
+.fc.tl{top:0;left:0;width:80px;height:80px;
+  border-top:3px solid var(--ice1);border-left:3px solid var(--ice1);
+  box-shadow:0 0 24px var(--ice-glow),-6px -6px 40px var(--ice-shadow);}
+.fc.tr{top:0;right:0;width:80px;height:80px;
+  border-top:3px solid var(--ice1);border-right:3px solid var(--ice1);
+  box-shadow:0 0 24px var(--ice-glow),6px -6px 40px var(--ice-shadow);}
+.fc.bl{bottom:0;left:0;width:80px;height:80px;
+  border-bottom:3px solid var(--ice1);border-left:3px solid var(--ice1);
+  box-shadow:0 0 24px var(--ice-glow),-6px 6px 40px var(--ice-shadow);}
+.fc.br{bottom:0;right:0;width:80px;height:80px;
+  border-bottom:3px solid var(--ice1);border-right:3px solid var(--ice1);
+  box-shadow:0 0 24px var(--ice-glow),6px 6px 40px var(--ice-shadow);}
+
+/* 四角菱形大装饰 - 冰蓝色 */
 .fd{position:fixed;z-index:28;pointer-events:none;transform:rotate(45deg);}
-.fd.tl{top:10px;left:10px;width:13px;height:13px;background:var(--ice3);box-shadow:0 0 16px var(--ice-glow),0 0 32px var(--ice-shadow);}
-.fd.tr{top:10px;right:10px;width:13px;height:13px;background:var(--ice3);box-shadow:0 0 16px var(--ice-glow),0 0 32px var(--ice-shadow);}
-.fd.bl{bottom:10px;left:10px;width:13px;height:13px;background:var(--ice3);box-shadow:0 0 16px var(--ice-glow),0 0 32px var(--ice-shadow);}
-.fd.br{bottom:10px;right:10px;width:13px;height:13px;background:var(--ice3);box-shadow:0 0 16px var(--ice-glow),0 0 32px var(--ice-shadow);}
-.fm{position:fixed;z-index:27;pointer-events:none;transform:rotate(45deg);width:10px;height:10px;
-  background:rgba(200,236,255,0.95);box-shadow:0 0 14px var(--ice-glow),0 0 28px rgba(100,180,255,0.5);}
+.fd.tl{top:10px;left:10px;width:13px;height:13px;
+  background:var(--ice3);box-shadow:0 0 16px var(--ice-glow),0 0 32px var(--ice-shadow);}
+.fd.tr{top:10px;right:10px;width:13px;height:13px;
+  background:var(--ice3);box-shadow:0 0 16px var(--ice-glow),0 0 32px var(--ice-shadow);}
+.fd.bl{bottom:10px;left:10px;width:13px;height:13px;
+  background:var(--ice3);box-shadow:0 0 16px var(--ice-glow),0 0 32px var(--ice-shadow);}
+.fd.br{bottom:10px;right:10px;width:13px;height:13px;
+  background:var(--ice3);box-shadow:0 0 16px var(--ice-glow),0 0 32px var(--ice-shadow);}
+
+/* 边线中点菱形 - 白冰色 */
+.fm{position:fixed;z-index:27;pointer-events:none;transform:rotate(45deg);
+  width:10px;height:10px;background:rgba(200,236,255,0.95);
+  box-shadow:0 0 14px var(--ice-glow),0 0 28px rgba(100,180,255,0.5);}
 .fm.top{top:9px;left:calc(50% - 5px);}
 .fm.bottom{bottom:9px;left:calc(50% - 5px);}
 .fm.left{left:9px;top:calc(50% - 5px);}
 .fm.right{right:9px;top:calc(50% - 5px);}
-.fq{position:fixed;z-index:27;pointer-events:none;transform:rotate(45deg);width:7px;height:7px;
-  background:rgba(168,216,247,0.85);box-shadow:0 0 10px var(--ice-glow);}
-.fq.t1{top:10px;left:25%;}.fq.t2{top:10px;right:25%;}
-.fq.b1{bottom:10px;left:25%;}.fq.b2{bottom:10px;right:25%;}
-.fq.l1{left:10px;top:25%;}.fq.l2{left:10px;bottom:25%;}
-.fq.r1{right:10px;top:25%;}.fq.r2{right:10px;bottom:25%;}
 
-/* ── PV layer ── */
+/* 1/4处小菱形 - 浅冰蓝 */
+.fq{position:fixed;z-index:27;pointer-events:none;transform:rotate(45deg);
+  width:7px;height:7px;background:rgba(168,216,247,0.85);
+  box-shadow:0 0 10px var(--ice-glow);}
+.fq.t1{top:10px;left:25%;}
+.fq.t2{top:10px;right:25%;}
+.fq.b1{bottom:10px;left:25%;}
+.fq.b2{bottom:10px;right:25%;}
+.fq.l1{left:10px;top:25%;}
+.fq.l2{left:10px;bottom:25%;}
+.fq.r1{right:10px;top:25%;}
+.fq.r2{right:10px;bottom:25%;}
+
+/* ── PV层 ── */
 #pv-layer{position:fixed;inset:0;z-index:100;background:#000;display:none;align-items:center;justify-content:center;}
 #pv-layer.show{display:flex;}
 #pv-video{width:1920px;height:1080px;object-fit:cover;}
@@ -97,25 +167,24 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   cursor:pointer;border:1px solid rgba(168,216,247,0.4);color:rgba(168,216,247,0.7);
   background:rgba(0,0,0,0.5);transition:all 0.2s;}
 .pv-btn:hover{color:var(--ice3);border-color:var(--ice3);}
-#pv-overlay{position:absolute;inset:0;z-index:102;display:none;align-items:center;
-  justify-content:center;flex-direction:column;gap:12px;pointer-events:none;}
+#pv-overlay{position:absolute;inset:0;z-index:102;display:none;
+  align-items:center;justify-content:center;flex-direction:column;gap:12px;pointer-events:none;}
 #pv-overlay.show{display:flex;}
 #pv-countdown{font-family:'Oswald',sans-serif;font-size:130px;font-weight:700;
-  color:rgba(168,216,247,0.9);text-shadow:0 0 50px var(--ice-glow),0 0 100px var(--ice-shadow);
+  color:rgba(168,216,247,0.9);
+  text-shadow:0 0 50px var(--ice-glow),0 0 100px var(--ice-shadow);
   animation:cdpulse 1s ease-in-out;}
 @keyframes cdpulse{0%{transform:scale(1.5);opacity:0;}100%{transform:scale(1);opacity:1;}}
 #pv-countdown-label{font-size:16px;letter-spacing:6px;color:rgba(255,255,255,0.35);}
 
-/* ── main grid ── */
-#app{
-  position:relative;z-index:10;width:1920px;height:1080px;
+/* ── 主布局 ── */
+#app{position:relative;z-index:10;width:1920px;height:1080px;
   display:grid;
   grid-template-rows:90px 40px 1fr 100px;
-  grid-template-columns:284px 1fr 284px;
-}
+  grid-template-columns:220px 1fr 220px;}
 
-/* ── header ── */
-#header{grid-column:1/-1;grid-row:1;display:grid;grid-template-columns:380px 1fr 380px;
+/* ── Header ── */
+#header{grid-column:1/-1;grid-row:1;display:grid;grid-template-columns:340px 1fr 340px;
   align-items:center;position:relative;overflow:hidden;z-index:10;}
 #header::before{content:'';position:absolute;inset:0;
   background:url('./3.jpg') center 15%/cover no-repeat;opacity:0.25;}
@@ -125,40 +194,42 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .hdr-line{position:absolute;bottom:0;left:0;right:0;height:1px;z-index:3;
   background:linear-gradient(90deg,transparent 0%,var(--ice2) 8%,var(--ice3) 35%,#fff 50%,var(--ice3) 65%,var(--ice2) 92%,transparent 100%);
   box-shadow:0 0 12px var(--ice-glow),0 2px 24px var(--ice-shadow);}
-#p1-header-area{display:flex;align-items:center;gap:12px;padding:8px 20px;height:100%;position:relative;z-index:3;}
-#p1-header-area::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,rgba(232,92,48,0.16) 0%,transparent 100%);}
+
+#p1-header-area{display:flex;align-items:center;gap:10px;padding:8px 16px;height:100%;position:relative;z-index:3;}
+#p1-header-area::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(232,92,48,0.13) 0%,transparent 100%);}
 #p1-header-area::after{content:'';position:absolute;left:0;top:12%;bottom:12%;width:3px;
   background:linear-gradient(180deg,transparent,var(--p1),transparent);box-shadow:0 0 12px var(--p1);}
-#p2-header-area{display:flex;align-items:center;gap:12px;flex-direction:row-reverse;
-  padding:8px 20px;height:100%;position:relative;z-index:3;}
-#p2-header-area::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(270deg,rgba(58,143,255,0.16) 0%,transparent 100%);}
+#p2-header-area{display:flex;align-items:center;gap:10px;flex-direction:row-reverse;
+  padding:8px 16px;height:100%;position:relative;z-index:3;}
+#p2-header-area::before{content:'';position:absolute;inset:0;background:linear-gradient(270deg,rgba(58,143,255,0.13) 0%,transparent 100%);}
 #p2-header-area::after{content:'';position:absolute;right:0;top:12%;bottom:12%;width:3px;
   background:linear-gradient(180deg,transparent,var(--p2),transparent);box-shadow:0 0 12px var(--p2);}
-.guild-img{width:64px;height:64px;border-radius:4px;object-fit:cover;flex-shrink:0;}
+
+.guild-img{width:62px;height:62px;border-radius:4px;object-fit:cover;flex-shrink:0;}
 .guild-img.p1g{border:1px solid rgba(232,92,48,0.55);box-shadow:0 0 14px rgba(232,92,48,0.3);}
 .guild-img.p2g{border:1px solid rgba(58,143,255,0.55);box-shadow:0 0 14px rgba(58,143,255,0.3);}
-.player-info{display:flex;flex-direction:column;gap:3px;flex:1;}
+.player-info{display:flex;flex-direction:column;gap:3px;flex:1;position:relative;}
 .player-label{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;}
-.player-name-hdr{font-size:18px;font-weight:700;letter-spacing:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.player-name-hdr{font-size:17px;font-weight:700;letter-spacing:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .p1c{color:var(--p1);text-shadow:0 0 14px rgba(232,92,48,0.5);}
 .p2c{color:var(--p2);text-shadow:0 0 14px rgba(58,143,255,0.5);}
 .player-sub-hdr{font-size:10px;color:var(--muted);letter-spacing:1px;}
 .p2-wrap{display:flex;flex-direction:column;gap:3px;align-items:flex-end;flex:1;}
+
 #center-header{display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:4px;padding:0 16px;position:relative;z-index:3;}
 #logo-row{display:flex;align-items:center;gap:12px;}
-#logo-img{height:38px;width:auto;object-fit:contain;filter:drop-shadow(0 0 10px var(--ice-glow));}
-#main-title{font-family:'Oswald','Noto Sans SC',sans-serif;font-size:28px;font-weight:700;
-  letter-spacing:8px;color:#d8eeff;text-transform:uppercase;
+#logo-img{height:36px;width:auto;object-fit:contain;filter:drop-shadow(0 0 10px var(--ice-glow));}
+#main-title{font-family:'Oswald','Noto Sans SC',sans-serif;font-size:26px;font-weight:700;letter-spacing:7px;
+  color:#d8eeff;text-transform:uppercase;
   text-shadow:0 0 20px var(--ice-glow),0 0 50px var(--ice-shadow);}
 #sub-title{font-size:10px;letter-spacing:5px;color:var(--muted);text-transform:uppercase;}
-#phase-tag{font-size:10px;letter-spacing:3px;padding:3px 18px;border-radius:2px;
+#phase-tag{font-size:10px;letter-spacing:3px;padding:2px 14px;border-radius:2px;
   border:1px solid rgba(106,184,240,0.55);color:var(--ice2);
-  background:rgba(60,130,220,0.12);margin-top:2px;text-shadow:0 0 8px var(--ice-glow);}
+  background:rgba(60,130,220,0.1);margin-top:2px;text-shadow:0 0 8px var(--ice-glow);}
 
-/* ── sponsor bar ── */
+
+/* ── 赞助商栏 ── */
 #sponsor-bar{grid-column:1/-1;grid-row:2;
   display:flex;align-items:center;justify-content:center;gap:22px;
   position:relative;overflow:hidden;z-index:10;}
@@ -179,422 +250,83 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .c-teal{color:var(--teal);text-shadow:0 0 8px rgba(30,200,150,0.4);}
 .c-white{color:var(--ice3);text-shadow:0 0 8px var(--ice-glow);}
 
-/* ══════════════════════════════════════
-   SIDE PANELS — PORTRAIT CARD DESIGN
-══════════════════════════════════════ */
-.player-panel{
-  grid-row:3/4;
-  display:flex;flex-direction:column;
-  position:relative;z-index:10;overflow:hidden;
-}
-#p1-panel{
-  background:linear-gradient(100deg,rgba(2,4,16,0.97) 0%,rgba(5,11,32,0.93) 100%);
-  border-right:1px solid rgba(106,184,240,0.14);
-}
-#p2-panel{
-  background:linear-gradient(260deg,rgba(2,4,16,0.97) 0%,rgba(5,11,32,0.93) 100%);
-  border-left:1px solid rgba(106,184,240,0.14);
-}
-#p1-panel::before,#p2-panel::before{
-  content:'';position:absolute;inset:0;z-index:0;
-  background:url('./3.jpg') center/cover no-repeat;opacity:0.07;
-}
-#p1-panel::after{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;z-index:1;
-  background:linear-gradient(180deg,transparent 0%,var(--p1) 20%,var(--p1) 80%,transparent 100%);
-  box-shadow:0 0 14px rgba(232,92,48,0.35);
-}
+/* ── 侧边面板 ── */
+.player-panel{grid-row:3/4;display:flex;flex-direction:column;position:relative;z-index:10;overflow:hidden;}
+#p1-panel{background:linear-gradient(90deg,rgba(2,5,18,0.96) 0%,rgba(4,9,28,0.88) 100%);
+  border-right:1px solid rgba(106,184,240,0.18);}
+#p2-panel{background:linear-gradient(270deg,rgba(2,5,18,0.96) 0%,rgba(4,9,28,0.88) 100%);
+  border-left:1px solid rgba(106,184,240,0.18);}
+/* 侧边面板背景用3.jpg */
+#p1-panel::before,#p2-panel::before{content:'';position:absolute;inset:0;z-index:0;
+  background:url('./3.jpg') center/cover no-repeat;opacity:0.1;}
+#p1-panel::after{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;z-index:1;
+  background:linear-gradient(180deg,transparent 0%,var(--p1) 25%,var(--p1) 75%,transparent 100%);
+  box-shadow:0 0 10px rgba(232,92,48,0.28);}
 .p2-vline{position:absolute;right:0;top:0;bottom:0;width:2px;z-index:1;
-  background:linear-gradient(180deg,transparent 0%,var(--p2) 20%,var(--p2) 80%,transparent 100%);
-  box-shadow:0 0 14px rgba(58,143,255,0.35);}
+  background:linear-gradient(180deg,transparent 0%,var(--p2) 25%,var(--p2) 75%,transparent 100%);
+  box-shadow:0 0 10px rgba(58,143,255,0.28);}
 
-.panel-player-hdr{
-  height:32px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:700;letter-spacing:5px;text-transform:uppercase;
-  border-bottom:1px solid rgba(106,184,240,0.14);
-  position:relative;z-index:2;
-}
-.ph-p1{background:linear-gradient(90deg,rgba(232,92,48,0.3) 0%,rgba(232,92,48,0.05) 100%);
+.panel-player-hdr{height:36px;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;letter-spacing:4px;text-transform:uppercase;
+  border-bottom:1px solid rgba(106,184,240,0.18);position:relative;z-index:2;}
+.ph-p1{background:linear-gradient(90deg,rgba(232,92,48,0.3) 0%,rgba(232,92,48,0.04) 100%);
   color:var(--p1);text-shadow:0 0 12px rgba(232,92,48,0.45);}
-.ph-p2{background:linear-gradient(270deg,rgba(58,143,255,0.3) 0%,rgba(58,143,255,0.05) 100%);
+.ph-p2{background:linear-gradient(270deg,rgba(58,143,255,0.3) 0%,rgba(58,143,255,0.04) 100%);
   color:var(--p2);text-shadow:0 0 12px rgba(58,143,255,0.45);}
-
-/* section labels */
-.section-lbl{
-  flex-shrink:0;
-  font-size:8px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;
-  padding:5px 10px 4px;
-  border-bottom:1px solid rgba(60,120,200,0.08);
-  display:flex;align-items:center;gap:6px;
-  position:relative;z-index:2;
-}
-.section-lbl.ban-lbl::before{
-  content:'';display:inline-block;width:6px;height:6px;border-radius:50%;
-  background:var(--ban);box-shadow:0 0 6px var(--ban);
-}
-.section-lbl.pick-lbl::before{
-  content:'';display:inline-block;width:6px;height:6px;border-radius:50%;
-  background:var(--ice2);box-shadow:0 0 6px var(--ice2);
-}
-
-/* ── BAN cards (2×3 grid) ── */
-.ban-section{flex-shrink:0;position:relative;z-index:2;}
-.ban-cards-row{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  column-gap:3px;row-gap:5px;
-  padding:4px 6px;
-}
-
-.ban-card{
-  height:54px;
-  position:relative;overflow:hidden;border-radius:3px;
-  background:rgba(5,10,32,0.95);
-  border:1px solid rgba(60,100,180,0.18);
-  transition:border-color 0.35s,box-shadow 0.35s;
-}
-.ban-card img{
-  width:100%;height:100%;
-  object-fit:cover;object-position:top center;
-  display:block;
-}
-.ban-card .bc-empty-txt{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:9px;color:rgba(60,100,160,0.28);letter-spacing:1px;
-}
-.ban-card .bc-overlay{
-  position:absolute;inset:0;
-  background:rgba(110,8,8,0.68);
-  display:flex;align-items:center;justify-content:center;
-}
-.ban-card .bc-overlay svg{width:30px;height:30px;filter:drop-shadow(0 0 8px rgba(255,50,50,0.8));}
-.ban-card .bc-name{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:4px 5px;
-  background:linear-gradient(0deg,rgba(0,0,0,0.92),rgba(0,0,0,0.5),transparent);
-  font-size:9px;font-weight:700;letter-spacing:1px;
-  color:rgba(255,160,160,0.85);text-decoration:line-through;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.ban-card .bc-badge{
-  position:absolute;top:3px;right:3px;
-  font-size:7px;letter-spacing:1px;padding:1px 4px;border-radius:1px;
-  background:rgba(120,8,8,0.8);color:rgba(255,140,140,0.9);
-  border:1px solid rgba(180,25,25,0.55);
-}
-.ban-card.active{
-  border-color:rgba(200,25,25,0.7);
-  animation:ban-pulse 1.4s ease-in-out infinite;
-}
-@keyframes ban-pulse{
-  0%,100%{box-shadow:0 0 10px rgba(180,20,20,0.3),inset 0 0 12px rgba(180,20,20,0.06);}
-  50%{box-shadow:0 0 24px rgba(210,30,30,0.6),inset 0 0 28px rgba(210,30,30,0.12);}
-}
-
-/* ── PICK portrait cards (3×3 grid) ── */
-.pick-section{flex:1;display:flex;flex-direction:column;min-height:0;position:relative;z-index:2;}
-.pick-cards-col{
-  flex:1;min-height:0;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  grid-template-rows:repeat(3,1fr);
-  grid-auto-flow:column;
-  gap:3px;
-  padding:4px 5px;
-}
-
-.pick-card{
-  position:relative;overflow:hidden;border-radius:3px;
-  background:rgba(5,10,32,0.95);
-  border:1px solid rgba(60,100,180,0.18);
-  transition:border-color 0.35s,box-shadow 0.35s;
-}
-.pick-card img{
-  width:100%;height:100%;
-  object-fit:cover;object-position:top center;
-  display:block;
-}
-.pick-card .pc-empty{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:3px;
-}
-.pick-card .pc-empty-icon{
-  width:22px;height:22px;border-radius:50%;
-  border:1px dashed rgba(60,100,160,0.2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;color:rgba(60,100,160,0.2);
-}
-.pick-card .pc-empty-txt{font-size:7px;color:rgba(60,100,160,0.22);letter-spacing:1px;}
-.pick-card .pc-info{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:16px 4px 4px;
-  background:linear-gradient(0deg,rgba(2,5,18,0.97) 0%,rgba(2,5,18,0.68) 55%,transparent 100%);
-}
-.pick-card .pc-name{
-  font-size:10px;font-weight:700;letter-spacing:1px;
-  color:#e8f4ff;text-shadow:0 0 8px rgba(168,216,247,0.4);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.pick-card .pc-el{font-size:7px;letter-spacing:1px;margin-top:1px;}
-.pick-card .pc-badge{
-  position:absolute;top:3px;left:3px;
-  font-size:7px;letter-spacing:1px;padding:1px 4px;border-radius:1px;
-  background:rgba(2,8,30,0.82);
-  border:1px solid rgba(106,184,240,0.24);
-  color:var(--ice2);
-}
-/* active waiting slot */
-.pick-card.active{
-  border-color:rgba(106,184,240,0.5);
-  animation:pick-pulse 1.4s ease-in-out infinite;
-}
-@keyframes pick-pulse{
-  0%,100%{box-shadow:0 0 10px rgba(106,184,240,0.18);}
-  50%{box-shadow:0 0 22px rgba(106,184,240,0.42);}
-}
-.pick-card.p1-active{
-  border-color:rgba(232,92,48,0.55);
-  animation:pick-pulse-p1 1.4s ease-in-out infinite;
-}
-@keyframes pick-pulse-p1{
-  0%,100%{box-shadow:0 0 10px rgba(232,92,48,0.2);}
-  50%{box-shadow:0 0 22px rgba(232,92,48,0.5);}
-}
-.pick-card.p2-active{
-  border-color:rgba(58,143,255,0.55);
-  animation:pick-pulse-p2 1.4s ease-in-out infinite;
-}
-@keyframes pick-pulse-p2{
-  0%,100%{box-shadow:0 0 10px rgba(58,143,255,0.2);}
-  50%{box-shadow:0 0 22px rgba(58,143,255,0.5);}
-}
-/* filled pick card */
-.pick-card.p1-filled{
-  border-color:rgba(232,92,48,0.38);
-  box-shadow:0 0 8px rgba(232,92,48,0.12);
-}
-.pick-card.p2-filled{
-  border-color:rgba(58,143,255,0.38);
-  box-shadow:0 0 8px rgba(58,143,255,0.12);
-}
-
-/* element colors */
+.section-title{font-size:8px;letter-spacing:3px;color:var(--muted);
+  text-transform:uppercase;padding:5px 10px 3px;
+  border-bottom:1px solid rgba(60,120,200,0.1);position:relative;z-index:2;}
+.char-slot{display:flex;align-items:center;gap:6px;padding:3px 8px;
+  border-bottom:1px solid rgba(20,50,100,0.16);
+  position:relative;overflow:hidden;min-height:40px;z-index:2;}
+.char-slot.is-ban::before{content:'';position:absolute;inset:0;background:rgba(180,20,20,0.07);}
+.char-slot.current-active{background:rgba(106,184,240,0.09)!important;
+  border-bottom-color:rgba(106,184,240,0.3);
+  animation:slotglow 1.4s ease-in-out infinite;}
+@keyframes slotglow{0%,100%{box-shadow:inset 0 0 0 transparent;}50%{box-shadow:inset 2px 0 18px rgba(106,184,240,0.18);}}
+.char-avatar{width:34px;height:34px;flex-shrink:0;border-radius:3px;
+  overflow:hidden;background:rgba(6,16,46,0.9);
+  border:1px solid rgba(60,120,200,0.26);position:relative;}
+.char-avatar img{width:100%;height:100%;object-fit:cover;object-position:top center;}
+.char-avatar.empty{border-style:dashed;border-color:rgba(60,120,200,0.13);}
+.ban-overlay{position:absolute;inset:0;background:rgba(160,15,15,0.65);
+  display:flex;align-items:center;justify-content:center;}
+.ban-overlay svg{width:20px;height:20px;}
+.char-info{flex:1;min-width:0;}
+.char-name-text{font-size:11px;font-weight:700;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.char-name-text.banned{text-decoration:line-through;color:#664040;}
+.char-el-text{font-size:8px;color:var(--muted);letter-spacing:1px;margin-top:1px;}
+.slot-label{font-size:8px;color:var(--muted);flex-shrink:0;letter-spacing:1px;}
 .el-Fusion{color:#ff7040;}.el-Glacio{color:#60c8ff;}.el-Electro{color:#b070ff;}
 .el-Aero{color:#40d890;}.el-Spectro{color:#ffe040;}.el-Havoc{color:#d060d0;}
 
-/* ── 24进16 仅PICK 模式 ── */
-.mode-pick-only .ban-section{display:none;}
-.mode-pick-only #ban-row{display:none;}
-
-/* ══════════════════════════════════════
-   CENTER COLUMN
-══════════════════════════════════════ */
-#center{
-  grid-row:3/4;grid-column:2;
-  display:flex;flex-direction:column;
-  position:relative;z-index:5;
-}
-
-/* ── BP sequence bar ── */
-#bp-seq-bar{
-  height:46px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  gap:4px;padding:0 20px;
-  position:relative;z-index:10;
-  background:rgba(2,5,18,0.92);
-  border-bottom:1px solid rgba(106,184,240,0.12);
-}
-.seq-block{
-  flex:1;max-width:52px;min-width:28px;height:26px;
-  border-radius:2px;
-  display:flex;align-items:center;justify-content:center;
-  gap:4px;
-  position:relative;overflow:hidden;
-  transition:background 0.3s,border-color 0.3s,box-shadow 0.3s;
-}
-.seq-block .sb-dot{
-  width:5px;height:5px;border-radius:50%;flex-shrink:0;
-}
-.sb-p1-dot{background:var(--p1);}
-.sb-p2-dot{background:var(--p2);}
-/* default states */
-.seq-block.sb-ban{
-  background:rgba(100,10,10,0.1);
-  border:1px solid rgba(140,20,20,0.22);
-  color:rgba(180,70,70,0.4);
-}
-.seq-block.sb-pick{
-  background:rgba(20,55,120,0.1);
-  border:1px solid rgba(40,90,170,0.18);
-  color:rgba(90,150,220,0.38);
-}
-.seq-block.sb-done.sb-ban{
-  background:rgba(90,8,8,0.48);
-  border-color:rgba(160,25,25,0.5);
-  color:rgba(210,90,90,0.8);
-}
-.seq-block.sb-done.sb-pick{
-  background:rgba(14,44,100,0.48);
-  border-color:rgba(50,110,200,0.42);
-  color:rgba(110,170,250,0.8);
-}
-/* current step */
-.seq-block.sb-cur.sb-ban{
-  background:rgba(190,25,25,0.22);
-  border-color:rgba(220,40,40,0.75);
-  color:#ff9999;
-  box-shadow:0 0 16px rgba(200,30,30,0.45);
-  animation:seqcur-ban 1.3s ease-in-out infinite;
-}
-@keyframes seqcur-ban{
-  0%,100%{box-shadow:0 0 10px rgba(200,30,30,0.3);}
-  50%{box-shadow:0 0 24px rgba(220,40,40,0.65);}
-}
-.seq-block.sb-cur.sb-pick-p1{
-  background:rgba(232,92,48,0.18);
-  border-color:rgba(232,92,48,0.8);
-  color:#ffbb88;
-  box-shadow:0 0 16px rgba(232,92,48,0.4);
-  animation:seqcur-p1 1.3s ease-in-out infinite;
-}
-@keyframes seqcur-p1{
-  0%,100%{box-shadow:0 0 10px rgba(232,92,48,0.25);}
-  50%{box-shadow:0 0 24px rgba(232,92,48,0.6);}
-}
-.seq-block.sb-cur.sb-pick-p2{
-  background:rgba(58,143,255,0.18);
-  border-color:rgba(58,143,255,0.8);
-  color:#88ccff;
-  box-shadow:0 0 16px rgba(58,143,255,0.4);
-  animation:seqcur-p2 1.3s ease-in-out infinite;
-}
-@keyframes seqcur-p2{
-  0%,100%{box-shadow:0 0 10px rgba(58,143,255,0.25);}
-  50%{box-shadow:0 0 24px rgba(58,143,255,0.6);}
-}
-/* current indicator arrow */
-.seq-block.sb-cur::after{
-  content:'▲';
-  position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
-  font-size:7px;opacity:0.7;
-}
-
-/* ── video / game area ── */
+/* ── 中央透明 - 完全透明给OBS游戏画面 ── */
+#center{grid-row:3/4;grid-column:2;display:flex;flex-direction:column;position:relative;z-index:5;}
 #video-area{flex:1;background:transparent;position:relative;}
 .vc{position:absolute;z-index:4;pointer-events:none;width:24px;height:24px;}
 .vc.tl{top:7px;left:7px;border-top:2px solid rgba(168,216,247,0.8);border-left:2px solid rgba(168,216,247,0.8);box-shadow:0 0 12px var(--ice-glow);}
 .vc.tr{top:7px;right:7px;border-top:2px solid rgba(168,216,247,0.8);border-right:2px solid rgba(168,216,247,0.8);box-shadow:0 0 12px var(--ice-glow);}
 .vc.bl{bottom:7px;left:7px;border-bottom:2px solid rgba(168,216,247,0.8);border-left:2px solid rgba(168,216,247,0.8);}
 .vc.br{bottom:7px;right:7px;border-bottom:2px solid rgba(168,216,247,0.8);border-right:2px solid rgba(168,216,247,0.8);}
-.vf-l{position:absolute;top:0;left:0;bottom:0;width:28px;z-index:3;pointer-events:none;background:linear-gradient(90deg,rgba(2,5,18,0.35),transparent);}
-.vf-r{position:absolute;top:0;right:0;bottom:0;width:28px;z-index:3;pointer-events:none;background:linear-gradient(270deg,rgba(2,5,18,0.35),transparent);}
-.vf-t{position:absolute;top:0;left:0;right:0;height:20px;z-index:3;pointer-events:none;background:linear-gradient(180deg,rgba(2,5,18,0.28),transparent);}
+.vf-l{position:absolute;top:0;left:0;bottom:0;width:30px;z-index:3;pointer-events:none;background:linear-gradient(90deg,rgba(2,5,18,0.4),transparent);}
+.vf-r{position:absolute;top:0;right:0;bottom:0;width:30px;z-index:3;pointer-events:none;background:linear-gradient(270deg,rgba(2,5,18,0.4),transparent);}
+.vf-t{position:absolute;top:0;left:0;right:0;height:22px;z-index:3;pointer-events:none;background:linear-gradient(180deg,rgba(2,5,18,0.3),transparent);}
 
-/* ── spotlight overlay ── */
-#spotlight{
-  position:absolute;inset:0;z-index:20;
-  display:flex;align-items:center;justify-content:center;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity 0.28s ease;
-}
-#spotlight.show{opacity:1;}
-/* tinted radial glow behind card */
-#spotlight.show.spot-ban{background:radial-gradient(ellipse 60% 70% at center,rgba(180,15,15,0.16) 0%,transparent 70%);}
-#spotlight.show.spot-pick-p1{background:radial-gradient(ellipse 60% 70% at center,rgba(232,92,48,0.13) 0%,transparent 70%);}
-#spotlight.show.spot-pick-p2{background:radial-gradient(ellipse 60% 70% at center,rgba(58,143,255,0.13) 0%,transparent 70%);}
-
-#spot-card{
-  position:relative;
-  width:296px;height:380px;
-  border-radius:5px;overflow:hidden;
-  transform:scale(0.88);
-  transition:transform 0.38s cubic-bezier(0.175,0.885,0.32,1.275);
-}
-#spotlight.show #spot-card{transform:scale(1);}
-
-#spot-img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;}
-
-/* ban tint */
-#spot-ban-tint{
-  position:absolute;inset:0;
-  background:rgba(100,5,5,0.58);
-  display:none;
-  align-items:center;justify-content:center;
-}
-#spotlight.spot-ban #spot-ban-tint{display:flex;}
-#spot-ban-x{
-  font-size:96px;font-weight:900;
-  color:rgba(255,70,70,0.92);
-  text-shadow:0 0 30px rgba(255,0,0,0.8),0 0 60px rgba(200,0,0,0.5);
-  line-height:1;
-}
-/* border glow per type */
-#spotlight.spot-ban #spot-card{
-  border:2px solid rgba(200,30,30,0.85);
-  box-shadow:0 0 40px rgba(200,30,30,0.5),0 0 80px rgba(180,20,20,0.2),inset 0 0 30px rgba(150,10,10,0.15);
-}
-#spotlight.spot-pick-p1 #spot-card{
-  border:2px solid rgba(232,92,48,0.85);
-  box-shadow:0 0 40px rgba(232,92,48,0.5),0 0 80px rgba(200,70,20,0.2),inset 0 0 30px rgba(200,70,20,0.08);
-}
-#spotlight.spot-pick-p2 #spot-card{
-  border:2px solid rgba(58,143,255,0.85);
-  box-shadow:0 0 40px rgba(58,143,255,0.5),0 0 80px rgba(30,100,220,0.2),inset 0 0 30px rgba(30,100,220,0.08);
-}
-/* info bar */
-#spot-info{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:30px 12px 10px;
-  background:linear-gradient(0deg,rgba(2,5,18,0.97) 0%,rgba(2,5,18,0.68) 55%,transparent 100%);
-}
-#spot-name{
-  font-size:21px;font-weight:700;letter-spacing:3px;
-  color:#e8f4ff;text-shadow:0 0 16px rgba(168,216,247,0.5);
-}
-#spot-action{font-size:9px;letter-spacing:4px;margin-top:3px;}
-#spotlight.spot-ban #spot-action{color:rgba(255,110,110,0.8);}
-#spotlight.spot-pick-p1 #spot-action{color:rgba(255,155,90,0.8);}
-#spotlight.spot-pick-p2 #spot-action{color:rgba(100,175,255,0.8);}
-/* top badge */
-#spot-badge{
-  position:absolute;top:10px;left:10px;
-  font-size:9px;letter-spacing:3px;padding:3px 10px;border-radius:2px;
-  font-weight:700;text-transform:uppercase;
-}
-#spotlight.spot-ban #spot-badge{
-  background:rgba(150,10,10,0.85);color:#ff9999;
-  border:1px solid rgba(200,30,30,0.6);
-  text-shadow:0 0 8px var(--ban);
-}
-#spotlight.spot-pick-p1 #spot-badge{
-  background:rgba(180,60,15,0.75);color:#ffcc99;
-  border:1px solid rgba(232,92,48,0.5);
-}
-#spotlight.spot-pick-p2 #spot-badge{
-  background:rgba(20,80,180,0.75);color:#99ccff;
-  border:1px solid rgba(58,143,255,0.5);
-}
-
-/* ── BAN row (center bottom) ── */
-#ban-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:6px 18px;position:relative;z-index:10;overflow:hidden;flex-shrink:0;
-}
+/* ── BAN行 ── */
+#ban-row{display:flex;align-items:center;justify-content:space-between;
+  padding:6px 20px;position:relative;z-index:10;overflow:hidden;}
 #ban-row::before{content:'';position:absolute;inset:0;background:rgba(2,5,18,0.96);}
-#ban-row::after{content:'';position:absolute;inset:0;background:url('./1.jpg') center 80%/cover no-repeat;opacity:0.04;}
+#ban-row::after{content:'';position:absolute;inset:0;
+  background:url('./1.jpg') center 80%/cover no-repeat;opacity:0.05;}
 .br-line{position:absolute;left:0;right:0;height:1px;z-index:2;
   background:linear-gradient(90deg,transparent,var(--ice2) 16%,var(--ice3) 50%,var(--ice2) 84%,transparent);}
 .br-line.top{top:0;}.br-line.bottom{bottom:0;}
 #ban-center-label{position:absolute;left:50%;transform:translateX(-50%);z-index:3;
-  font-size:9px;letter-spacing:5px;font-weight:700;color:var(--ban);padding:3px 16px;
-  border:1px solid rgba(200,30,30,0.35);background:rgba(130,10,10,0.15);border-radius:2px;
+  font-size:10px;letter-spacing:5px;font-weight:700;color:var(--ban);padding:3px 16px;
+  border:1px solid rgba(200,30,30,0.38);background:rgba(160,15,15,0.16);border-radius:2px;
   text-shadow:0 0 10px var(--ban);}
 .ban-group{display:flex;gap:5px;position:relative;z-index:3;}
-.ban-avatar{width:56px;height:56px;border-radius:3px;background:rgba(5,10,32,0.97);
+.ban-avatar{width:52px;height:52px;border-radius:3px;background:rgba(5,10,32,0.97);
   border:1px solid rgba(60,120,200,0.2);overflow:hidden;position:relative;transition:border-color 0.3s;}
 .ban-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;}
 .ban-avatar.empty{border-style:dashed;border-color:rgba(60,120,200,0.12);}
@@ -602,28 +334,27 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 .ban-avatar.p2-ban{border-color:rgba(58,143,255,0.55);box-shadow:0 0 8px rgba(58,143,255,0.22);}
 .ban-avatar.filled::after{content:'✕';position:absolute;inset:0;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(130,8,8,0.62);font-size:20px;font-weight:900;color:#fff;
+  background:rgba(140,12,12,0.62);font-size:18px;font-weight:900;color:#fff;
   text-shadow:0 0 10px #ff2020;}
 
-/* ── bottom bar ── */
+/* ── 底部 ── */
 #bottom{grid-column:1/-1;grid-row:4;display:flex;align-items:stretch;
   position:relative;z-index:10;overflow:hidden;}
 #bottom::before{content:'';position:absolute;inset:0;
   background:linear-gradient(0deg,rgba(2,4,14,1) 0%,rgba(3,7,24,0.97) 100%);}
 #bottom::after{content:'';position:absolute;inset:0;
-  background:url('./1.jpg') center bottom/cover no-repeat;opacity:0.04;}
+  background:url('./1.jpg') center bottom/cover no-repeat;opacity:0.05;}
 .bt-line{position:absolute;top:0;left:0;right:0;height:1px;z-index:2;
   background:linear-gradient(90deg,transparent,var(--ice2) 12%,var(--ice1) 50%,var(--ice2) 88%,transparent);
   box-shadow:0 0 8px var(--ice-glow);}
 
-#status-area{width:300px;flex-shrink:0;border-right:1px solid rgba(106,184,240,0.1);
-  padding:10px 18px;display:flex;flex-direction:column;justify-content:center;gap:8px;
-  position:relative;z-index:3;}
+#status-area{width:260px;flex-shrink:0;border-right:1px solid rgba(106,184,240,0.12);
+  padding:10px 16px;display:flex;flex-direction:column;justify-content:center;gap:7px;position:relative;z-index:3;}
 #status-phase-row{display:flex;align-items:center;gap:8px;}
 #status-who{font-size:14px;font-weight:700;letter-spacing:2px;}
 #status-phase{font-size:10px;letter-spacing:2px;color:var(--muted);}
 #status-seq{display:flex;gap:3px;flex-wrap:wrap;}
-.seq-dot{width:20px;height:6px;border-radius:1px;background:rgba(40,80,160,0.16);
+.seq-dot{width:22px;height:7px;border-radius:1px;background:rgba(40,80,160,0.16);
   border:1px solid rgba(40,80,160,0.16);transition:all 0.3s;}
 .seq-dot.ban-dot{border-color:rgba(200,30,30,0.26);}
 .seq-dot.pick-dot{border-color:rgba(106,184,240,0.3);}
@@ -632,19 +363,19 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   box-shadow:0 0 7px var(--ice-glow);animation:dotpulse 1s ease-in-out infinite;}
 @keyframes dotpulse{0%,100%{opacity:0.75;}50%{opacity:1;}}
 
-#score-area{flex:1;display:flex;align-items:center;justify-content:center;gap:40px;
+#score-area{flex:1;display:flex;align-items:center;justify-content:center;gap:36px;
   padding:0 20px;position:relative;z-index:3;}
 .score-block{display:flex;flex-direction:column;align-items:center;gap:3px;}
 .score-label{font-size:8px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;}
-.score-num{font-family:'Oswald',sans-serif;font-size:58px;font-weight:700;line-height:1;
+.score-num{font-family:'Oswald',sans-serif;font-size:56px;font-weight:700;line-height:1;
   text-shadow:0 0 24px currentColor,0 0 55px currentColor;}
 .score-p1{color:var(--p1);}.score-p2{color:var(--p2);}
-.score-divider{font-size:40px;color:rgba(60,100,160,0.42);font-weight:300;margin-top:16px;}
+.score-divider{font-size:38px;color:rgba(60,100,160,0.42);font-weight:300;margin-top:16px;}
 
-#holo-area{width:500px;flex-shrink:0;border-left:1px solid rgba(30,200,150,0.14);
+#holo-area{width:500px;flex-shrink:0;border-left:1px solid rgba(30,200,150,0.16);
   padding:8px 14px;display:flex;flex-direction:column;gap:5px;position:relative;z-index:3;}
 #holo-title{font-size:9px;letter-spacing:4px;color:var(--teal);
-  border-bottom:1px solid rgba(30,200,150,0.12);padding-bottom:3px;
+  border-bottom:1px solid rgba(30,200,150,0.14);padding-bottom:3px;
   text-shadow:0 0 8px rgba(30,200,150,0.4);}
 #holo-enemies{display:flex;gap:7px;align-items:center;flex-wrap:wrap;}
 .enemy-slot{display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;}
@@ -652,8 +383,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   border:1px solid rgba(30,200,150,0.16);
   display:flex;align-items:center;justify-content:center;
   font-size:14px;font-weight:700;color:var(--teal);}
-.enemy-name{font-size:8px;color:var(--muted);letter-spacing:1px;max-width:50px;
-  text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.enemy-name{font-size:8px;color:var(--muted);letter-spacing:1px;max-width:50px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .enemy-slot.defeated .enemy-avatar{filter:grayscale(0.9);opacity:0.35;}
 .enemy-slot.defeated::after{content:'✓';position:absolute;top:1px;right:1px;
   width:14px;height:14px;background:var(--teal);border-radius:50%;
@@ -664,38 +394,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 #holo-score-display{font-size:10px;color:var(--teal);letter-spacing:2px;}
 #holo-score-num{font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;color:var(--teal);
   text-shadow:0 0 12px rgba(30,200,150,0.5);}
-
-/* ── 音效解锁提示 ── */
-#sfx-unlock{
-  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
-  z-index:200;cursor:pointer;
-  padding:7px 22px;border-radius:3px;
-  background:rgba(2,6,20,0.88);
-  border:1px solid rgba(168,216,247,0.35);
-  color:rgba(168,216,247,0.7);
-  font-family:'Noto Sans SC',sans-serif;font-size:11px;letter-spacing:3px;
-  box-shadow:0 0 18px rgba(106,184,240,0.18);
-  transition:opacity 0.5s;
-  animation:sfxpulse 2s ease-in-out infinite;
-}
-@keyframes sfxpulse{0%,100%{box-shadow:0 0 12px rgba(106,184,240,0.15);}50%{box-shadow:0 0 24px rgba(106,184,240,0.35);}}
-#sfx-unlock.hidden{opacity:0;pointer-events:none;}
-
-/* ── BP countdown timer ── */
-#bp-timer{
-  position:absolute;bottom:14px;right:14px;z-index:15;
-  display:flex;flex-direction:column;align-items:center;gap:2px;
-  opacity:0;transition:opacity 0.4s ease;
-  pointer-events:none;
-}
-#bp-timer.t-show{opacity:1;}
-#bp-timer-sub{
-  font-size:8px;letter-spacing:3px;font-weight:700;
-  color:rgba(106,184,240,0.55);
-  text-shadow:0 0 8px rgba(106,184,240,0.3);
-}
-
-/* ── floating score + death flash ── */
+/* 积分飘字 */
 .score-float{
   position:fixed;z-index:50;
   font-family:'Oswald',sans-serif;font-size:32px;font-weight:700;
@@ -708,17 +407,32 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   60%{opacity:1;transform:translateY(-50px) scale(1);}
   100%{opacity:0;transform:translateY(-90px) scale(0.8);}
 }
-#death-flash{position:fixed;inset:0;z-index:60;background:rgba(200,20,20,0);pointer-events:none;display:none;}
-#death-flash.active{display:block;animation:death-flash 0.8s ease-out forwards;}
-@keyframes death-flash{0%{background:rgba(200,20,20,0.45);}30%{background:rgba(200,20,20,0.6);}100%{background:rgba(200,20,20,0);}}
+/* 阵亡红色闪屏 */
+#death-flash{
+  position:fixed;inset:0;z-index:60;
+  background:rgba(200,20,20,0);
+  pointer-events:none;
+  display:none;
+}
+#death-flash.active{
+  display:block;
+  animation:death-flash 0.8s ease-out forwards;
+}
+@keyframes death-flash{
+  0%{background:rgba(200,20,20,0.45);}
+  30%{background:rgba(200,20,20,0.6);}
+  100%{background:rgba(200,20,20,0);}
+}
+/* 阵亡提示文字 */
 #death-text{
   position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
   z-index:61;pointer-events:none;display:none;
   font-family:'Oswald',sans-serif;font-size:72px;font-weight:700;
   color:#fff;letter-spacing:8px;
   text-shadow:0 0 30px rgba(200,20,20,0.8),0 0 60px rgba(200,20,20,0.5);
+  animation:death-text-anim 1.2s ease-out forwards;
 }
-#death-text.active{display:block;animation:death-text-anim 1.2s ease-out forwards;}
+#death-text.active{display:block;}
 @keyframes death-text-anim{
   0%{opacity:0;transform:translate(-50%,-50%) scale(1.5);}
   20%{opacity:1;transform:translate(-50%,-50%) scale(1);}
@@ -735,6 +449,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 <div id="scanlines"></div>
 <canvas id="pcanvas"></canvas>
 
+<!-- 冰蓝边框 -->
 <div class="fl-top"></div><div class="fl-bottom"></div>
 <div class="fl-left"></div><div class="fl-right"></div>
 <div class="fl-ti"></div><div class="fl-bi"></div>
@@ -750,6 +465,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
 <div class="fq l1"></div><div class="fq l2"></div>
 <div class="fq r1"></div><div class="fq r2"></div>
 
+<!-- PV -->
 <div id="pv-layer">
   <video id="pv-video" src="./SG.mp4" preload="auto"></video>
   <div id="pv-title">旧雨杯 · 赛前PV · 西格莉卡</div>
@@ -760,13 +476,10 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   </div>
 </div>
 
-<div id="sfx-unlock">🔊 点击此处启用音效</div>
 <div id="death-flash"></div>
 <div id="death-text">角色阵亡！</div>
 
 <div id="app">
-
-  <!-- ── Header ── -->
   <div id="header">
     <div id="p1-header-area">
       <img class="guild-img p1g" src="./guide.png" onerror="this.style.display='none'" alt="">
@@ -783,6 +496,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
       </div>
       <div id="sub-title">鸣 潮 娱 乐 赛 · WUTHERING WAVES</div>
       <div id="phase-tag">BP 阶段</div>
+
     </div>
     <div id="p2-header-area">
       <img class="guild-img p2g" src="./guide.png" onerror="this.style.display='none'" alt="">
@@ -795,7 +509,6 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
     <div class="hdr-line"></div>
   </div>
 
-  <!-- ── Sponsor bar ── -->
   <div id="sponsor-bar">
     <div class="sp-item">
       <img class="sp-gif" src="./鸣潮.gif" onerror="this.style.display='none'" alt="">
@@ -820,53 +533,22 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
     </div>
   </div>
 
-  <!-- ── P1 panel ── -->
   <div class="player-panel" id="p1-panel">
     <div class="panel-player-hdr ph-p1" id="p1-panel-name">玩家一</div>
-    <div class="ban-section">
-      <div class="section-lbl ban-lbl">BAN 禁用</div>
-      <div class="ban-cards-row" id="p1-ban-cards"></div>
+    <div id="p1-ban-section">
+      <div class="section-title">BAN 禁用</div>
+      <div id="p1-ban-slots"></div>
     </div>
-    <div class="pick-section">
-      <div class="section-lbl pick-lbl">PICK 选择</div>
-      <div class="pick-cards-col" id="p1-pick-cards"></div>
-    </div>
+    <div class="section-title">PICK 选择</div>
+    <div id="p1-pick-slots"></div>
   </div>
 
-  <!-- ── Center ── -->
   <div id="center">
-    <div id="bp-seq-bar"></div>
     <div id="video-area">
       <div class="vc tl"></div><div class="vc tr"></div>
       <div class="vc bl"></div><div class="vc br"></div>
       <div class="vf-l"></div><div class="vf-r"></div>
       <div class="vf-t"></div>
-      <!-- BP countdown timer -->
-      <div id="bp-timer">
-        <svg width="110" height="110" viewBox="0 0 110 110">
-          <circle cx="55" cy="55" r="50" fill="rgba(2,6,20,0.68)"/>
-          <circle cx="55" cy="55" r="46" fill="none" stroke="rgba(40,80,160,0.12)" stroke-width="5"/>
-          <circle id="bp-timer-arc" cx="55" cy="55" r="46" fill="none"
-            stroke="#3a8fff" stroke-width="5" stroke-linecap="round"
-            stroke-dasharray="289.0" stroke-dashoffset="0"
-            transform="rotate(-90,55,55)"/>
-          <text id="bp-timer-num" x="55" y="64" text-anchor="middle"
-            fill="#d8eeff" font-family="Oswald" font-size="32" font-weight="700">—</text>
-        </svg>
-        <div id="bp-timer-sub">P1 · PICK</div>
-      </div>
-      <!-- character spotlight -->
-      <div id="spotlight">
-        <div id="spot-card">
-          <img id="spot-img" src="" alt="">
-          <div id="spot-ban-tint"><div id="spot-ban-x">✕</div></div>
-          <div id="spot-info">
-            <div id="spot-name"></div>
-            <div id="spot-action"></div>
-          </div>
-          <div id="spot-badge">BAN</div>
-        </div>
-      </div>
     </div>
     <div id="ban-row">
       <div class="br-line top"></div>
@@ -877,21 +559,17 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
     </div>
   </div>
 
-  <!-- ── P2 panel ── -->
   <div class="player-panel" id="p2-panel">
     <div class="p2-vline"></div>
     <div class="panel-player-hdr ph-p2" id="p2-panel-name">玩家二</div>
-    <div class="ban-section">
-      <div class="section-lbl ban-lbl">BAN 禁用</div>
-      <div class="ban-cards-row" id="p2-ban-cards"></div>
+    <div id="p2-ban-section">
+      <div class="section-title">BAN 禁用</div>
+      <div id="p2-ban-slots"></div>
     </div>
-    <div class="pick-section">
-      <div class="section-lbl pick-lbl">PICK 选择</div>
-      <div class="pick-cards-col" id="p2-pick-cards"></div>
-    </div>
+    <div class="section-title">PICK 选择</div>
+    <div id="p2-pick-slots"></div>
   </div>
 
-  <!-- ── Bottom ── -->
   <div id="bottom">
     <div class="bt-line"></div>
     <div id="status-area">
@@ -903,12 +581,12 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
     </div>
     <div id="score-area">
       <div class="score-block">
-        <div class="score-label" id="score-lbl-p1">玩家一</div>
+        <div class="score-label">玩家一</div>
         <div class="score-num score-p1" id="score-p1">0</div>
       </div>
       <div class="score-divider">:</div>
       <div class="score-block">
-        <div class="score-label" id="score-lbl-p2">玩家二</div>
+        <div class="score-label">玩家二</div>
         <div class="score-num score-p2" id="score-p2">0</div>
       </div>
     </div>
@@ -920,11 +598,9 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
       </div>
     </div>
   </div>
-
-</div><!-- #app -->
+</div>
 
 <script>
-/* ── particles ── */
 (function(){
   const c=document.getElementById('pcanvas'),x=c.getContext('2d');
   c.width=1920;c.height=1080;
@@ -949,7 +625,6 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   draw();
 })();
 
-/* ── PV ── */
 function playPV(){
   const layer=document.getElementById('pv-layer'),video=document.getElementById('pv-video');
   layer.classList.add('show');video.currentTime=0;video.play();
@@ -966,130 +641,92 @@ function startCountdown(){
   },1000);
 }
 
-/* ── constants ── */
 const EL_ZH={Fusion:'热熔',Glacio:'冷凝',Electro:'导电',Aero:'气动',Spectro:'衍射',Havoc:'湮灭'};
-const SEQ_BAN_PICK=[
-  // 第1轮BAN
-  {phase:'ban',player:1},{phase:'ban',player:2},
-  {phase:'ban',player:1},{phase:'ban',player:1},
-  {phase:'ban',player:2},{phase:'ban',player:2},
-  // 第1组PICK：2号先手
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:2},{phase:'pick',player:2},
-  {phase:'pick',player:1},{phase:'pick',player:1},
-  // 第2轮BAN：2号先手
-  {phase:'ban',player:2},{phase:'ban',player:1},
-  {phase:'ban',player:2},{phase:'ban',player:1},
-  {phase:'ban',player:2},{phase:'ban',player:1},
-  // 第2组PICK：1号先手
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  // 第3组PICK：2号先手（反转）
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-];
-const SEQ_PICK_ONLY=[
-  // 第1组：2号先手
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:2},{phase:'pick',player:2},
-  {phase:'pick',player:1},{phase:'pick',player:1},
-  // 第2组：1号先手
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  // 第3组：2号先手（反转）
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-];
-let SEQ=SEQ_BAN_PICK;
-let BANS_EACH=6;
-const PICKS_EACH=9;
-let _obsMode='ban_pick';
+const SEQ_CONFIGS={
+  r24:{
+    bansEach:0,picksEach:9,
+    seq:[
+      {phase:'pick',player:1},{phase:'pick',player:2},
+      {phase:'pick',player:2},{phase:'pick',player:1},
+      {phase:'pick',player:1},{phase:'pick',player:2},
+      {phase:'pick',player:2},{phase:'pick',player:1},
+      {phase:'pick',player:1},{phase:'pick',player:2},
+      {phase:'pick',player:2},{phase:'pick',player:1},
+      {phase:'pick',player:1},{phase:'pick',player:2},
+      {phase:'pick',player:2},{phase:'pick',player:1},
+      {phase:'pick',player:1},{phase:'pick',player:2},
+    ]
+  },
+  r16:{
+    bansEach:4,picksEach:9,
+    seq:[
+      {phase:'ban',player:1},{phase:'ban',player:2},
+      {phase:'ban',player:1},{phase:'ban',player:2},
+      {phase:'ban',player:1},{phase:'ban',player:2},
+      {phase:'ban',player:1},{phase:'ban',player:2},
+      {phase:'pick',player:1},{phase:'pick',player:2},
+      {phase:'pick',player:2},{phase:'pick',player:1},
+      {phase:'pick',player:1},{phase:'pick',player:2},
+      {phase:'pick',player:2},{phase:'pick',player:1},
+      {phase:'pick',player:1},{phase:'pick',player:2},
+      {phase:'pick',player:2},{phase:'pick',player:1},
+      {phase:'pick',player:1},{phase:'pick',player:2},
+      {phase:'pick',player:2},{phase:'pick',player:1},
+      {phase:'pick',player:1},{phase:'pick',player:2},
+    ]
+  }
+};
+function getCfg(S){return SEQ_CONFIGS[S&&S.mode||'r24'];}
 
 function loadState(){try{return JSON.parse(localStorage.getItem('wuwa_bp_state'))||null;}catch{return null;}}
-function imgErr(img,n){
-  img.style.display='none';
-  img.parentNode.insertAdjacentHTML('beforeend',
-    `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:rgba(168,216,247,0.7);text-align:center;padding:4px;line-height:1.3;">${n}</div>`);
-}
-
-/* active slot calculation */
-function getActiveInfo(step,done){
-  if(done||step>=SEQ.length)return null;
-  const cur=SEQ[step];
-  let p1b=0,p2b=0,p1p=0,p2p=0;
-  for(let i=0;i<step;i++){
-    if(SEQ[i].player===1&&SEQ[i].phase==='ban')p1b++;
-    if(SEQ[i].player===2&&SEQ[i].phase==='ban')p2b++;
-    if(SEQ[i].player===1&&SEQ[i].phase==='pick')p1p++;
-    if(SEQ[i].player===2&&SEQ[i].phase==='pick')p2p++;
+function imgErr(img,n){img.style.display='none';img.parentNode.insertAdjacentHTML('beforeend',
+  `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:rgba(168,216,247,0.7);text-align:center;padding:2px;line-height:1.2;">${n}</div>`);}
+function renderFromState(S){
+  if(!S)return;
+  const cfg=getCfg(S);
+  const p1n=S.p1name||'玩家一',p2n=S.p2name||'玩家二';
+  document.getElementById('hdr-p1-name').textContent=p1n;
+  document.getElementById('hdr-p2-name').textContent=p2n;
+  document.getElementById('hdr-p1-sub').textContent=S.p1sub||'旧雨杯参赛选手';
+  document.getElementById('hdr-p2-sub').textContent=S.p2sub||'旧雨杯参赛选手';
+  document.getElementById('p1-panel-name').textContent=p1n;
+  document.getElementById('p2-panel-name').textContent=p2n;
+  // 根据模式显示/隐藏ban区域
+  const hasBans=cfg.bansEach>0;
+  document.getElementById('p1-ban-section').style.display=hasBans?'':'none';
+  document.getElementById('p2-ban-section').style.display=hasBans?'':'none';
+  document.getElementById('ban-row').style.display=hasBans?'':'none';
+  if(hasBans){
+    renderSlots('p1-ban-slots',S.p1bans,cfg.bansEach,true);
+    renderSlots('p2-ban-slots',S.p2bans,cfg.bansEach,true);
+    renderBanRow('p1-ban-row',S.p1bans,'p1-ban',cfg.bansEach);
+    renderBanRow('p2-ban-row',S.p2bans,'p2-ban',cfg.bansEach);
   }
-  const idx=cur.player===1?(cur.phase==='ban'?p1b:p1p):(cur.phase==='ban'?p2b:p2p);
-  return{player:cur.player,phase:cur.phase,idx};
+  renderSlots('p1-pick-slots',S.p1picks,cfg.picksEach,false);
+  renderSlots('p2-pick-slots',S.p2picks,cfg.picksEach,false);
+  document.getElementById('score-p1').textContent=S.scoreP1||0;
+  document.getElementById('score-p2').textContent=S.scoreP2||0;
+  renderHolo(S);renderStatus(S);
 }
-
-/* render ban cards */
-function renderBanCards(id,slots,player,activeInfo){
+function renderSlots(id,slots,count,isBan){
   let h='';
-  for(let i=0;i<BANS_EACH;i++){
+  for(let i=0;i<count;i++){
     const c=slots&&slots[i];
-    const isActive=!c&&activeInfo&&activeInfo.phase==='ban'&&activeInfo.player===player&&activeInfo.idx===i;
-    if(c){
-      h+=`<div class="ban-card filled">
-        <img src="${c.img}" onerror="imgErr(this,'${c.name}')" alt="${c.name}">
-        <div class="bc-overlay">
-          <svg viewBox="0 0 32 32" fill="none" stroke="rgba(255,80,80,0.92)" stroke-width="4" stroke-linecap="round">
-            <line x1="6" y1="6" x2="26" y2="26"/><line x1="26" y1="6" x2="6" y2="26"/>
-          </svg>
-        </div>
-        <div class="bc-name">${c.name}</div>
-        <div class="bc-badge">B${i+1}</div>
-      </div>`;
-    } else {
-      h+=`<div class="ban-card${isActive?' active':''}">
-        <div class="bc-empty-txt">${isActive?'BAN...':'— 禁用 —'}</div>
-        ${isActive?`<div class="bc-badge" style="background:rgba(180,20,20,0.5);color:#ff9999;border-color:rgba(220,40,40,0.6);">B${i+1}</div>`:''}
-      </div>`;
-    }
+    let cls='char-slot';if(isBan&&c)cls+=' is-ban';
+    h+=`<div class="${cls}">
+      <div class="char-avatar${!c?' empty':''}">
+        ${c?`<img src="${c.img}" onerror="imgErr(this,'${c.name}')" alt="${c.name}">`:''}
+        ${isBan&&c?`<div class="ban-overlay"><svg viewBox="0 0 24 24" fill="none" stroke="#ff4040" stroke-width="3.5"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg></div>`:''}
+      </div>
+      <div class="char-info">
+        <div class="char-name-text${isBan&&c?' banned':''}">${c?c.name:(isBan?'— 禁用 —':'— 待选 —')}</div>
+        ${c?`<div class="char-el-text el-${c.el}">${EL_ZH[c.el]||c.el}</div>`:''}
+      </div>
+      <div class="slot-label">${isBan?'B':'P'}${i+1}</div>
+    </div>`;
   }
   document.getElementById(id).innerHTML=h;
 }
-
-/* render pick cards */
-function renderPickCards(id,slots,player,activeInfo){
-  let h='';
-  for(let i=0;i<PICKS_EACH;i++){
-    const c=slots&&slots[i];
-    const isActive=!c&&activeInfo&&activeInfo.phase==='pick'&&activeInfo.player===player&&activeInfo.idx===i;
-    const pCls=player===1?'p1':'p2';
-    if(c){
-      h+=`<div class="pick-card ${pCls}-filled">
-        <img src="${c.img}" onerror="imgErr(this,'${c.name}')" alt="${c.name}">
-        <div class="pc-info">
-          <div class="pc-name">${c.name}</div>
-          <div class="pc-el el-${c.el}">${EL_ZH[c.el]||c.el}</div>
-        </div>
-        <div class="pc-badge">P${i+1}</div>
-      </div>`;
-    } else {
-      const activeCls=isActive?` active ${pCls}-active`:'';
-      const pVar=player===1?'var(--p1)':'var(--p2)';
-      h+=`<div class="pick-card${activeCls}">
-        <div class="pc-empty">
-          <div class="pc-empty-icon">${isActive?'◈':'+'}</div>
-          <div class="pc-empty-txt">${isActive?'选择中...':'— 待选 —'}</div>
-        </div>
-        ${isActive?`<div class="pc-badge" style="border-color:${pVar};color:${pVar};">P${i+1}</div>`:''}
-      </div>`;
-    }
-  }
-  document.getElementById(id).innerHTML=h;
-}
-
-/* render ban row (center) */
 function renderBanRow(id,slots,cls,count){
   let h='';
   for(let i=0;i<count;i++){
@@ -1100,129 +737,11 @@ function renderBanRow(id,slots,cls,count){
   }
   document.getElementById(id).innerHTML=h;
 }
-
-/* render BP sequence bar */
-function renderSeqBar(step,done){
-  const seps=_obsMode==='pick_only'?[6,12]:[6,12,18,24];
-  const sep=`<div style="width:1px;height:20px;flex-shrink:0;background:linear-gradient(180deg,transparent,rgba(168,216,247,0.28),transparent);margin:0 1px;"></div>`;
-  let h='';
-  SEQ.forEach((s,i)=>{
-    if(seps.includes(i))h+=sep;
-    const isBan=s.phase==='ban';
-    const isDone=i<step;
-    const isCur=i===step&&!done;
-    let cls='seq-block';
-    cls+=isBan?' sb-ban':' sb-pick';
-    if(isDone)cls+=' sb-done';
-    if(isCur){
-      cls+=' sb-cur';
-      if(isBan)cls+=' sb-ban';
-      else cls+=s.player===1?' sb-pick-p1':' sb-pick-p2';
-    }
-    h+=`<div class="${cls}"><span class="sb-dot sb-p${s.player}-dot"></span></div>`;
-  });
-  document.getElementById('bp-seq-bar').innerHTML=h;
-}
-
-/* ── spotlight ── */
-let spotTimer=null;
-let prevCounts={p1bans:0,p2bans:0,p1picks:0,p2picks:0};
-
-function showSpotlight(char,type){
-  // type: 'ban' | 'pick-p1' | 'pick-p2'
-  if(type==='ban')playBanSFX();else playPickSFX();
-  if(spotTimer)clearTimeout(spotTimer);
-  const sp=document.getElementById('spotlight');
-  sp.classList.remove('show');
-  void sp.offsetWidth; // force reflow to restart transition
-
-  document.getElementById('spot-img').src=char.img;
-  document.getElementById('spot-name').textContent=char.name;
-
-  const actionEl=document.getElementById('spot-action');
-  const badgeEl=document.getElementById('spot-badge');
-  if(type==='ban'){
-    actionEl.textContent='BANNED · 已禁用';
-    badgeEl.textContent='BAN';
-  } else if(type==='pick-p1'){
-    actionEl.textContent='PICKED · 玩家一选择';
-    badgeEl.textContent='PICK · P1';
-  } else {
-    actionEl.textContent='PICKED · 玩家二选择';
-    badgeEl.textContent='PICK · P2';
-  }
-
-  sp.className='show spot-'+type;
-  spotTimer=setTimeout(()=>sp.classList.remove('show'),2600);
-}
-
-function checkSpotlight(S){
-  const p1b=(S.p1bans||[]).length;
-  const p2b=(S.p2bans||[]).length;
-  const p1p=(S.p1picks||[]).length;
-  const p2p=(S.p2picks||[]).length;
-
-  if(p1b>prevCounts.p1bans){
-    const ch=S.p1bans[p1b-1];
-    if(ch)showSpotlight(ch,'ban');
-  } else if(p2b>prevCounts.p2bans){
-    const ch=S.p2bans[p2b-1];
-    if(ch)showSpotlight(ch,'ban');
-  } else if(p1p>prevCounts.p1picks){
-    const ch=S.p1picks[p1p-1];
-    if(ch)showSpotlight(ch,'pick-p1');
-  } else if(p2p>prevCounts.p2picks){
-    const ch=S.p2picks[p2p-1];
-    if(ch)showSpotlight(ch,'pick-p2');
-  }
-
-  prevCounts={p1bans:p1b,p2bans:p2b,p1picks:p1p,p2picks:p2p};
-}
-
-/* ── mode switch ── */
-function applyMode(mode){
-  if(_obsMode===mode)return;
-  _obsMode=mode;
-  SEQ=mode==='pick_only'?SEQ_PICK_ONLY:SEQ_BAN_PICK;
-  BANS_EACH=mode==='pick_only'?0:6;
-  document.body.classList.toggle('mode-pick-only',mode==='pick_only');
-}
-
-/* ── main render ── */
-function renderFromState(S){
-  if(!S)return;
-  applyMode(S.mode||'ban_pick');
-  const p1n=S.p1name||'玩家一',p2n=S.p2name||'玩家二';
-  document.getElementById('hdr-p1-name').textContent=p1n;
-  document.getElementById('hdr-p2-name').textContent=p2n;
-  document.getElementById('hdr-p1-sub').textContent=S.p1sub||'旧雨杯参赛选手';
-  document.getElementById('hdr-p2-sub').textContent=S.p2sub||'旧雨杯参赛选手';
-  document.getElementById('p1-panel-name').textContent=p1n;
-  document.getElementById('p2-panel-name').textContent=p2n;
-  document.getElementById('score-lbl-p1').textContent=p1n;
-  document.getElementById('score-lbl-p2').textContent=p2n;
-  document.getElementById('score-p1').textContent=S.scoreP1||0;
-  document.getElementById('score-p2').textContent=S.scoreP2||0;
-
-  const ai=getActiveInfo(S.step||0,S.done||false);
-  renderBanCards('p1-ban-cards',S.p1bans,1,ai);
-  renderBanCards('p2-ban-cards',S.p2bans,2,ai);
-  renderPickCards('p1-pick-cards',S.p1picks,1,ai);
-  renderPickCards('p2-pick-cards',S.p2picks,2,ai);
-  renderBanRow('p1-ban-row',S.p1bans,'p1-ban',BANS_EACH);
-  renderBanRow('p2-ban-row',S.p2bans,'p2-ban',BANS_EACH);
-  renderSeqBar(S.step||0,S.done||false);
-  renderHolo(S);
-  renderStatus(S);
-  updateBPTimer(S);
-}
-
 function renderHolo(S){
   const en=S.holoEnemies||[],cur=S.holoCurrentEnemy||0;
   let h='';
   en.forEach((name,i)=>{
-    let cls='enemy-slot';
-    if(i<cur)cls+=' defeated';else if(i===cur)cls+=' current';
+    let cls='enemy-slot';if(i<cur)cls+=' defeated';else if(i===cur)cls+=' current';
     h+=`<div class="${cls}"><div class="enemy-avatar">${name.charAt(0)}</div><div class="enemy-name">${name}</div></div>`;
   });
   document.getElementById('holo-enemies').innerHTML=h;
@@ -1231,11 +750,14 @@ function renderHolo(S){
   const newScore=S.holoScore||0;
   document.getElementById('holo-score-num').textContent=newScore;
 
+  // 积分增加时飘字
   if(newScore>prevScore){
     const diff=newScore-prevScore;
     const el=document.createElement('div');
-    el.className='score-float';el.textContent='+'+diff;
-    const rect=document.getElementById('holo-score-num').getBoundingClientRect();
+    el.className='score-float';
+    el.textContent='+'+diff;
+    const scoreEl=document.getElementById('holo-score-num');
+    const rect=scoreEl.getBoundingClientRect();
     el.style.left=(rect.left+rect.width/2-20)+'px';
     el.style.top=(rect.top-10)+'px';
     document.body.appendChild(el);
@@ -1247,6 +769,7 @@ let lastHoloScore=0;
 function checkDeathFlash(S){
   const cur=S.holoScore||0;
   if(lastHoloScore>0&&cur===0){
+    // 触发阵亡闪屏
     const flash=document.getElementById('death-flash');
     const txt=document.getElementById('death-text');
     flash.classList.remove('active');txt.classList.remove('active');
@@ -1256,223 +779,36 @@ function checkDeathFlash(S){
   }
   lastHoloScore=cur;
 }
-
 function renderStatus(S){
+  const cfg=getCfg(S);
+  const seq=cfg.seq;
+  const bansTotal=cfg.bansEach*2;
+  const picksTotal=cfg.picksEach*2;
   const step=S.step||0,done=S.done||false;
   const wo=document.getElementById('status-who'),ph=document.getElementById('status-phase');
-  if(done||step>=SEQ.length){
+  if(done||step>=seq.length){
     document.getElementById('phase-tag').textContent='BP 完成';
     wo.textContent='BP 完成';wo.style.color='var(--gold)';ph.textContent='';
   } else {
-    const cur=SEQ[step];
-    let tag;
-    if(cur.phase==='ban'){
-      const r=step<6?1:2;
-      const n=step<6?step+1:step-11;
-      tag=`禁用第${r}轮 ${n}/6`;
-    } else {
-      const g=_obsMode==='pick_only'
-        ?(step<6?1:step<12?2:3)
-        :(step<12?1:step<24?2:3);
-      tag=`第${g}组 PICK`;
-    }
-    document.getElementById('phase-tag').textContent=tag;
-    wo.textContent=`玩家${cur.player}`;
-    wo.style.color=cur.player===1?'var(--p1)':'var(--p2)';
-    ph.textContent=cur.phase==='ban'?'▸ 禁用阶段':'▸ 选择阶段';
+    const cur=seq[step];
+    const isBan=cur.phase==='ban';
+    const phaseIdx=isBan?(step+1):(step-bansTotal+1);
+    const phaseTotal=isBan?bansTotal:picksTotal;
+    document.getElementById('phase-tag').textContent=isBan?`BAN ${phaseIdx}/${phaseTotal}`:`PICK ${phaseIdx}/${phaseTotal}`;
+    const pn=cur.player===1?(S.p1name||'玩家一'):(S.p2name||'玩家二');
+    wo.textContent=pn;wo.style.color=cur.player===1?'var(--p1)':'var(--p2)';
+    ph.textContent=isBan?'▸ 禁用阶段':'▸ 选择阶段';
   }
-  document.getElementById('status-seq').innerHTML=SEQ.map((s,i)=>{
+  document.getElementById('status-seq').innerHTML=seq.map((s,i)=>{
     let cls='seq-dot '+(s.phase==='ban'?'ban-dot':'pick-dot');
-    if(i<step)cls+=' done-dot';
-    if(i===step&&!done)cls+=' cur-dot';
+    if(i<step)cls+=' done-dot';if(i===step&&!done)cls+=' cur-dot';
     return `<div class="${cls}"></div>`;
   }).join('');
 }
-
-/* ── 音效解锁 ── */
-(function(){
-  const btn=document.getElementById('sfx-unlock');
-  function unlock(){
-    _sfxCtxGet();
-    btn.classList.add('hidden');
-    setTimeout(()=>btn.remove(),600);
-    document.removeEventListener('click',unlock);
-    document.removeEventListener('keydown',unlock);
-  }
-  document.addEventListener('click',unlock);
-  document.addEventListener('keydown',unlock);
-  btn.addEventListener('click',e=>{e.stopPropagation();unlock();});
-})();
-
-/* ── Sound Effects ── */
-let _sfxCtx=null;
-function _sfxCtxGet(){
-  if(!_sfxCtx)_sfxCtx=new(window.AudioContext||window.webkitAudioContext)();
-  if(_sfxCtx.state==='suspended')_sfxCtx.resume();
-  return _sfxCtx;
-}
-function _makeReverb(ctx,dur,decay){
-  const len=ctx.sampleRate*dur;
-  const buf=ctx.createBuffer(2,len,ctx.sampleRate);
-  for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
-  const c=ctx.createConvolver();c.buffer=buf;return c;
-}
-
-function playBanSFX(){
-  const ctx=_sfxCtxGet();const t=ctx.currentTime;
-  const master=ctx.createGain();master.gain.value=0.82;master.connect(ctx.destination);
-  const rev=_makeReverb(ctx,0.55,3.2);rev.connect(master);
-
-  // ① 低沉下滑冲击
-  const o1=ctx.createOscillator();const g1=ctx.createGain();
-  o1.type='sine';
-  o1.frequency.setValueAtTime(210,t);
-  o1.frequency.exponentialRampToValueAtTime(40,t+0.38);
-  g1.gain.setValueAtTime(0.95,t);
-  g1.gain.exponentialRampToValueAtTime(0.001,t+0.46);
-  o1.connect(g1);g1.connect(rev);g1.connect(master);
-  o1.start(t);o1.stop(t+0.52);
-
-  // ② 金属质感噪声 + bandpass
-  const nLen=Math.floor(ctx.sampleRate*0.2);
-  const nBuf=ctx.createBuffer(1,nLen,ctx.sampleRate);
-  const nd=nBuf.getChannelData(0);
-  for(let i=0;i<nLen;i++)nd[i]=(Math.random()*2-1)*Math.pow(1-i/nLen,2.2);
-  const ns=ctx.createBufferSource();ns.buffer=nBuf;
-  const nf=ctx.createBiquadFilter();nf.type='bandpass';nf.frequency.value=260;nf.Q.value=1.1;
-  const ng=ctx.createGain();ng.gain.setValueAtTime(0.5,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.2);
-  ns.connect(nf);nf.connect(ng);ng.connect(rev);ng.connect(master);ns.start(t);
-
-  // ③ 短促高频刮擦
-  const s2Len=Math.floor(ctx.sampleRate*0.055);
-  const s2Buf=ctx.createBuffer(1,s2Len,ctx.sampleRate);
-  const s2d=s2Buf.getChannelData(0);
-  for(let i=0;i<s2Len;i++)s2d[i]=(Math.random()*2-1)*Math.pow(1-i/s2Len,1.4);
-  const s2=ctx.createBufferSource();s2.buffer=s2Buf;
-  const sf2=ctx.createBiquadFilter();sf2.type='highpass';sf2.frequency.value=2600;
-  const sg2=ctx.createGain();sg2.gain.value=0.2;
-  s2.connect(sf2);sf2.connect(sg2);sg2.connect(master);s2.start(t);
-}
-
-function playPickSFX(){
-  const ctx=_sfxCtxGet();const t=ctx.currentTime;
-  const master=ctx.createGain();master.gain.value=0.78;master.connect(ctx.destination);
-  const rev=_makeReverb(ctx,1.4,2.4);rev.connect(master);
-
-  [{freq:587.3,dt:0},{freq:880,dt:0.15}].forEach(({freq,dt})=>{
-    const nt=t+dt;
-    const o=ctx.createOscillator();const g=ctx.createGain();
-    o.type='sine';o.frequency.value=freq;
-    g.gain.setValueAtTime(0,nt);g.gain.linearRampToValueAtTime(0.48,nt+0.008);
-    g.gain.exponentialRampToValueAtTime(0.001,nt+1.0);
-    o.connect(g);g.connect(rev);g.connect(master);o.start(nt);o.stop(nt+1.1);
-    const o2=ctx.createOscillator();const g2=ctx.createGain();
-    o2.type='sine';o2.frequency.value=freq*2.756;
-    g2.gain.setValueAtTime(0,nt);g2.gain.linearRampToValueAtTime(0.14,nt+0.005);
-    g2.gain.exponentialRampToValueAtTime(0.001,nt+0.22);
-    o2.connect(g2);g2.connect(rev);g2.connect(master);o2.start(nt);o2.stop(nt+0.28);
-    const o3=ctx.createOscillator();const g3=ctx.createGain();
-    o3.type='sine';o3.frequency.value=freq*5.4;
-    g3.gain.setValueAtTime(0,nt);g3.gain.linearRampToValueAtTime(0.06,nt+0.003);
-    g3.gain.exponentialRampToValueAtTime(0.001,nt+0.08);
-    o3.connect(g3);g3.connect(master);o3.start(nt);o3.stop(nt+0.1);
-  });
-}
-
-/* ── BP countdown timer ── */
-let _bpTimerRaf=null;
-let _bpTS=null,_bpTD=0,_bpPlayer=1,_bpPhase='pick';
-
-function _bpTimerFrac(){
-  if(!_bpTS||!_bpTD)return 1;
-  return Math.max(0,1-(Date.now()-_bpTS)/(_bpTD*1000));
-}
-
-function _bpTimerRender(){
-  const el=document.getElementById('bp-timer');
-  const arc=document.getElementById('bp-timer-arc');
-  const num=document.getElementById('bp-timer-num');
-  const sub=document.getElementById('bp-timer-sub');
-  if(!el||!arc||!num)return;
-
-  if(!_bpTS){el.classList.remove('t-show');return;}
-  el.classList.add('t-show');
-
-  // sub label
-  if(sub){
-    const pColor=_bpPlayer===1?'var(--p1)':'var(--p2)';
-    sub.style.color=pColor;
-    sub.textContent=`P${_bpPlayer} · ${_bpPhase==='ban'?'BAN':'PICK'}`;
-  }
-
-  if(!_bpTD){
-    // infinite
-    arc.setAttribute('stroke','rgba(106,184,240,0.28)');
-    arc.style.strokeDashoffset='0';
-    num.textContent='∞';
-    num.setAttribute('fill','rgba(106,184,240,0.4)');
-    return;
-  }
-
-  const frac=_bpTimerFrac();
-  const C=2*Math.PI*46;
-  arc.style.strokeDashoffset=C*(1-frac);
-  const col=frac>0.5?'#3a8fff':frac>0.2?'#d4a020':'#cc2020';
-  arc.setAttribute('stroke',col);
-  const rem=Math.max(0,_bpTD-(Date.now()-_bpTS)/1000);
-  num.textContent=Math.ceil(rem);
-  num.setAttribute('fill',frac<0.2?'#ff8888':frac<0.5?'#ffd060':'#a8d8f7');
-}
-
-function _bpTimerRunRaf(){
-  if(_bpTimerRaf){cancelAnimationFrame(_bpTimerRaf);_bpTimerRaf=null;}
-  if(!_bpTS)return;
-  if(!_bpTD){_bpTimerRender();return;} // infinite: static render
-  function tick(){
-    _bpTimerRender();
-    if(_bpTS&&_bpTimerFrac()>0){
-      _bpTimerRaf=requestAnimationFrame(tick);
-    } else {
-      _bpTimerRaf=null;
-      _bpTimerRender();
-    }
-  }
-  _bpTimerRaf=requestAnimationFrame(tick);
-}
-
-function updateBPTimer(S){
-  const newTS=S.timerStart||null;
-  const newTD=typeof S.timerDuration==='number'?S.timerDuration:0;
-  const step=S.step||0;
-  if(step<SEQ.length&&!S.done&&newTS){
-    _bpPlayer=SEQ[step].player;
-    _bpPhase=SEQ[step].phase;
-  }
-  const changed=newTS!==_bpTS||newTD!==_bpTD;
-  _bpTS=newTS;_bpTD=newTD;
-  if(changed){
-    if(_bpTimerRaf){cancelAnimationFrame(_bpTimerRaf);_bpTimerRaf=null;}
-    if(newTS)_bpTimerRunRaf();
-    else _bpTimerRender();
-  }
-}
-
-/* ── init ── */
-renderFromState({
-  p1bans:[],p2bans:[],p1picks:[],p2picks:[],
-  step:0,done:false,scoreP1:0,scoreP2:0,
-  holoEnemies:['飞廉之猩','燎照之骑','无冠者','芙露德莉斯','赫卡忒','罗蕾莱'],
-  holoCurrentEnemy:0,holoScore:0
-});
-
-setInterval(()=>{
-  const S=loadState();
-  if(S){checkSpotlight(S);renderFromState(S);checkDeathFlash(S);}
-},300);
-window.addEventListener('storage',()=>{
-  const S=loadState();
-  if(S){checkSpotlight(S);renderFromState(S);checkDeathFlash(S);}
-});
+renderFromState({p1bans:[],p2bans:[],p1picks:[],p2picks:[],step:0,done:false,scoreP1:0,scoreP2:0,
+  holoEnemies:['飞廉之猩','燎照之骑','无冠者','芙露德莉斯','赫卡忒','罗蕾莱'],holoCurrentEnemy:0,holoScore:0,mode:'r24'});
+setInterval(()=>{const S=loadState();if(S){renderFromState(S);checkDeathFlash(S);}},300);
+window.addEventListener('storage',()=>{const S=loadState();if(S){renderFromState(S);checkDeathFlash(S);}});
 </script>
 </body>
 </html>
