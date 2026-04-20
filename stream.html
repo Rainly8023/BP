@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>旧雨杯 · 选手投屏</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700;900&family=Oswald:wght@400;600;700&display=swap">
+<script src="./mqtt.min.js"></script>
+<script src="./sync-config.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{min-height:100vh;
+  background:linear-gradient(168deg,#010208 0%,#020510 60%,#030810 100%);
+  color:#e4f0ff;font-family:'Noto Sans SC','Oswald',system-ui,sans-serif;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;}
+
+/* hex grid */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='88' height='102'%3E%3Cpolygon points='44,4 84,26 84,76 44,98 4,76 4,26' fill='none' stroke='rgba(232,184,75,0.04)' stroke-width='0.7'/%3E%3C/svg%3E");
+  background-size:88px 102px;}
+
+/* ── player select ── */
+#ps-wrap{
+  position:fixed;inset:0;z-index:100;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;
+  background:rgba(1,2,8,0.96);
+}
+#ps-title{font-family:'Oswald',sans-serif;font-size:26px;font-weight:700;letter-spacing:8px;
+  color:#e8b84b;text-shadow:0 0 28px rgba(232,184,75,0.6);}
+#ps-sub{font-size:10px;letter-spacing:4px;color:#6888aa;}
+.ps-btns{display:flex;gap:20px;}
+.ps-btn{
+  padding:16px 52px;cursor:pointer;
+  font-family:'Oswald','Noto Sans SC',sans-serif;font-size:15px;font-weight:700;letter-spacing:4px;
+  border:2px solid;transition:all 0.2s;background:transparent;
+  clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+}
+.ps-p1{border-color:#ff5500;color:#ff5500;}
+.ps-p1:hover{background:rgba(255,85,0,0.18);box-shadow:0 0 28px rgba(255,85,0,0.35);}
+.ps-p2{border-color:#0099ff;color:#0099ff;}
+.ps-p2:hover{background:rgba(0,153,255,0.18);box-shadow:0 0 28px rgba(0,153,255,0.35);}
+
+/* ── main app ── */
+#app{width:100%;max-width:920px;padding:24px;display:flex;flex-direction:column;gap:16px;}
+
+/* header */
+#hdr{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px;
+  background:rgba(3,6,20,0.95);border:1px solid rgba(232,184,75,0.15);
+  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));}
+#hdr-left{display:flex;align-items:center;gap:14px;}
+#hdr-icon{width:36px;height:36px;border:2px solid;display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:900;transform:rotate(45deg);}
+#hdr-icon.p1{border-color:#ff5500;color:#ff5500;box-shadow:0 0 18px rgba(255,85,0,0.45);}
+#hdr-icon.p2{border-color:#0099ff;color:#0099ff;box-shadow:0 0 18px rgba(0,153,255,0.45);}
+#hdr-icon-inner{transform:rotate(-45deg);}
+#hdr-title{font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;letter-spacing:4px;}
+#hdr-title.p1{color:#ff5500;text-shadow:0 0 18px rgba(255,85,0,0.6);}
+#hdr-title.p2{color:#0099ff;text-shadow:0 0 18px rgba(0,153,255,0.6);}
+#hdr-sub{font-size:10px;letter-spacing:3px;color:#6888aa;}
+#hdr-status{display:flex;align-items:center;gap:8px;}
+#status-dot{width:10px;height:10px;border-radius:50%;background:#333;transition:all 0.4s;}
+#status-dot.connecting{background:#e8b84b;box-shadow:0 0 10px rgba(232,184,75,0.7);animation:dotpulse 1s infinite;}
+#status-dot.streaming{background:#00e8a0;box-shadow:0 0 14px rgba(0,232,160,0.8);animation:dotpulse 1.4s infinite;}
+#status-dot.error{background:#ff3366;box-shadow:0 0 10px rgba(255,51,102,0.7);}
+@keyframes dotpulse{0%,100%{opacity:0.6;}50%{opacity:1;}}
+#status-text{font-size:11px;letter-spacing:2px;color:#6888aa;transition:color 0.3s;}
+
+/* main layout */
+#main{display:grid;grid-template-columns:1fr 320px;gap:14px;}
+
+/* preview panel */
+#preview-panel{
+  background:rgba(3,6,20,0.95);border:1px solid rgba(232,184,75,0.12);
+  display:flex;flex-direction:column;
+  clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));}
+#preview-lbl{padding:10px 16px;font-size:8px;letter-spacing:5px;color:#6888aa;text-transform:uppercase;
+  border-bottom:1px solid rgba(232,184,75,0.08);display:flex;align-items:center;gap:8px;}
+#preview-lbl::before{content:'';width:5px;height:5px;transform:rotate(45deg);
+  background:#e8b84b;box-shadow:0 0 8px rgba(232,184,75,0.6);}
+#preview-box{flex:1;min-height:320px;position:relative;background:#000;overflow:hidden;}
+#preview-video{width:100%;height:100%;object-fit:contain;display:block;}
+#preview-placeholder{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;color:#6888aa;}
+#preview-icon{font-size:48px;opacity:0.3;}
+#preview-hint{font-size:10px;letter-spacing:3px;opacity:0.5;}
+/* live badge */
+#live-badge{
+  position:absolute;top:10px;left:10px;
+  font-size:9px;letter-spacing:4px;font-weight:700;padding:3px 14px;
+  background:rgba(255,30,60,0.9);color:#fff;
+  clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%);
+  display:none;}
+#live-badge.show{display:block;animation:livepulse 1.5s ease-in-out infinite;}
+@keyframes livepulse{0%,100%{opacity:0.85;}50%{opacity:1;}}
+
+/* right panel */
+#right-panel{display:flex;flex-direction:column;gap:12px;}
+
+/* control card */
+.ctrl-card{
+  background:rgba(3,6,20,0.95);border:1px solid rgba(232,184,75,0.12);padding:16px;
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));}
+.ctrl-card-title{font-size:8px;letter-spacing:5px;color:#6888aa;text-transform:uppercase;
+  margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.ctrl-card-title::before{content:'';width:4px;height:4px;transform:rotate(45deg);
+  background:#e8b84b;display:inline-block;}
+
+/* main stream button */
+#btn-start{
+  width:100%;padding:16px;cursor:pointer;
+  font-family:'Oswald','Noto Sans SC',sans-serif;font-size:14px;font-weight:700;letter-spacing:4px;
+  border:2px solid;background:transparent;color:#e4f0ff;transition:all 0.25s;
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);
+}
+#btn-start.ready{border-color:#e8b84b;color:#e8b84b;}
+#btn-start.ready:hover{background:rgba(232,184,75,0.15);box-shadow:0 0 24px rgba(232,184,75,0.35);}
+#btn-start.streaming{border-color:#ff3366;color:#ff3366;}
+#btn-start.streaming:hover{background:rgba(255,51,102,0.15);box-shadow:0 0 24px rgba(255,51,102,0.35);}
+#btn-start:disabled{border-color:#333;color:#333;cursor:not-allowed;}
+
+/* quality selector */
+.quality-row{display:flex;gap:6px;margin-top:8px;}
+.q-btn{
+  flex:1;padding:7px 4px;cursor:pointer;
+  font-family:'Noto Sans SC',sans-serif;font-size:10px;letter-spacing:1px;
+  border:1px solid rgba(232,184,75,0.2);color:#6888aa;background:transparent;transition:all 0.2s;
+  clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);}
+.q-btn.active{border-color:#e8b84b;color:#e8b84b;background:rgba(232,184,75,0.1);}
+
+/* info rows */
+.info-row{display:flex;justify-content:space-between;align-items:center;
+  padding:7px 0;border-bottom:1px solid rgba(232,184,75,0.06);}
+.info-row:last-child{border-bottom:none;}
+.info-key{font-size:9px;letter-spacing:2px;color:#6888aa;}
+.info-val{font-size:11px;font-weight:700;color:#b8c8d8;}
+.info-val.ok{color:#00e8a0;}
+.info-val.warn{color:#e8b84b;}
+.info-val.err{color:#ff3366;}
+
+/* MQTT status bar */
+#mqtt-bar{
+  padding:10px 16px;
+  background:rgba(2,4,14,0.98);border:1px solid rgba(232,184,75,0.08);
+  display:flex;align-items:center;gap:10px;
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));}
+#mqtt-dot{width:7px;height:7px;border-radius:50%;background:#333;flex-shrink:0;}
+#mqtt-dot.ok{background:#00e8a0;box-shadow:0 0 8px rgba(0,232,160,0.7);}
+#mqtt-dot.warn{background:#e8b84b;animation:dotpulse 1s infinite;}
+#mqtt-text{font-size:9px;letter-spacing:2px;color:#6888aa;}
+
+/* toast */
+#toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:rgba(3,8,24,0.96);border:1px solid rgba(232,184,75,0.35);
+  color:#e8b84b;font-size:11px;letter-spacing:3px;padding:8px 28px;
+  clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);
+  opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:200;}
+#toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- 玩家选择界面 -->
+<div id="ps-wrap">
+  <div id="ps-title">选 手 投 屏</div>
+  <div id="ps-sub">请选择你的位置 · SELECT YOUR POSITION</div>
+  <div class="ps-btns">
+    <button class="ps-btn ps-p1" onclick="choosePlayer(1)">玩 家 一 · P1</button>
+    <button class="ps-btn ps-p2" onclick="choosePlayer(2)">玩 家 二 · P2</button>
+  </div>
+</div>
+
+<!-- 主界面 -->
+<div id="app" style="display:none;">
+  <div id="hdr">
+    <div id="hdr-left">
+      <div id="hdr-icon"><div id="hdr-icon-inner">▶</div></div>
+      <div>
+        <div id="hdr-title">玩家一 · 投屏端</div>
+        <div id="hdr-sub">旧雨杯 · SCREEN SHARE</div>
+      </div>
+    </div>
+    <div id="hdr-status">
+      <div id="status-dot"></div>
+      <div id="status-text">未投屏</div>
+    </div>
+  </div>
+
+  <div id="main">
+    <!-- 预览区 -->
+    <div id="preview-panel">
+      <div class="preview-lbl" id="preview-lbl">画面预览 · PREVIEW</div>
+      <div id="preview-box">
+        <video id="preview-video" autoplay muted playsinline style="display:none;"></video>
+        <div id="preview-placeholder">
+          <div id="preview-icon">🖥️</div>
+          <div id="preview-hint">点击「开始投屏」后预览将出现在这里</div>
+        </div>
+        <div id="live-badge">● LIVE</div>
+      </div>
+    </div>
+
+    <!-- 右侧控制 -->
+    <div id="right-panel">
+
+      <!-- 投屏控制 -->
+      <div class="ctrl-card">
+        <div class="ctrl-card-title">投屏控制</div>
+        <button id="btn-start" class="ready" onclick="toggleStream()">▶ 开 始 投 屏</button>
+        <div class="quality-row" id="quality-row">
+          <button class="q-btn active" onclick="setQuality('high',this)">高质量</button>
+          <button class="q-btn" onclick="setQuality('medium',this)">中等</button>
+          <button class="q-btn" onclick="setQuality('low',this)">流畅</button>
+        </div>
+      </div>
+
+      <!-- 连接状态 -->
+      <div class="ctrl-card">
+        <div class="ctrl-card-title">连接状态</div>
+        <div class="info-row">
+          <span class="info-key">信令服务器</span>
+          <span class="info-val" id="info-mqtt">连接中...</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">导播端</span>
+          <span class="info-val" id="info-obs">等待连接</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">画面质量</span>
+          <span class="info-val" id="info-quality">高质量</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">投屏状态</span>
+          <span class="info-val" id="info-state">未开始</span>
+        </div>
+      </div>
+
+      <!-- 使用说明 -->
+      <div class="ctrl-card">
+        <div class="ctrl-card-title">使用说明</div>
+        <div style="font-size:10px;color:#6888aa;line-height:1.9;letter-spacing:1px;">
+          1. 点击「开始投屏」<br>
+          2. 在弹出窗口选择游戏画面<br>
+          3. 点击「分享」确认<br>
+          4. 等待导播端接收成功<br>
+          5. 比赛期间保持此页面开启<br>
+          <br>
+          <span style="color:#e8b84b;">⚡ 建议选择「窗口」标签</span><br>
+          <span style="color:#e8b84b;">    并选择游戏窗口</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MQTT 状态栏 -->
+  <div id="mqtt-bar">
+    <div id="mqtt-dot" class="warn"></div>
+    <div id="mqtt-text">正在连接信令服务器...</div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ══ 配置 ══ */
+const ICE_SERVERS=[
+  {urls:'stun:stun.l.google.com:19302'},
+  {urls:'stun:stun1.l.google.com:19302'},
+  {urls:'stun:stun.cloudflare.com:3478'},
+  {urls:'stun:stun.miwifi.com:3478'},
+];
+
+const QUALITY={
+  high:  {width:1920,height:1080,frameRate:30,bitrate:4000000},
+  medium:{width:1280,height:720, frameRate:24,bitrate:2000000},
+  low:   {width:854, height:480, frameRate:20,bitrate:800000},
+};
+
+/* ══ 状态 ══ */
+let myPlayer=null;
+let mqttClient=null;
+let pc=null;              // RTCPeerConnection
+let localStream=null;
+let isStreaming=false;
+let qualityKey='high';
+let obsConnected=false;
+const CH=window.SYNC_CHANNEL||'wuwa_bp_114514';
+
+/* ══ 玩家选择 ══ */
+function choosePlayer(p){
+  myPlayer=p;
+  document.getElementById('ps-wrap').style.display='none';
+  document.getElementById('app').style.display='block';
+  const pn=p===1?'玩家一':'玩家二';
+  const pColor=p===1?'#ff5500':'#0099ff';
+  const hdrTitle=document.getElementById('hdr-title');
+  hdrTitle.textContent=`${pn} · 投屏端`;
+  hdrTitle.className=`p${p}`;
+  const icon=document.getElementById('hdr-icon');
+  icon.className=`p${p}`;
+  initMQTT();
+}
+
+/* ══ MQTT 信令 ══ */
+function initMQTT(){
+  mqttClient=mqtt.connect('wss://broker.emqx.io:8084/mqtt',{
+    clientId:`wuwa_stream_p${myPlayer}_`+(Math.random()*1e9|0).toString(36),
+    reconnectPeriod:3000,connectTimeout:10000,clean:true,
+  });
+  mqttClient.on('connect',()=>{
+    // 订阅 OBS 发给我的信令
+    const answerCh=`${CH}_stream_obs_p${myPlayer}`;
+    mqttClient.subscribe(answerCh);
+    setMqttStatus(true,`频道 ${CH}`);
+    document.getElementById('info-mqtt').textContent='已连接';
+    document.getElementById('info-mqtt').className='info-val ok';
+    toast('信令服务器已连接');
+  });
+  mqttClient.on('message',(topic,msg)=>{
+    try{
+      const data=JSON.parse(msg.toString());
+      handleObsSignal(data);
+    }catch{}
+  });
+  mqttClient.on('error',()=>setMqttStatus(false,'连接错误'));
+  mqttClient.on('offline',()=>setMqttStatus(false,'离线'));
+  mqttClient.on('reconnect',()=>{
+    document.getElementById('mqtt-dot').className='warn';
+    document.getElementById('mqtt-text').textContent='重新连接中...';
+  });
+}
+
+function setMqttStatus(ok,msg){
+  document.getElementById('mqtt-dot').className=ok?'ok':'warn';
+  document.getElementById('mqtt-text').textContent=ok?`信令已就绪 · ${msg}`:`信令断开 · ${msg}`;
+}
+
+/* 发送信令到 OBS */
+function sendSignal(data){
+  if(!mqttClient)return;
+  mqttClient.publish(`${CH}_stream_p${myPlayer}`,JSON.stringify(data));
+}
+
+/* 接收来自 OBS 的信令 */
+async function handleObsSignal(data){
+  if(!pc)return;
+  if(data.type==='answer'){
+    await pc.setRemoteDescription(new RTCSessionDescription({type:'answer',sdp:data.sdp}));
+    obsConnected=true;
+    document.getElementById('info-obs').textContent='已连接';
+    document.getElementById('info-obs').className='info-val ok';
+    setStatus('streaming','● 投屏中');
+    document.getElementById('info-state').textContent='投屏中';
+    document.getElementById('info-state').className='info-val ok';
+    document.getElementById('live-badge').classList.add('show');
+    toast('导播端已接收画面！');
+  } else if(data.type==='ice'&&data.candidate){
+    try{await pc.addIceCandidate(new RTCIceCandidate(data.candidate));}catch{}
+  } else if(data.type==='stop'){
+    stopStream();
+  }
+}
+
+/* ══ 画质 ══ */
+function setQuality(key,btn){
+  qualityKey=key;
+  document.querySelectorAll('.q-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('info-quality').textContent=
+    key==='high'?'高质量 (1080p)':key==='medium'?'中等 (720p)':'流畅 (480p)';
+}
+
+/* ══ 投屏控制 ══ */
+async function toggleStream(){
+  if(isStreaming){stopStream();}
+  else{await startStream();}
+}
+
+async function startStream(){
+  const q=QUALITY[qualityKey];
+  const btn=document.getElementById('btn-start');
+  btn.disabled=true;
+  setStatus('connecting','连接中...');
+  document.getElementById('info-state').textContent='获取画面中...';
+
+  try{
+    // 1. 获取屏幕（含系统音频）
+    localStream=await navigator.mediaDevices.getDisplayMedia({
+      video:{width:q.width,height:q.height,frameRate:q.frameRate,cursor:'never'},
+      audio:{
+        echoCancellation:false,
+        noiseSuppression:false,
+        autoGainControl:false,
+        sampleRate:48000,
+      },
+    });
+  }catch(e){
+    toast('未选择画面或已取消');
+    setStatus('','未投屏');
+    document.getElementById('info-state').textContent='未开始';
+    btn.disabled=false;return;
+  }
+
+  // 1b. 可选：同时采集麦克风并混入
+  try{
+    const mic=await navigator.mediaDevices.getUserMedia({
+      audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false},
+      video:false,
+    });
+    mic.getAudioTracks().forEach(t=>localStream.addTrack(t));
+  }catch(e){
+    // 麦克风未授权时静默跳过，只传系统声音
+    console.warn('[stream] 麦克风不可用，仅传系统音频',e);
+  }
+
+  // 2. 预览（本地预览保持静音避免回声）
+  const vid=document.getElementById('preview-video');
+  vid.srcObject=localStream;
+  vid.muted=true;
+  vid.style.display='block';
+  document.getElementById('preview-placeholder').style.display='none';
+
+  // 3. WebRTC
+  pc=new RTCPeerConnection({iceServers:ICE_SERVERS});
+  localStream.getTracks().forEach(t=>pc.addTrack(t,localStream));
+
+  pc.onicecandidate=e=>{
+    if(e.candidate)sendSignal({type:'ice',candidate:e.candidate.toJSON()});
+  };
+  pc.onconnectionstatechange=()=>{
+    const st=pc.connectionState;
+    if(st==='disconnected'||st==='failed'){
+      obsConnected=false;
+      document.getElementById('info-obs').textContent='已断开';
+      document.getElementById('info-obs').className='info-val err';
+      setStatus('connecting','等待重连...');
+    }
+  };
+  // 流结束（用户在系统层停止分享）
+  localStream.getTracks()[0].onended=()=>stopStream();
+
+  // 4. 创建 offer
+  const offer=await pc.createOffer();
+  await pc.setLocalDescription(offer);
+  sendSignal({type:'offer',sdp:offer.sdp,quality:qualityKey});
+
+  isStreaming=true;
+  btn.disabled=false;
+  btn.className='streaming';
+  btn.textContent='■ 停 止 投 屏';
+  document.getElementById('quality-row').style.opacity='0.4';
+  document.getElementById('quality-row').style.pointerEvents='none';
+  document.getElementById('info-obs').textContent='等待导播端...';
+  document.getElementById('info-obs').className='info-val warn';
+  document.getElementById('info-state').textContent='等待导播接收...';
+  document.getElementById('info-state').className='info-val warn';
+  toast('投屏请求已发送，等待导播端接收...');
+}
+
+function stopStream(){
+  if(pc){pc.close();pc=null;}
+  if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null;}
+  const vid=document.getElementById('preview-video');
+  vid.srcObject=null;vid.style.display='none';
+  document.getElementById('preview-placeholder').style.display='flex';
+  document.getElementById('live-badge').classList.remove('show');
+
+  isStreaming=false;obsConnected=false;
+  const btn=document.getElementById('btn-start');
+  btn.className='ready';btn.textContent='▶ 开 始 投 屏';btn.disabled=false;
+  document.getElementById('quality-row').style.opacity='1';
+  document.getElementById('quality-row').style.pointerEvents='auto';
+  document.getElementById('info-obs').textContent='未连接';
+  document.getElementById('info-obs').className='info-val';
+  setStatus('','未投屏');
+  document.getElementById('info-state').textContent='已停止';
+  document.getElementById('info-state').className='info-val';
+  sendSignal({type:'stop'});
+  toast('已停止投屏');
+}
+
+/* ══ UI 辅助 ══ */
+function setStatus(cls,txt){
+  document.getElementById('status-dot').className=cls;
+  document.getElementById('status-text').textContent=txt;
+}
+
+function toast(msg,dur=2800){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toast._t);
+  toast._t=setTimeout(()=>el.classList.remove('show'),dur);
+}
+</script>
+</body>
+</html>

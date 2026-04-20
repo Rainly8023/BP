@@ -3,23 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <title>旧雨杯 · 结算页面</title>
+<link rel="stylesheet" href="./theme-wuwa-deep.css">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Oswald:wght@400;600;700&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --ice1:#a8d8f7;--ice2:#6ab8f0;--ice3:#c8ecff;
-  --ice-glow:rgba(168,216,247,0.65);
-  --ice-shadow:rgba(80,160,230,0.45);
-  --p1:#e85c30;--p2:#3a8fff;
-  --gold:#d4a020;--teal:#20c8a0;
-  --font:'Noto Sans SC','Oswald',sans-serif;
-}
-html,body{width:1920px;height:1080px;overflow:hidden;background:#020810;font-family:var(--font);}
+html,body{width:1920px;height:1080px;overflow:hidden;
+  background:linear-gradient(165deg,var(--void) 0%,var(--bg) 100%);
+  font-family:var(--font);color:var(--text);}
 
 #bg{position:fixed;inset:0;z-index:0;background:url('./3.jpg') center/cover no-repeat;}
-#bg-dim{position:fixed;inset:0;z-index:1;background:rgba(2,6,20,0.78);}
+#bg-dim{position:fixed;inset:0;z-index:1;
+  background:linear-gradient(165deg,rgba(3,8,18,0.9) 0%,rgba(5,12,24,0.84) 50%,rgba(4,10,20,0.92) 100%);}
 #scanlines{position:fixed;inset:0;z-index:2;pointer-events:none;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,8,30,0.05) 2px,rgba(0,8,30,0.05) 4px);}
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.02) 2px,rgba(255,255,255,0.02) 4px);}
+#wuwa-deco-result{position:fixed;right:-2%;bottom:0;z-index:3;width:min(34vw,500px);height:88%;pointer-events:none;opacity:0.12;
+  background:url('./images/pd.jpg') right bottom/contain no-repeat;
+  -webkit-mask-image:linear-gradient(90deg,transparent,rgba(0,0,0,0.45) 40%,#000);mask-image:linear-gradient(90deg,transparent,rgba(0,0,0,0.45) 40%,#000);}
 #pcanvas{position:fixed;inset:0;z-index:2;pointer-events:none;}
 
 /* 边框 */
@@ -60,8 +58,8 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#020810;font-fam
 }
 #event-badge{
   font-family:'Oswald',sans-serif;font-size:32px;font-weight:700;
-  letter-spacing:8px;color:#d8eeff;text-transform:uppercase;
-  text-shadow:0 0 20px var(--ice-glow),0 0 50px var(--ice-shadow);
+  letter-spacing:8px;color:var(--ink-display);text-transform:uppercase;
+  text-shadow:0 0 32px rgba(34,211,238,0.3);
   margin-bottom:32px;
 }
 
@@ -92,7 +90,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#020810;font-fam
 }
 #winner-name.w-p1{color:var(--p1);text-shadow:0 0 24px rgba(232,92,48,0.6),0 0 60px rgba(232,92,48,0.3);}
 #winner-name.w-p2{color:var(--p2);text-shadow:0 0 24px rgba(58,143,255,0.6),0 0 60px rgba(58,143,255,0.3);}
-#winner-sub{font-size:14px;letter-spacing:4px;color:rgba(168,216,247,0.5);}
+#winner-sub{font-size:14px;letter-spacing:4px;color:var(--muted);}
 
 /* 分割线 */
 .v-line{width:800px;height:1px;margin:4px 0 32px;
@@ -102,8 +100,8 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#020810;font-fam
 /* 比分卡 */
 #score-card{
   display:flex;align-items:center;gap:0;
-  background:rgba(4,10,30,0.85);
-  border:1px solid rgba(106,184,240,0.2);
+  background:rgba(8,16,28,0.88);
+  border:1px solid rgba(56,189,248,0.22);
   border-radius:4px;
   overflow:hidden;
   margin-bottom:36px;
@@ -114,8 +112,8 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#020810;font-fam
   display:flex;flex-direction:column;align-items:center;
   padding:28px 60px;gap:10px;
 }
-.score-side.p1-side{background:linear-gradient(135deg,rgba(232,92,48,0.12) 0%,transparent 100%);}
-.score-side.p2-side{background:linear-gradient(225deg,rgba(58,143,255,0.12) 0%,transparent 100%);}
+.score-side.p1-side{background:linear-gradient(135deg,rgba(255,138,92,0.1) 0%,transparent 100%);}
+.score-side.p2-side{background:linear-gradient(225deg,rgba(92,183,255,0.1) 0%,transparent 100%);}
 .score-player-name{font-size:16px;font-weight:700;letter-spacing:3px;}
 .score-player-name.p1n{color:var(--p1);}
 .score-player-name.p2n{color:var(--p2);}
@@ -131,12 +129,12 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#020810;font-fam
 }
 .score-vs-text{
   font-family:'Oswald',sans-serif;font-size:28px;font-weight:300;
-  color:rgba(168,216,247,0.25);letter-spacing:4px;
+  color:rgba(56,189,248,0.28);letter-spacing:4px;
 }
 .score-bo-text{
   font-size:11px;letter-spacing:3px;
-  color:rgba(168,216,247,0.35);
-  padding:3px 12px;border:1px solid rgba(168,216,247,0.15);border-radius:2px;
+  color:var(--muted);
+  padding:3px 12px;border:1px solid rgba(56,189,248,0.2);border-radius:2px;
 }
 
 /* pick展示 */
@@ -145,38 +143,39 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:#020810;font-fam
   animation:score-in 1s ease-out 0.5s both;
 }
 .picks-block{display:flex;flex-direction:column;align-items:center;gap:12px;}
-.picks-label{font-size:9px;letter-spacing:3px;color:rgba(168,216,247,0.35);text-transform:uppercase;}
+.picks-label{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;}
 .picks-chars{display:flex;gap:8px;}
 .pick-char{
   display:flex;flex-direction:column;align-items:center;gap:4px;
 }
 .pick-avatar{
   width:52px;height:52px;border-radius:3px;
-  background:rgba(6,16,46,0.9);
+  background:rgba(12,22,38,0.92);
   overflow:hidden;display:flex;align-items:center;justify-content:center;
 }
 .pick-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;}
-.pick-avatar.empty-av{border:1px dashed rgba(106,184,240,0.15);}
-.pick-name{font-size:9px;color:rgba(168,216,247,0.5);letter-spacing:1px;text-align:center;max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.pick-avatar.p1-av{border:1px solid rgba(232,92,48,0.4);}
-.pick-avatar.p2-av{border:1px solid rgba(58,143,255,0.4);}
+.pick-avatar.empty-av{border:1px dashed rgba(56,189,248,0.22);}
+.pick-name{font-size:9px;color:var(--muted);letter-spacing:1px;text-align:center;max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pick-avatar.p1-av{border:1px solid rgba(255,138,92,0.45);}
+.pick-avatar.p2-av{border:1px solid rgba(92,183,255,0.45);}
 
 /* 控制面板 */
 #ctrl-panel{
   position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
   display:flex;gap:10px;align-items:center;z-index:30;
-  background:rgba(2,6,20,0.92);border:1px solid rgba(106,184,240,0.2);
+  background:rgba(8,16,28,0.94);border:1px solid rgba(56,189,248,0.28);
   border-radius:4px;padding:10px 20px;flex-wrap:wrap;justify-content:center;
+  box-shadow:0 12px 40px rgba(0,0,0,0.45);
 }
-.ctrl-label{font-size:10px;letter-spacing:2px;color:rgba(168,216,247,0.4);}
-.ctrl-input{background:rgba(4,12,36,0.9);border:1px solid rgba(106,184,240,0.3);
-  border-radius:2px;color:var(--ice1);font-family:var(--font);
+.ctrl-label{font-size:10px;letter-spacing:2px;color:var(--muted);}
+.ctrl-input{background:rgba(6,14,26,0.92);border:1px solid rgba(56,189,248,0.28);
+  border-radius:2px;color:var(--text);font-family:var(--font);
   font-size:12px;padding:4px 10px;outline:none;}
 .ctrl-btn{font-family:var(--font);font-size:11px;letter-spacing:2px;
   padding:5px 14px;border-radius:2px;cursor:pointer;transition:all 0.15s;
-  border:1px solid rgba(106,184,240,0.4);color:var(--ice1);
-  background:rgba(60,130,220,0.12);}
-.ctrl-btn:hover{background:rgba(168,216,247,0.2);}
+  border:1px solid rgba(56,189,248,0.38);color:var(--ink-accent);
+  background:rgba(34,211,238,0.08);}
+.ctrl-btn:hover{background:rgba(34,211,238,0.16);}
 .ctrl-btn.gold{border-color:rgba(212,160,32,0.5);color:var(--gold);background:rgba(212,160,32,0.08);}
 .ctrl-btn.gold:hover{background:rgba(212,160,32,0.2);}
 </style>

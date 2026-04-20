@@ -4,25 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>旧雨杯 · BP 选角端</title>
+<link rel="stylesheet" href="./theme-wuwa-deep.css">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Oswald:wght@500;700&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --p1:#e85c30;--p2:#3a8fff;--ban:#cc2020;--gold:#d4a020;--teal:#20c8a0;
-  --bg:#020810;--panel:rgba(4,12,30,0.95);--border:rgba(50,100,200,0.32);
-  --text:#c8deff;--muted:#4a70a0;
-  --font:'Noto Sans SC','Oswald',sans-serif;
-}
-html,body{min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font);}
+html,body{min-height:100vh;
+  background:
+    radial-gradient(ellipse 110% 75% at 100% -5%,rgba(34,211,238,0.14) 0%,transparent 52%),
+    radial-gradient(ellipse 85% 55% at 0% 105%,rgba(56,189,248,0.08) 0%,transparent 48%),
+    linear-gradient(168deg,var(--void) 0%,var(--bg) 48%,#030810 100%);
+  color:var(--text);font-family:var(--font);}
 body::before{content:'';position:fixed;inset:0;z-index:0;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='52'%3E%3Cpolygon points='30,2 58,17 58,35 30,50 2,35 2,17' fill='none' stroke='rgba(28,65,160,0.07)' stroke-width='0.6'/%3E%3C/svg%3E");
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='52'%3E%3Cpolygon points='30,2 58,17 58,35 30,50 2,35 2,17' fill='none' stroke='rgba(56,189,248,0.06)' stroke-width='0.6'/%3E%3C/svg%3E");
   background-size:60px 52px;pointer-events:none;}
+#wuwa-deco-player{position:fixed;left:-5%;bottom:0;z-index:1;width:min(38vw,420px);height:min(75vh,640px);pointer-events:none;
+  background:url('./images/pd.jpg') left bottom/contain no-repeat;opacity:0.14;
+  -webkit-mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,0.5) 55%,transparent 100%);
+  mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,0.5) 55%,transparent 100%);}
 
 /* ── 选择玩家界面 ── */
 #player-select{
   position:fixed;inset:0;z-index:100;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
-  background:rgba(2,6,20,0.97);
+  background:linear-gradient(165deg,rgba(4,10,20,0.97) 0%,rgba(6,14,26,0.99) 100%);
 }
 #ps-title{font-family:'Oswald',sans-serif;font-size:22px;letter-spacing:6px;color:var(--text);}
 #ps-sub{font-size:10px;letter-spacing:3px;color:var(--muted);}
@@ -36,7 +39,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 .ps-p1:hover{background:rgba(232,92,48,0.26);box-shadow:0 0 20px rgba(232,92,48,0.2);}
 .ps-p2{background:rgba(58,143,255,0.12);border-color:var(--p2);color:var(--p2);}
 .ps-p2:hover{background:rgba(58,143,255,0.26);box-shadow:0 0 20px rgba(58,143,255,0.2);}
-.ps-warning{font-size:9px;letter-spacing:2px;color:rgba(80,120,180,0.45);margin-top:4px;}
+.ps-warning{font-size:9px;letter-spacing:2px;color:var(--ink-ghost-2);margin-top:4px;}
 
 /* ── 主界面 ── */
 #app{position:relative;z-index:10;max-width:900px;margin:0 auto;padding:12px 14px;display:flex;flex-direction:column;gap:9px;}
@@ -52,7 +55,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 #hdr-player{font-size:13px;font-weight:700;letter-spacing:2px;}
 #hdr-badge{font-size:9px;letter-spacing:3px;padding:3px 10px;border-radius:2px;}
 .badge-yours{background:rgba(32,200,160,0.14);border:1px solid var(--teal);color:var(--teal);}
-.badge-wait{background:rgba(40,80,160,0.1);border:1px solid rgba(50,100,200,0.2);color:var(--muted);}
+.badge-wait{background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);color:var(--muted);}
 .badge-done{background:rgba(212,160,32,0.12);border:1px solid rgba(212,160,32,0.28);color:var(--gold);}
 #hdr-timer{font-family:'Oswald',sans-serif;font-size:26px;font-weight:700;min-width:50px;text-align:right;}
 
@@ -72,41 +75,41 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 #confirm-btn{
   padding:9px 22px;border-radius:3px;font-family:var(--font);font-size:12px;font-weight:700;
   letter-spacing:2px;cursor:pointer;
-  background:rgba(80,160,255,0.18);color:#80c8ff;border:1px solid rgba(80,160,255,0.55);
+  background:rgba(56,189,248,0.12);color:var(--ink-accent);border:1px solid rgba(92,183,255,0.45);
   transition:all 0.15s;
 }
 #confirm-btn:disabled{opacity:0.22;cursor:not-allowed;}
-#confirm-btn:not(:disabled):hover{background:rgba(80,160,255,0.32);}
+#confirm-btn:not(:disabled):hover{background:rgba(56,189,248,0.22);}
 
 /* 角色格子 */
 #char-panel{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:10px;}
 #char-filter-row{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:8px;}
 .el-btn{
   padding:3px 9px;border-radius:2px;cursor:pointer;font-size:9px;letter-spacing:2px;
-  background:transparent;color:var(--muted);border:1px solid rgba(40,80,160,0.28);
+  background:transparent;color:var(--muted);border:1px solid rgba(56,189,248,0.2);
   font-family:var(--font);transition:all 0.15s;
 }
-.el-btn.active,.el-btn:hover{color:#f7a8c4;border-color:#f7a8c4;background:rgba(247,168,196,0.08);}
+.el-btn.active,.el-btn:hover{color:var(--ink-accent);border-color:var(--ice2);background:rgba(34,211,238,0.08);}
 #char-search{
-  flex:1;max-width:180px;background:rgba(4,12,36,0.9);border:1px solid var(--border);
+  flex:1;max-width:180px;background:var(--soft);border:1px solid var(--border);
   border-radius:2px;color:var(--text);font-family:var(--font);font-size:11px;padding:4px 10px;outline:none;
 }
 #char-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));
   gap:5px;max-height:430px;overflow-y:auto;
-  scrollbar-width:thin;scrollbar-color:rgba(80,130,220,0.2) transparent;
+  scrollbar-width:thin;scrollbar-color:rgba(56,189,248,0.35) transparent;
 }
 .g-card{
-  background:rgba(4,10,30,0.9);border:1px solid rgba(25,55,130,0.35);
+  background:var(--soft);border:1px solid rgba(56,189,248,0.2);
   border-radius:3px;padding:5px;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:3px;
   transition:all 0.12s;user-select:none;
 }
-.g-card:hover:not(.g-na):not(.g-locked){border-color:#f7a8c4;background:rgba(247,168,196,0.06);}
-.g-card.g-sel{border-color:var(--gold);background:rgba(212,160,32,0.1);box-shadow:0 0 10px rgba(212,160,32,0.18);}
+.g-card:hover:not(.g-na):not(.g-locked){border-color:var(--ice2);background:rgba(34,211,238,0.08);}
+.g-card.g-sel{border-color:var(--gold);background:rgba(244,215,125,0.1);box-shadow:0 0 14px rgba(244,215,125,0.15);}
 .g-card.g-na{opacity:0.18;cursor:not-allowed;}
 .g-card.g-locked{opacity:0.4;cursor:default;filter:grayscale(0.45);}
-.g-avatar{width:60px;height:60px;border-radius:3px;overflow:hidden;background:rgba(4,12,36,0.9);}
+.g-avatar{width:60px;height:60px;border-radius:3px;overflow:hidden;background:rgba(12,22,38,0.92);}
 .g-avatar img{width:100%;height:100%;object-fit:cover;object-position:top center;}
 .g-name{font-size:9px;font-weight:700;letter-spacing:1px;text-align:center;color:var(--text);}
 .g-el{font-size:7px;letter-spacing:1px;text-align:center;}
@@ -123,23 +126,24 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 .sum-lbl{font-size:8px;letter-spacing:3px;color:var(--muted);}
 .sum-slots{display:flex;flex-wrap:wrap;gap:3px;}
 .sm{width:36px;height:36px;border-radius:3px;overflow:hidden;position:relative;
-  background:rgba(5,10,32,0.9);border:1px solid rgba(40,80,160,0.18);}
+  background:rgba(12,22,38,0.92);border:1px solid rgba(56,189,248,0.2);}
 .sm img{width:100%;height:100%;object-fit:cover;object-position:top;}
 .sm.ban-slot{border-color:rgba(200,30,30,0.35);}
 .sm.ban-slot::after{content:'✕';position:absolute;inset:0;display:flex;align-items:center;
   justify-content:center;background:rgba(120,5,5,0.65);font-size:13px;font-weight:900;color:rgba(255,100,100,0.95);}
 .sm.p1s{border-color:rgba(232,92,48,0.38);}
 .sm.p2s{border-color:rgba(58,143,255,0.38);}
-.sm.empty{border-style:dashed;border-color:rgba(40,80,160,0.12);}
+.sm.empty{border-style:dashed;border-color:rgba(56,189,248,0.18);}
 
 /* 键盘提示 */
-#kb-hint{text-align:center;font-size:9px;letter-spacing:2px;color:rgba(60,100,160,0.38);padding-bottom:2px;}
+#kb-hint{text-align:center;font-size:9px;letter-spacing:2px;color:var(--ink-ghost-3);padding-bottom:2px;}
 
 /* Toast */
 #toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);
-  background:#f7a8c4;color:#2a0a18;padding:6px 22px;border-radius:2px;
+  background:linear-gradient(90deg,rgba(34,211,238,0.95),rgba(56,189,248,0.88));color:#031018;padding:6px 22px;border-radius:2px;
   font-size:12px;font-weight:700;letter-spacing:2px;z-index:9999;
-  opacity:0;transition:opacity 0.25s;pointer-events:none;white-space:nowrap;}
+  opacity:0;transition:opacity 0.25s;pointer-events:none;white-space:nowrap;
+  box-shadow:0 0 22px rgba(34,211,238,0.3);}
 #toast.show{opacity:1;}
 </style>
 <script src="./mqtt.min.js"></script>
@@ -174,6 +178,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 </script>
 </head>
 <body>
+<div id="wuwa-deco-player" aria-hidden="true"></div>
 
 <!-- 玩家选择 -->
 <div id="player-select">
@@ -289,39 +294,38 @@ const CHARS=[
   {name:'卜灵',el:'Electro',img:'./images/bl.jpg'},
   {name:'鉴心',el:'Aero',img:'./images/jx1.jpg'},
   {name:'漂泊者·气动',el:'Aero',img:'./images/pd.jpg'},
+  {name:'嘉贝丽娜',el:'Fusion',img:'./images/jb.jpg'},
 ];
 const EL_ZH={Fusion:'热熔',Glacio:'冷凝',Electro:'导电',Aero:'气动',Spectro:'衍射',Havoc:'湮灭'};
 const ELEMENTS=['全部','Fusion','Glacio','Electro','Aero','Spectro','Havoc'];
 
+// ⚠️ 必须与 control.html 的 SEQ 完全一致，否则 isMyTurn() 判断会出错
 const SEQ_BAN_PICK=[
-  // 第1轮BAN：各禁2个（共4ban）
+  // 第1轮BAN：各禁2个（P1,P2,P1,P2 交替）
   {phase:'ban',player:1},{phase:'ban',player:2},
   {phase:'ban',player:1},{phase:'ban',player:2},
-  // 第1轮PICK：2号先手（共8pick，各选4）
+  // 第1组PICK：共8个（2号先手，蛇形）
   {phase:'pick',player:2},{phase:'pick',player:1},
   {phase:'pick',player:2},{phase:'pick',player:2},
   {phase:'pick',player:1},{phase:'pick',player:1},
   {phase:'pick',player:2},{phase:'pick',player:1},
-  // 第2轮BAN：2号先手，各禁2个（共4ban）
+  // 第2轮BAN：各禁2个（2号先手，P2,P1,P2,P1）
   {phase:'ban',player:2},{phase:'ban',player:1},
   {phase:'ban',player:2},{phase:'ban',player:1},
-  // 第2轮PICK：1号先手（共10pick，各选5）
+  // 第2组PICK：共10个（1号先手，蛇形）
   {phase:'pick',player:1},{phase:'pick',player:2},
   {phase:'pick',player:2},{phase:'pick',player:1},
   {phase:'pick',player:1},{phase:'pick',player:2},
   {phase:'pick',player:2},{phase:'pick',player:1},
   {phase:'pick',player:1},{phase:'pick',player:2},
 ];
+
+// 24进16：仅选角色（P1先选1，P2选2，P1选2，P2选2）
 const SEQ_PICK_ONLY=[
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
+  {phase:'pick',player:1},
+  {phase:'pick',player:2},{phase:'pick',player:2},
+  {phase:'pick',player:1},{phase:'pick',player:1},
+  {phase:'pick',player:2},{phase:'pick',player:2},
 ];
 let SEQ=SEQ_PICK_ONLY;
 
@@ -477,14 +481,15 @@ function startTimer(){
   const el=document.getElementById('hdr-timer');
   function tick(){
     if(!S||!S.timerStart||!S.timerDuration){
-      el.textContent='—';el.style.color='var(--muted)';return;
+      el.textContent='—';el.style.color='var(--muted)';
+      _timerRaf=null;return;
     }
     const rem=Math.max(0,S.timerDuration-(Date.now()-S.timerStart)/1000);
     const frac=rem/S.timerDuration;
     el.textContent=Math.ceil(rem);
     el.style.color=frac>0.5?'var(--p2)':frac>0.2?'var(--gold)':'var(--ban)';
     if(rem>0)_timerRaf=requestAnimationFrame(tick);
-    else{el.textContent='0';el.style.color='var(--ban)';}
+    else{el.textContent='0';el.style.color='var(--ban)';_timerRaf=null;} // 归零时重置标志
   }
   _timerRaf=requestAnimationFrame(tick);
 }
@@ -538,27 +543,23 @@ document.addEventListener('keydown',e=>{
 
 /* ── 轮询 ── */
 let _prevStep=-1;
-setInterval(()=>{
-  const fresh=loadState();
-  if(!fresh)return;
-  if(_prevStep!==-1&&fresh.step!==_prevStep)_sel=null; // 对手确认了，清本地选择
+function syncState(fresh){
+  if(!fresh||!myPlayer)return;
+  const stepChanged=(_prevStep!==-1&&fresh.step!==_prevStep);
+  if(stepChanged)_sel=null; // 对手确认了，清本地预选
   _prevStep=fresh.step;
   S=fresh;
-  if(myPlayer){
-    applyMode(S.mode||'ban_pick');
-    renderAll();
-    if(S.timerStart&&S.timerDuration&&!_timerRaf)startTimer();
-    else if(!S.timerStart&&_timerRaf)stopTimer();
+  applyMode(S.mode||'ban_pick');
+  renderAll();
+  // 计时器：有 timerStart 就显示；步骤切换时强制重启（防止归零后卡死）
+  if(S.timerStart&&S.timerDuration){
+    if(!_timerRaf||stepChanged)startTimer();
+  } else {
+    stopTimer();
   }
-},300);
-window.addEventListener('storage',()=>{
-  const fresh=loadState();
-  if(fresh&&myPlayer){
-    if(_prevStep!==-1&&fresh.step!==_prevStep)_sel=null;
-    _prevStep=fresh.step;
-    S=fresh;applyMode(S.mode||'ban_pick');renderAll();
-  }
-});
+}
+setInterval(()=>{ syncState(loadState()); },300);
+window.addEventListener('storage',()=>{ syncState(loadState()); });
 
 // 自动启动（来自启动器）
 const _auto=localStorage.getItem('bp_autoPlayer');
