@@ -1,0 +1,54 @@
+/* 旧雨杯 · 鸣潮式深邃主题（全局设计令牌） */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Oswald:wght@400;500;600;700&display=swap');
+
+:root {
+  --p1: #ff8a5c;
+  --p2: #5cb7ff;
+  --ban: #f87171;
+  --gold: #f4d77d;
+  --pick: #e8c547;
+  --teal: #2dd4bf;
+
+  --void: #02060d;
+  --abyss: #050b14;
+  --deep: #0a1220;
+  --bg: #060d18;
+  --bg-elev: #0c1626;
+
+  --panel: rgba(10, 18, 32, 0.78);
+  --panel-strong: rgba(12, 24, 42, 0.92);
+  --soft: rgba(14, 26, 44, 0.94);
+
+  --border: rgba(56, 189, 248, 0.2);
+  --border-strong: rgba(45, 212, 191, 0.38);
+
+  --text: #dce8f5;
+  --muted: #7d93ad;
+  --glow: #67e8f9;
+
+  /* 青辉描边 / HUD */
+  --ice1: #5eead4;
+  --ice2: #22d3ee;
+  --ice3: #cffafe;
+  --ice-glow: rgba(45, 212, 191, 0.45);
+  --ice-shadow: rgba(2, 8, 20, 0.88);
+
+  --font: 'Noto Sans SC', 'Oswald', system-ui, sans-serif;
+
+  /* 控制端外框（原粉色改为青辉） */
+  --pk1: #5eead4;
+  --pk2: #0a1628;
+  --pk-glow: rgba(94, 234, 212, 0.32);
+  --pk-border: rgba(94, 234, 212, 0.34);
+  --pk-shadow: rgba(0, 0, 0, 0.5);
+
+  /* 大屏标题与次级字色 */
+  --ink-display: #bfefff;
+  --ink-accent: #7dd3fc;
+  --ink-ghost: rgba(148, 184, 214, 0.52);
+  --ink-ghost-2: rgba(148, 184, 214, 0.38);
+  --ink-ghost-3: rgba(148, 184, 214, 0.32);
+
+  --grid-line: rgba(56, 189, 248, 0.07);
+  --scan: rgba(255, 255, 255, 0.028);
+}

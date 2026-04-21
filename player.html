@@ -319,13 +319,18 @@ const SEQ_BAN_PICK=[
   {phase:'pick',player:2},{phase:'pick',player:1},
   {phase:'pick',player:1},{phase:'pick',player:2},
 ];
-
-// 24进16：仅选角色（P1先选1，P2选2，P1选2，P2选2）
-const SEQ_PICK_ONLY=[
-  {phase:'pick',player:1},
-  {phase:'pick',player:2},{phase:'pick',player:2},
-  {phase:'pick',player:1},{phase:'pick',player:1},
-  {phase:'pick',player:2},{phase:'pick',player:2},
+// 24进18：仅选角色（总计18个角色，每人9个）
+const SEQ_PICK_ONLY = [
+  { phase: 'pick', player: 1 }, // P1 选 1 (累计: P1-1, P2-0)
+  { phase: 'pick', player: 2 }, { phase: 'pick', player: 2 }, // P2 选 2 (累计: P1-1, P2-2)
+  { phase: 'pick', player: 1 }, { phase: 'pick', player: 1 }, // P1 选 2 (累计: P1-3, P2-2)
+  { phase: 'pick', player: 2 }, { phase: 'pick', player: 2 }, // P2 选 2 (累计: P1-3, P2-4)
+  { phase: 'pick', player: 1 }, { phase: 'pick', player: 1 }, // P1 选 2 (累计: P1-5, P2-4)
+  { phase: 'pick', player: 2 }, { phase: 'pick', player: 2 }, // P2 选 2 (累计: P1-5, P2-6)
+  { phase: 'pick', player: 1 }, { phase: 'pick', player: 1 }, // P1 选 2 (累计: P1-7, P2-6)
+  { phase: 'pick', player: 2 }, { phase: 'pick', player: 2 }, // P2 选 2 (累计: P1-7, P2-8)
+  { phase: 'pick', player: 1 }, { phase: 'pick', player: 1 }, // P1 选 2 (累计: P1-9, P2-8)
+  { phase: 'pick', player: 2 }                               // P2 选 1 (累计: P1-9, P2-9)
 ];
 let SEQ=SEQ_PICK_ONLY;
 
@@ -459,20 +464,15 @@ function renderSummary(){
   document.getElementById('lbl-p2-ban').textContent=`${p2n} · 禁用`;
   document.getElementById('lbl-p1-pick').textContent=`${p1n} · 选择`;
   document.getElementById('lbl-p2-pick').textContent=`${p2n} · 选择`;
+  
+  // 保持禁用逻辑不变
   const bans=S&&(S.mode==='ban_pick'||S.mode==='r16')?4:0;
   renderSlots('slots-p1-ban',S&&S.p1bans,'ban-slot p1s',bans,true);
   renderSlots('slots-p2-ban',S&&S.p2bans,'ban-slot p2s',bans,true);
-  renderSlots('slots-p1-pick',S&&S.p1picks,'p1s',9,false);
-  renderSlots('slots-p2-pick',S&&S.p2picks,'p2s',9,false);
-}
-function renderSlots(id,slots,cls,max){
-  let h='';
-  for(let i=0;i<max;i++){
-    const c=slots&&slots[i];
-    h+=c?`<div class="sm ${cls}"><img src="${c.img}" onerror="this.style.display='none'" alt="${c.name}"></div>`
-       :`<div class="sm empty"></div>`;
-  }
-  document.getElementById(id).innerHTML=h;
+  
+  // 修改这里：将原来的 8 改为 9，以显示每边 9 个选择槽位
+  renderSlots('slots-p1-pick',S&&S.p1picks,'p1s', 9, false); 
+  renderSlots('slots-p2-pick',S&&S.p2picks,'p2s', 9, false);
 }
 
 /* ── 倒计时显示 ── */
