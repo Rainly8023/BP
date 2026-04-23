@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>旧雨杯 · 抽签系统 · A组</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #f472b6;
+    --pink-light: #fbcfe8;
+    --lavender: #a78bfa;
+    --lavender-light: #ddd6fe;
+    --gold: #fbbf24;
+    --sky: #7dd3fc;
+    --panel: rgba(167,139,250,0.07);
+    --panel-border: rgba(167,139,250,0.22);
+    --text: #fff0ff;
+    --text-dim: #d8b4fe;
+    --text-muted: rgba(216,180,254,0.4);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: #0f0025;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, #2d0a5e 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 100%, #0a1a4e 0%, transparent 55%);
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--text);
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 130% 28% at 50% -8%, rgba(167,139,250,0.2) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 18% at 15% 108%, rgba(244,114,182,0.14) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 14% at 85% 92%, rgba(125,211,252,0.09) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(1.5px 1.5px at 8%  12%, rgba(255,255,255,0.9), transparent),
+      radial-gradient(1px   1px   at 18% 45%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(2px   2px   at 32%  8%, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1px   1px   at 47% 28%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1.5px 1.5px at 58% 72%, rgba(255,255,255,0.9), transparent),
+      radial-gradient(1px   1px   at 70% 18%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(2px   2px   at 82% 55%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1px   1px   at 91% 35%, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1.5px 1.5px at 25% 82%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1px   1px   at 65% 90%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(2px   2px   at 40% 62%, rgba(255,192,235,0.8), transparent),
+      radial-gradient(1px   1px   at 77% 78%, rgba(216,180,254,0.9), transparent),
+      radial-gradient(1.5px 1.5px at 12% 68%, rgba(255,192,235,0.6), transparent),
+      radial-gradient(1px   1px   at 55% 48%, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1px   1px   at 93% 85%, rgba(216,180,254,0.7), transparent);
+    pointer-events: none;
+    z-index: 0;
+    animation: starTwinkle 6s ease-in-out infinite alternate;
+  }
+
+  @keyframes starTwinkle {
+    from { opacity: 0.55; }
+    to   { opacity: 1; }
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 2;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 44px 24px 64px;
+  }
+
+  .header { text-align: center; margin-bottom: 44px; }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: var(--pink-light);
+    border: 1.5px solid rgba(244,114,182,0.4);
+    padding: 7px 22px;
+    border-radius: 100px;
+    margin-bottom: 22px;
+    background: rgba(244,114,182,0.08);
+    text-transform: uppercase;
+    box-shadow: 0 0 20px rgba(244,114,182,0.12), inset 0 0 12px rgba(244,114,182,0.04);
+  }
+  .badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--pink);
+    box-shadow: 0 0 8px var(--pink);
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+  @keyframes pulseDot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%       { transform: scale(1.5); opacity: 0.65; }
+  }
+
+  h1 {
+    font-family: 'Nunito', sans-serif;
+    font-size: 58px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #f9a8d4 0%, #c084fc 45%, #7dd3fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 10px;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 24px rgba(192,132,252,0.5));
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    letter-spacing: 5px;
+    color: var(--text-dim);
+    opacity: 0.8;
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 22px 0;
+  }
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(192,132,252,0.4), transparent);
+  }
+  .divider-gem {
+    color: var(--lavender);
+    font-size: 13px;
+    letter-spacing: 6px;
+    animation: gemFloat 3s ease-in-out infinite;
+  }
+  @keyframes gemFloat {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-5px); }
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: rgba(167,139,250,0.12);
+    border-radius: 100px;
+    margin-bottom: 34px;
+    overflow: visible;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink), var(--lavender), var(--sky), var(--lavender), var(--pink));
+    background-size: 300% 100%;
+    border-radius: 100px;
+    transition: width 0.6s cubic-bezier(.34,1.56,.64,1);
+    box-shadow: 0 0 14px rgba(192,132,252,0.6), 0 0 28px rgba(192,132,252,0.2);
+    animation: shimmerBg 3s linear infinite;
+    position: relative;
+  }
+  .progress-fill::after {
+    content: '✦';
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+    color: white;
+    filter: drop-shadow(0 0 6px var(--lavender));
+    animation: spinStar 2s linear infinite;
+  }
+  @keyframes shimmerBg {
+    from { background-position: 100% center; }
+    to   { background-position: -200% center; }
+  }
+  @keyframes spinStar {
+    from { transform: translateY(-50%) rotate(0deg); }
+    to   { transform: translateY(-50%) rotate(360deg); }
+  }
+
+  .slots-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--text-dim);
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .slots-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  .slot {
+    position: relative;
+    background: var(--panel);
+    border: 1.5px solid var(--panel-border);
+    border-radius: 14px;
+    padding: 13px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.4s cubic-bezier(.34,1.56,.64,1);
+    overflow: hidden;
+  }
+  .slot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(167,139,250,0.04), transparent 60%);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+  .slot.filled {
+    border-color: rgba(244,114,182,0.5);
+    background: rgba(244,114,182,0.07);
+    box-shadow: 0 0 20px rgba(244,114,182,0.1), inset 0 0 16px rgba(244,114,182,0.04);
+    animation: slotPop 0.45s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+  @keyframes slotPop {
+    0%   { transform: scale(0.96); }
+    55%  { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
+
+  .slot-num {
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-muted);
+    min-width: 26px;
+    background: rgba(167,139,250,0.1);
+    border-radius: 8px;
+    padding: 3px 6px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+  .slot.filled .slot-num {
+    background: rgba(244,114,182,0.15);
+    color: var(--pink-light);
+  }
+
+  .slot-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    flex: 1;
+    letter-spacing: 0.5px;
+    transition: all 0.35s;
+  }
+  .slot-name.placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
+    font-size: 13px;
+  }
+  .slot.filled .slot-name {
+    color: #fce7f3;
+    text-shadow: 0 0 10px rgba(244,114,182,0.4);
+  }
+
+  .slot-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    color: var(--text-muted);
+    background: rgba(167,139,250,0.1);
+    border: 1px solid rgba(167,139,250,0.2);
+    transition: all 0.4s cubic-bezier(.34,1.56,.64,1);
+  }
+  .slot.filled .slot-icon {
+    background: linear-gradient(135deg, var(--pink), var(--lavender));
+    border-color: transparent;
+    box-shadow: 0 0 14px rgba(244,114,182,0.45);
+    font-size: 15px;
+    animation: iconBounce 0.5s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+  @keyframes iconBounce {
+    0%   { transform: scale(0) rotate(-30deg); }
+    60%  { transform: scale(1.2) rotate(10deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  .result-area {
+    background: rgba(167,139,250,0.06);
+    border: 1.5px solid rgba(192,132,252,0.25);
+    border-radius: 22px;
+    padding: 30px 24px;
+    margin-bottom: 22px;
+    position: relative;
+    overflow: hidden;
+    min-height: 158px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 40px rgba(167,139,250,0.08), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+  .result-area::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(244,114,182,0.05), transparent 55%),
+      radial-gradient(ellipse at 80% 50%, rgba(125,211,252,0.04), transparent 55%);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .result-deco {
+    position: absolute;
+    font-size: 18px;
+    opacity: 0.35;
+    pointer-events: none;
+  }
+  .result-deco-tl { top: 12px; left: 16px;  animation: decoFloat 4s ease-in-out infinite 0s; }
+  .result-deco-tr { top: 12px; right: 16px; animation: decoFloat 4s ease-in-out infinite 1s; }
+  .result-deco-bl { bottom: 12px; left: 16px;  animation: decoFloat 4s ease-in-out infinite 2s; }
+  .result-deco-br { bottom: 12px; right: 16px; animation: decoFloat 4s ease-in-out infinite 0.5s; }
+  @keyframes decoFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg);    opacity: 0.35; }
+    50%       { transform: translateY(-6px) rotate(15deg); opacity: 0.6; }
+  }
+
+  .result-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .result-display {
+    text-align: center;
+    min-height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+
+  .result-names {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .result-player { text-align: center; }
+
+  .result-player-name {
+    font-family: 'Nunito', sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #f9a8d4, #c084fc, #93c5fd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 2px;
+    filter: drop-shadow(0 0 10px rgba(192,132,252,0.5));
+  }
+
+  .result-player-seed {
+    font-family: 'Nunito', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+
+  .vs-text {
+    font-family: 'Nunito', sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #fbbf24, #fde68a, #fbbf24);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 10px rgba(251,191,36,0.55));
+    letter-spacing: 3px;
+    flex-shrink: 0;
+    animation: shimmerBg 2s linear infinite;
+  }
+
+  .btn-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .btn {
+    padding: 15px 24px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.28s cubic-bezier(.34,1.56,.64,1);
+    border: none;
+    outline: none;
+    border-radius: 100px;
+  }
+
+  .btn-draw {
+    background: linear-gradient(135deg, #f472b6, #a78bfa, #7dd3fc, #a78bfa, #f472b6);
+    background-size: 300% 100%;
+    color: white;
+    box-shadow: 0 5px 22px rgba(167,139,250,0.4);
+    animation: shimmerBg 4s linear infinite;
+  }
+  .btn-draw:hover  { transform: translateY(-4px) scale(1.02); box-shadow: 0 10px 30px rgba(167,139,250,0.55); }
+  .btn-draw:active { transform: scale(0.97); }
+  .btn-draw:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none;
+    animation: none;
+  }
+
+  .btn-reset {
+    background: rgba(167,139,250,0.1);
+    border: 1.5px solid rgba(167,139,250,0.28);
+    color: var(--lavender-light);
+  }
+  .btn-reset:hover {
+    background: rgba(167,139,250,0.18);
+    border-color: rgba(192,132,252,0.5);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(167,139,250,0.15);
+  }
+
+  @keyframes glitch {
+    0%, 100% { transform: translateX(0) skewX(0deg); }
+    20%  { transform: translateX(-4px) skewX(-2deg); }
+    40%  { transform: translateX(4px)  skewX(2deg); }
+    60%  { transform: translateX(-2px) skewX(-1deg); }
+    80%  { transform: translateX(2px)  skewX(1deg); }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px) scale(0.92); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .drawing .result-player-name { animation: glitch 0.22s ease infinite; }
+  .result-anim { animation: fadeInUp 0.5s cubic-bezier(.34,1.56,.64,1) forwards; }
+
+  .burst {
+    position: absolute;
+    pointer-events: none;
+    animation: burstAnim 0.65s ease-out forwards;
+    z-index: 10;
+  }
+  @keyframes burstAnim {
+    0%   { transform: translate(0,0) scale(0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(var(--tx),var(--ty)) scale(1) rotate(var(--rot)); opacity: 0; }
+  }
+
+  .complete-banner {
+    display: none;
+    text-align: center;
+    padding: 22px;
+    background: linear-gradient(135deg, rgba(244,114,182,0.1), rgba(167,139,250,0.1), rgba(125,211,252,0.07));
+    border: 1.5px solid rgba(251,191,36,0.45);
+    border-radius: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 30px rgba(251,191,36,0.1);
+  }
+  .complete-banner.show {
+    display: block;
+    animation: fadeInUp 0.55s cubic-bezier(.34,1.56,.64,1) forwards;
+  }
+  .complete-title {
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, #fbbf24, #fde68a, #fbbf24);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 8px rgba(251,191,36,0.5));
+    margin-bottom: 6px;
+    animation: shimmerBg 2s linear infinite;
+  }
+  .complete-sub { font-size: 12px; color: var(--text-dim); letter-spacing: 3px; }
+
+  .history-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+
+  .history-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px; }
+
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba(167,139,250,0.05);
+    border: 1px solid rgba(167,139,250,0.15);
+    border-radius: 12px;
+    font-size: 13px;
+    animation: fadeInUp 0.4s cubic-bezier(.34,1.56,.64,1) forwards;
+    transition: all 0.2s;
+  }
+  .history-item:hover { border-color: rgba(244,114,182,0.3); background: rgba(244,114,182,0.05); }
+
+  .history-num {
+    font-family: 'Nunito', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--pink);
+    min-width: 30px;
+    background: rgba(244,114,182,0.1);
+    padding: 3px 8px;
+    border-radius: 100px;
+    text-align: center;
+  }
+
+  .history-a, .history-b { flex: 1; text-align: center; font-weight: 700; color: var(--text); }
+  .history-vs { font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 900; color: var(--gold); flex-shrink: 0; }
+
+  .edit-section {
+    margin-top: 12px;
+    padding: 22px;
+    background: rgba(167,139,250,0.05);
+    border: 1px solid rgba(167,139,250,0.14);
+    border-radius: 18px;
+  }
+
+  .edit-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+
+  .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .edit-row  { display: flex; align-items: center; gap: 8px; }
+
+  .edit-lbl {
+    font-family: 'Nunito', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-muted);
+    min-width: 24px;
+    text-align: center;
+  }
+
+  .edit-input {
+    flex: 1;
+    background: rgba(167,139,250,0.07);
+    border: 1.5px solid rgba(167,139,250,0.18);
+    border-radius: 10px;
+    color: var(--text);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-family: 'Noto Sans SC', sans-serif;
+    outline: none;
+    transition: all 0.2s;
+  }
+  .edit-input:focus {
+    border-color: rgba(244,114,182,0.55);
+    background: rgba(244,114,182,0.05);
+    box-shadow: 0 0 0 3px rgba(244,114,182,0.08);
+  }
+  .edit-input::placeholder { color: var(--text-muted); font-size: 12px; }
+
+  .btn-save {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, rgba(244,114,182,0.15), rgba(167,139,250,0.15));
+    border: 1.5px solid rgba(244,114,182,0.35);
+    border-radius: 100px;
+    color: var(--pink-light);
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.28s cubic-bezier(.34,1.56,.64,1);
+  }
+  .btn-save:hover {
+    background: linear-gradient(135deg, var(--pink), var(--lavender));
+    border-color: transparent;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(244,114,182,0.35);
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      WUTHERING WAVES ESPORTS
+      <span class="badge-dot"></span>
+    </div>
+    <h1>A 组</h1>
+    <div class="subtitle">16强对阵 · 抽签系统</div>
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-gem">✦ ✿ ✦</span>
+      <div class="divider-line"></div>
+    </div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+
+  <div class="slots-label">✦ 参赛选手 ✦</div>
+  <div class="slots-grid" id="slotsGrid"></div>
+
+  <div class="result-area" id="resultArea">
+    <span class="result-deco result-deco-tl">✨</span>
+    <span class="result-deco result-deco-tr">⭐</span>
+    <span class="result-deco result-deco-bl">💫</span>
+    <span class="result-deco result-deco-br">✨</span>
+    <div class="result-label">✦ CURRENT DRAW ✦</div>
+    <div class="result-display" id="resultDisplay">
+      <span style="font-size:13px;letter-spacing:3px;color:rgba(216,180,254,0.32);font-family:'Nunito',sans-serif">等待抽签 ✦</span>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-draw" id="drawBtn" onclick="doDraw()">✨ 开始抽签</button>
+    <button class="btn btn-reset" onclick="resetAll()">↺ 重置抽签</button>
+  </div>
+
+  <div class="complete-banner" id="completeBanner">
+    <div class="complete-title">⭐ 抽签完成 ⭐</div>
+    <div class="complete-sub">A 组 · 全部对阵已确定</div>
+  </div>
+
+  <div id="historySection" style="display:none">
+    <div class="history-label">✦ 对阵结果 ✦</div>
+    <div class="history-list" id="historyList"></div>
+  </div>
+
+  <div class="edit-section">
+    <div class="edit-label">✦ 修改选手名单 ✦</div>
+    <div class="edit-grid" id="editGrid"></div>
+    <button class="btn-save" onclick="saveNames()">✦ 确认更新名单 ✦</button>
+  </div>
+
+</div>
+<script>
+  const DEFAULT_NAMES = ['选手A','选手B','选手C','选手D','选手E','选手F','选手G','选手H'];
+  let players = [...DEFAULT_NAMES];
+  let remaining = [];
+  let pairs = [];
+  let isDrawing = false;
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function init() {
+    remaining = [...players.map((n,i) => ({name:n, seed:i+1}))];
+    pairs = [];
+    renderSlots();
+    renderEdit();
+    updateProgress();
+    document.getElementById('historySection').style.display = 'none';
+    document.getElementById('historyList').innerHTML = '';
+    document.getElementById('completeBanner').classList.remove('show');
+    document.getElementById('resultDisplay').innerHTML =
+      '<span style="font-size:13px;letter-spacing:3px;color:rgba(216,180,254,0.32);font-family:\'Nunito\',sans-serif">等待抽签 ✦</span>';
+    document.getElementById('drawBtn').disabled = false;
+    document.getElementById('drawBtn').textContent = '✨ 开始抽签';
+  }
+
+  function renderSlots() {
+    const grid = document.getElementById('slotsGrid');
+    grid.innerHTML = '';
+    players.forEach((name, i) => {
+      const drawn = pairs.some(p => p.a.seed === i+1 || p.b.seed === i+1);
+      const div = document.createElement('div');
+      div.className = 'slot' + (drawn ? ' filled' : '');
+      div.innerHTML = `
+        <div class="slot-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="slot-name ${drawn ? '' : 'placeholder'}">${esc(name)}</div>
+        <div class="slot-icon">${drawn ? '⭐' : String(i+1)}</div>
+      `;
+      grid.appendChild(div);
+    });
+  }
+
+  function renderEdit() {
+    const grid = document.getElementById('editGrid');
+    grid.innerHTML = '';
+    players.forEach((name, i) => {
+      const div = document.createElement('div');
+      div.className = 'edit-row';
+      div.innerHTML = `
+        <span class="edit-lbl">${String(i+1).padStart(2,'0')}</span>
+        <input class="edit-input" id="ei-${i}" value="${esc(name)}" placeholder="选手名称">
+      `;
+      grid.appendChild(div);
+    });
+  }
+
+  function saveNames() {
+    players = players.map((_, i) => {
+      const val = document.getElementById('ei-'+i).value.trim();
+      return val || DEFAULT_NAMES[i];
+    });
+    init();
+  }
+
+  function updateProgress() {
+    document.getElementById('progressFill').style.width = (pairs.length / 4 * 100) + '%';
+  }
+
+  function spawnBursts(container) {
+    const chars  = ['✦','★','✿','✨','⭐','💫','♡','◆'];
+    const colors = ['#f472b6','#a78bfa','#fbbf24','#7dd3fc','#34d399','#f9a8d4'];
+    for (let i = 0; i < 10; i++) {
+      const b = document.createElement('span');
+      b.className = 'burst';
+      b.textContent = chars[Math.floor(Math.random() * chars.length)];
+      const angle = (i / 10) * Math.PI * 2;
+      const dist  = 45 + Math.random() * 45;
+      b.style.cssText = `
+        left:50%; top:50%;
+        color:${colors[Math.floor(Math.random() * colors.length)]};
+        font-size:${11 + Math.random() * 10}px;
+        --tx:${Math.cos(angle) * dist}px;
+        --ty:${Math.sin(angle) * dist}px;
+        --rot:${Math.random() * 360}deg;
+        animation-delay:${i * 0.035}s;
+      `;
+      container.appendChild(b);
+      setTimeout(() => b.remove(), 900);
+    }
+  }
+
+  async function doDraw() {
+    if (isDrawing || remaining.length < 2) return;
+    isDrawing = true;
+    document.getElementById('drawBtn').disabled = true;
+
+    const idx1 = Math.floor(Math.random() * remaining.length);
+    let idx2;
+    do { idx2 = Math.floor(Math.random() * remaining.length); } while (idx2 === idx1);
+    const p1 = remaining[idx1];
+    const p2 = remaining[idx2];
+    remaining = remaining.filter((_, i) => i !== idx1 && i !== idx2);
+
+    const display    = document.getElementById('resultDisplay');
+    const resultArea = document.getElementById('resultArea');
+    resultArea.classList.add('drawing');
+
+    const ticker = setInterval(() => {
+      const r1 = esc(players[Math.floor(Math.random() * players.length)]);
+      const r2 = esc(players[Math.floor(Math.random() * players.length)]);
+      display.innerHTML = `
+        <div class="result-names">
+          <div class="result-player"><div class="result-player-name">${r1}</div></div>
+          <div class="vs-text">VS</div>
+          <div class="result-player"><div class="result-player-name">${r2}</div></div>
+        </div>`;
+    }, 80);
+
+    await new Promise(r => setTimeout(r, 1400));
+    clearInterval(ticker);
+    resultArea.classList.remove('drawing');
+    spawnBursts(resultArea);
+
+    display.innerHTML = `
+      <div class="result-names result-anim">
+        <div class="result-player">
+          <div class="result-player-name">${esc(p1.name)}</div>
+          <div class="result-player-seed">SEED ${p1.seed}</div>
+        </div>
+        <div class="vs-text">VS</div>
+        <div class="result-player">
+          <div class="result-player-name">${esc(p2.name)}</div>
+          <div class="result-player-seed">SEED ${p2.seed}</div>
+        </div>
+      </div>`;
+
+    pairs.push({a: p1, b: p2});
+    renderSlots();
+    updateProgress();
+    addHistory(p1, p2, pairs.length);
+
+    if (pairs.length === 4) {
+      document.getElementById('completeBanner').classList.add('show');
+      document.getElementById('drawBtn').disabled = true;
+      document.getElementById('drawBtn').textContent = '⭐ 抽签完成';
+    } else {
+      document.getElementById('drawBtn').disabled = false;
+    }
+    isDrawing = false;
+  }
+
+  function addHistory(p1, p2, num) {
+    document.getElementById('historySection').style.display = 'block';
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerHTML = `
+      <span class="history-num">M${num}</span>
+      <span class="history-a">${esc(p1.name)}</span>
+      <span class="history-vs">VS</span>
+      <span class="history-b">${esc(p2.name)}</span>`;
+    document.getElementById('historyList').appendChild(item);
+  }
+
+  function resetAll() { isDrawing = false; init(); }
+
+  init();
+</script>
+</body>
+</html>
