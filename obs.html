@@ -970,23 +970,25 @@ function startCountdown(){
 /* ── constants ── */
 const EL_ZH={Fusion:'热熔',Glacio:'冷凝',Electro:'导电',Aero:'气动',Spectro:'衍射',Havoc:'湮灭'};
 const SEQ_BAN_PICK=[
-  // 第1轮BAN：各禁2个
+  // 第1轮BAN：1号先手，各禁2个
   {phase:'ban',player:1},{phase:'ban',player:2},
   {phase:'ban',player:1},{phase:'ban',player:2},
-  // 第1轮PICK：2号先手（共8pick，各选4）
-  {phase:'pick',player:2},{phase:'pick',player:1},
+  // 第1轮PICK：1号先手（共10pick，P1选5 P2选5）
+  {phase:'pick',player:1},
   {phase:'pick',player:2},{phase:'pick',player:2},
   {phase:'pick',player:1},{phase:'pick',player:1},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  // 第2轮BAN：2号先手 各禁2个
+  {phase:'pick',player:2},{phase:'pick',player:2},
+  {phase:'pick',player:1},{phase:'pick',player:1},
+  {phase:'pick',player:2},
+  // 第2轮BAN：2号先手，各禁2个
   {phase:'ban',player:2},{phase:'ban',player:1},
   {phase:'ban',player:2},{phase:'ban',player:1},
-  // 第2轮PICK：1号先手（共10pick，各选5）
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
+  // 第2轮PICK：2号先手（共8pick，P2选4 P1选4）
+  {phase:'pick',player:2},
+  {phase:'pick',player:1},{phase:'pick',player:1},
+  {phase:'pick',player:2},{phase:'pick',player:2},
+  {phase:'pick',player:1},{phase:'pick',player:1},
+  {phase:'pick',player:2},
 ];
 const SEQ_PICK_ONLY=[
   // 1号先選1個，2号選2個，1号再選2個，2号再選2個

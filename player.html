@@ -301,23 +301,25 @@ const ELEMENTS=['全部','Fusion','Glacio','Electro','Aero','Spectro','Havoc'];
 
 // ⚠️ 必须与 control.html 的 SEQ 完全一致，否则 isMyTurn() 判断会出错
 const SEQ_BAN_PICK=[
-  // 第1轮BAN：各禁2个（P1,P2,P1,P2 交替）
+  // 第1轮BAN：1号先手，各禁2个
   {phase:'ban',player:1},{phase:'ban',player:2},
   {phase:'ban',player:1},{phase:'ban',player:2},
-  // 第1组PICK：共8个（2号先手，蛇形）
-  {phase:'pick',player:2},{phase:'pick',player:1},
+  // 第1轮PICK：1号先手（共10pick，P1选5 P2选5）
+  {phase:'pick',player:1},
   {phase:'pick',player:2},{phase:'pick',player:2},
   {phase:'pick',player:1},{phase:'pick',player:1},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  // 第2轮BAN：各禁2个（2号先手，P2,P1,P2,P1）
+  {phase:'pick',player:2},{phase:'pick',player:2},
+  {phase:'pick',player:1},{phase:'pick',player:1},
+  {phase:'pick',player:2},
+  // 第2轮BAN：2号先手，各禁2个
   {phase:'ban',player:2},{phase:'ban',player:1},
   {phase:'ban',player:2},{phase:'ban',player:1},
-  // 第2组PICK：共10个（1号先手，蛇形）
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
+  // 第2轮PICK：2号先手（共8pick，P2选4 P1选4）
+  {phase:'pick',player:2},
+  {phase:'pick',player:1},{phase:'pick',player:1},
+  {phase:'pick',player:2},{phase:'pick',player:2},
+  {phase:'pick',player:1},{phase:'pick',player:1},
+  {phase:'pick',player:2},
 ];
 // 24进18：仅选角色（总计18个角色，每人9个）
 const SEQ_PICK_ONLY = [
