@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>旧雨杯 · 玩家二启动中...</title>
+<link rel="stylesheet" href="./theme-wuwa-deep.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--font);
+  background:radial-gradient(ellipse 90% 70% at 50% 18%,rgba(56,189,248,0.12) 0%,transparent 52%),
+    linear-gradient(168deg,#030810 0%,#060d18 45%,#02060d 100%);}
+.deco{position:fixed;left:-8%;bottom:0;width:min(48vw,520px);height:70vh;pointer-events:none;opacity:0.18;
+  background:url('./images/pd.jpg') left bottom/contain no-repeat;transform:scaleX(-1);
+  -webkit-mask-image:linear-gradient(90deg,#000 30%,transparent);mask-image:linear-gradient(90deg,#000 30%,transparent);}
+.ring{width:64px;height:64px;border:3px solid rgba(92,183,255,0.22);border-top:3px solid var(--p2);border-radius:50%;animation:spin 0.9s linear infinite;margin-bottom:28px;position:relative;z-index:1;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.name{font-size:28px;font-weight:700;letter-spacing:6px;color:var(--p2);margin-bottom:10px;position:relative;z-index:1;text-shadow:0 0 24px rgba(92,183,255,0.35);}
+.sub{font-size:11px;letter-spacing:4px;color:var(--ink-ghost);position:relative;z-index:1;}
+</style>
+</head>
+<body>
+<div class="deco" aria-hidden="true"></div>
+<div class="ring"></div>
+<div class="name">玩家二 · P2</div>
+<div class="sub">正在启动 BP 选角...</div>
+<script>
+localStorage.setItem('bp_autoPlayer','2');
+setTimeout(()=>{ window.location.href='player.html'; }, 800);
+</script>
+</body>
+</html>
