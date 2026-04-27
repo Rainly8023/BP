@@ -116,24 +116,37 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 .el-Fusion{color:#ff7040;}.el-Glacio{color:#60c8ff;}.el-Electro{color:#b070ff;}
 .el-Aero{color:#40d890;}.el-Spectro{color:#ffe040;}.el-Havoc{color:#d060d0;}
 
-/* 摘要 */
-#summary{
+/* 同步状态指示 */
+#sync-dot{font-size:9px;letter-spacing:2px;padding:3px 10px;border-radius:2px;
+  background:rgba(40,80,160,0.1);border:1px solid rgba(56,189,248,0.2);color:var(--muted);}
+#sync-dot.ok{background:rgba(32,200,160,0.1);border-color:rgba(32,200,160,0.35);color:var(--teal);}
+#sync-dot.err{background:rgba(200,30,30,0.1);border-color:rgba(200,30,30,0.35);color:var(--ban);}
+
+/* ── 双方阵容面板（选角格子上方，始终可见）── */
+#roster-panel{
   background:var(--panel);border:1px solid var(--border);border-radius:4px;
   padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;
 }
-#summary.no-bans .ban-row{display:none;}
-.sum-row{display:flex;flex-direction:column;gap:4px;}
-.sum-lbl{font-size:8px;letter-spacing:3px;color:var(--muted);}
-.sum-slots{display:flex;flex-wrap:wrap;gap:3px;}
-.sm{width:36px;height:36px;border-radius:3px;overflow:hidden;position:relative;
-  background:rgba(12,22,38,0.92);border:1px solid rgba(56,189,248,0.2);}
-.sm img{width:100%;height:100%;object-fit:cover;object-position:top;}
-.sm.ban-slot{border-color:rgba(200,30,30,0.35);}
-.sm.ban-slot::after{content:'✕';position:absolute;inset:0;display:flex;align-items:center;
-  justify-content:center;background:rgba(120,5,5,0.65);font-size:13px;font-weight:900;color:rgba(255,100,100,0.95);}
-.sm.p1s{border-color:rgba(232,92,48,0.38);}
-.sm.p2s{border-color:rgba(58,143,255,0.38);}
-.sm.empty{border-style:dashed;border-color:rgba(56,189,248,0.18);}
+#roster-panel.no-bans .ban-row{display:none;}
+.rp-side{display:flex;flex-direction:column;gap:5px;}
+.rp-title{font-size:10px;font-weight:700;letter-spacing:3px;padding-bottom:5px;border-bottom:2px solid;}
+.rp-title.p1t{color:var(--p1);border-color:rgba(232,92,48,0.35);}
+.rp-title.p2t{color:var(--p2);border-color:rgba(58,143,255,0.35);}
+.rp-sec-lbl{font-size:7px;letter-spacing:2px;color:var(--muted);}
+.rp-cards{display:flex;flex-wrap:wrap;gap:4px;}
+.rpc{width:52px;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.rpc-img{width:52px;height:52px;border-radius:3px;overflow:hidden;position:relative;
+  background:rgba(12,22,38,0.92);border:1px solid rgba(56,189,248,0.2);flex-shrink:0;}
+.rpc-img img{width:100%;height:100%;object-fit:cover;object-position:top center;}
+.rpc-img.rpc-p1{border-color:rgba(232,92,48,0.45);}
+.rpc-img.rpc-p2{border-color:rgba(58,143,255,0.45);}
+.rpc-img.rpc-ban::after{content:'✕';position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;background:rgba(120,5,5,0.72);font-size:16px;font-weight:900;color:rgba(255,100,100,0.95);}
+.rpc-name{font-size:9px;font-weight:700;text-align:center;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:54px;}
+.rpc-empty{width:52px;height:52px;border-radius:3px;border:1px dashed rgba(56,189,248,0.15);background:rgba(4,10,28,0.5);}
+@keyframes rpcNew{0%{box-shadow:0 0 0 2px rgba(212,160,32,0.95),0 0 18px rgba(212,160,32,0.55);}100%{box-shadow:none;}}
+.rpc-img.rpc-new{animation:rpcNew 2s ease forwards;}
 
 /* 键盘提示 */
 #kb-hint{text-align:center;font-size:9px;letter-spacing:2px;color:var(--ink-ghost-3);padding-bottom:2px;}
@@ -157,10 +170,18 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
     reconnectPeriod:3000,connectTimeout:10000,clean:true
   });
   let _mine='';
+  let _pending=null;
+  function setSyncDot(s){const d=document.getElementById('sync-dot');if(!d)return;if(s==='ok'){d.textContent='● 已同步';d.className='ok';}else if(s==='err'){d.textContent='● 断线';d.className='err';}else{d.textContent='● 连接中';d.className='';}}
   client.on('connect',()=>{
     client.subscribe(ch);
+    setSyncDot('ok');
+    const toSend=_pending||localStorage.getItem('wuwa_bp_state');
+    if(toSend)client.publish(ch,toSend,{qos:1,retain:true});
+    _pending=null;
     console.log('%c✓ 实时同步已连接 · 频道:'+ch,'color:#20c8a0;font-weight:700');
   });
+  client.on('close',()=>setSyncDot('err'));
+  client.on('reconnect',()=>setSyncDot(''));
   client.on('message',(t,msg)=>{
     const j=msg.toString();
     if(j===_mine)return;
@@ -172,7 +193,8 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
   client.on('error',e=>console.warn('同步错误',e));
   window._syncPush=obj=>{
     const j=JSON.stringify(obj);_mine=j;
-    if(client.connected)client.publish(ch,j,{qos:1,retain:true});
+    if(client.connected){client.publish(ch,j,{qos:1,retain:true});}
+    else{_pending=j;}
   };
 })();
 </script>
@@ -199,7 +221,10 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
       <div id="hdr-player">—</div>
       <div id="hdr-badge" class="badge-wait">等待中</div>
     </div>
-    <div id="hdr-timer" style="color:var(--muted)">—</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div id="sync-dot">● 同步中</div>
+      <div id="hdr-timer" style="color:var(--muted)">—</div>
+    </div>
   </div>
 
   <div id="action-bar">
@@ -213,31 +238,30 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
     </div>
   </div>
 
+  <!-- 双方阵容：始终可见，在选角格子上方 -->
+  <div id="roster-panel">
+    <div class="rp-side">
+      <div class="rp-title p1t" id="rp-p1-title">玩家一 · P1</div>
+      <div class="rp-sec-lbl ban-row">— 禁用 —</div>
+      <div class="rp-cards ban-row" id="rp-p1-bans"></div>
+      <div class="rp-sec-lbl">— 选择 —</div>
+      <div class="rp-cards" id="rp-p1-picks"></div>
+    </div>
+    <div class="rp-side">
+      <div class="rp-title p2t" id="rp-p2-title">玩家二 · P2</div>
+      <div class="rp-sec-lbl ban-row">— 禁用 —</div>
+      <div class="rp-cards ban-row" id="rp-p2-bans"></div>
+      <div class="rp-sec-lbl">— 选择 —</div>
+      <div class="rp-cards" id="rp-p2-picks"></div>
+    </div>
+  </div>
+
   <div id="char-panel">
     <div id="char-filter-row">
       <div id="filter-btns"></div>
       <input id="char-search" placeholder="搜索角色..." oninput="filterGrid()">
     </div>
     <div id="char-grid"></div>
-  </div>
-
-  <div id="summary">
-    <div class="sum-row ban-row">
-      <div class="sum-lbl" id="lbl-p1-ban">P1 禁用</div>
-      <div class="sum-slots" id="slots-p1-ban"></div>
-    </div>
-    <div class="sum-row ban-row">
-      <div class="sum-lbl" id="lbl-p2-ban">P2 禁用</div>
-      <div class="sum-slots" id="slots-p2-ban"></div>
-    </div>
-    <div class="sum-row">
-      <div class="sum-lbl" id="lbl-p1-pick">P1 选择</div>
-      <div class="sum-slots" id="slots-p1-pick"></div>
-    </div>
-    <div class="sum-row">
-      <div class="sum-lbl" id="lbl-p2-pick">P2 选择</div>
-      <div class="sum-slots" id="slots-p2-pick"></div>
-    </div>
   </div>
 
   <div id="kb-hint">Enter 确认 · Esc 取消选择</div>
@@ -342,12 +366,32 @@ let _sel=null;      // 本页暂存的选择
 let _filterEl='全部';
 let _timerRaf=null;
 
+/* ── BroadcastChannel：同浏览器不同标签页即时同步 ── */
+const _bc=(()=>{try{return new BroadcastChannel('wuwa_bp');}catch(e){return null;}})();
+if(_bc){
+  _bc.onmessage=e=>{
+    const fresh=e.data;
+    if(!fresh||!myPlayer)return;
+    const stepChanged=_prevStep!==-1&&fresh.step!==_prevStep;
+    const tlLen=(fresh.bpTimeline||[]).length;
+    if(stepChanged){
+      _sel=null;
+      if(tlLen>_prevTimelineLen){notifyOpponentAction(fresh);animateNewSummaryItems();}
+    }
+    _prevStep=fresh.step;_prevTimelineLen=tlLen;
+    S=fresh;applyMode(S.mode||'ban_pick');renderAll();
+    if(S.timerStart&&S.timerDuration){if(!_timerRaf||stepChanged)startTimer();}
+    else stopTimer();
+  };
+}
+
 function loadState(){try{return JSON.parse(localStorage.getItem('wuwa_bp_state'))||null;}catch{return null;}}
 function saveState(){
   if(!S)return;
   const out={...S};delete out.selected;delete out.filterEl;delete out.search;
   localStorage.setItem('wuwa_bp_state',JSON.stringify(out));
-  if(window._syncPush)window._syncPush(out);
+  if(_bc)_bc.postMessage(out);           // 同浏览器标签页：即时
+  if(window._syncPush)window._syncPush(out); // 不同设备：MQTT
 }
 function toast(msg,d=2000){
   const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
@@ -356,7 +400,7 @@ function toast(msg,d=2000){
 function applyMode(mode){
   const pickOnly=(mode==='pick_only'||mode==='r24');
   SEQ=pickOnly?SEQ_PICK_ONLY:SEQ_BAN_PICK;
-  document.getElementById('summary').classList.toggle('no-bans',pickOnly);
+  document.getElementById('roster-panel').classList.toggle('no-bans',pickOnly);
 }
 function isMyTurn(){
   if(!S||S.done||S.step>=SEQ.length)return false;
@@ -396,7 +440,7 @@ function renderAll(){
   applyMode(S.mode||'ban_pick');
   renderHeader();
   renderGrid();
-  renderSummary();
+  renderRoster();
 }
 
 function renderHeader(){
@@ -459,22 +503,46 @@ function renderGrid(){
   }).join('');
 }
 
-function renderSummary(){
+function renderRoster(){
   const p1n=(S&&S.p1name)||'玩家一';
   const p2n=(S&&S.p2name)||'玩家二';
-  document.getElementById('lbl-p1-ban').textContent=`${p1n} · 禁用`;
-  document.getElementById('lbl-p2-ban').textContent=`${p2n} · 禁用`;
-  document.getElementById('lbl-p1-pick').textContent=`${p1n} · 选择`;
-  document.getElementById('lbl-p2-pick').textContent=`${p2n} · 选择`;
-  
-  // 保持禁用逻辑不变
-  const bans=S&&(S.mode==='ban_pick'||S.mode==='r16')?4:0;
-  renderSlots('slots-p1-ban',S&&S.p1bans,'ban-slot p1s',bans,true);
-  renderSlots('slots-p2-ban',S&&S.p2bans,'ban-slot p2s',bans,true);
-  
-  // 修改这里：将原来的 8 改为 9，以显示每边 9 个选择槽位
-  renderSlots('slots-p1-pick',S&&S.p1picks,'p1s', 9, false); 
-  renderSlots('slots-p2-pick',S&&S.p2picks,'p2s', 9, false);
+  document.getElementById('rp-p1-title').textContent=`${p1n} · P1`;
+  document.getElementById('rp-p2-title').textContent=`${p2n} · P2`;
+  const banMax=S&&(S.mode==='ban_pick'||S.mode==='r16')?4:0;
+  fillRosterCards('rp-p1-bans', S&&S.p1bans, banMax, true,  'rpc-p1');
+  fillRosterCards('rp-p2-bans', S&&S.p2bans, banMax, true,  'rpc-p2');
+  fillRosterCards('rp-p1-picks',S&&S.p1picks,9,     false, 'rpc-p1');
+  fillRosterCards('rp-p2-picks',S&&S.p2picks,9,     false, 'rpc-p2');
+}
+function fillRosterCards(id,chars,max,isBan,colorCls){
+  let h='';
+  for(let i=0;i<max;i++){
+    const c=chars&&chars[i];
+    if(c){
+      const banCls=isBan?' rpc-ban':'';
+      h+=`<div class="rpc"><div class="rpc-img ${colorCls}${banCls}"><img src="${c.img}" onerror="this.style.display='none'" alt="${c.name}"></div><div class="rpc-name">${c.name}</div></div>`;
+    }else{
+      h+=`<div class="rpc"><div class="rpc-empty"></div></div>`;
+    }
+  }
+  document.getElementById(id).innerHTML=h;
+}
+
+function notifyOpponentAction(fresh){
+  const tl=fresh.bpTimeline||[];
+  const last=tl[tl.length-1];
+  if(!last||last.player===myPlayer)return;
+  const pn=last.player===1?(fresh.p1name||'玩家一'):(fresh.p2name||'玩家二');
+  toast(`${pn} ${last.phase==='ban'?'禁用了':'选择了'} ${last.char.name}`,3500);
+}
+function animateNewSummaryItems(){
+  setTimeout(()=>{
+    ['rp-p1-bans','rp-p2-bans','rp-p1-picks','rp-p2-picks'].forEach(id=>{
+      const row=document.getElementById(id);if(!row)return;
+      const imgs=[...row.querySelectorAll('.rpc-img:not(.rpc-new)')];
+      if(imgs.length){const last=imgs[imgs.length-1];last.classList.add('rpc-new');last.addEventListener('animationend',()=>last.classList.remove('rpc-new'),{once:true});}
+    });
+  },80);
 }
 
 /* ── 倒计时显示 ── */
