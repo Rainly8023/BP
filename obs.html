@@ -270,7 +270,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   gap:4px;padding:5px 8px;
 }
 .ban-card{
-  height:62px;position:relative;overflow:hidden;
+  height:130px;position:relative;overflow:hidden;
   background:rgba(3,5,18,0.98);border:1px solid rgba(80,25,25,0.3);
   transition:all 0.35s;
   clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
@@ -529,7 +529,7 @@ html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font
   width:58px;height:58px;background:rgba(3,5,20,0.98);
   border:1px solid rgba(60,100,180,0.2);overflow:hidden;position:relative;transition:all 0.3s;
   clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));}
-.ban-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;filter:grayscale(0.15);}
+.ban-avatar img{width:100%;height:100%;object-fit:cover;object-position:center 20%;filter:grayscale(0.15);}
 .ban-avatar.empty{border-style:dashed;border-color:rgba(60,100,180,0.1);}
 .ban-avatar.p1-ban{border-color:rgba(255,85,0,0.55);box-shadow:0 0 12px rgba(255,85,0,0.24);}
 .ban-avatar.p2-ban{border-color:rgba(0,153,255,0.55);box-shadow:0 0 12px rgba(0,153,255,0.24);}
@@ -991,11 +991,16 @@ const SEQ_BAN_PICK=[
   {phase:'pick',player:2},
 ];
 const SEQ_PICK_ONLY=[
-  // 1号先選1個，2号選2個，1号再選2個，2号再選2個
   {phase:'pick',player:1},
   {phase:'pick',player:2},{phase:'pick',player:2},
   {phase:'pick',player:1},{phase:'pick',player:1},
   {phase:'pick',player:2},{phase:'pick',player:2},
+  {phase:'pick',player:1},{phase:'pick',player:1},
+  {phase:'pick',player:2},{phase:'pick',player:2},
+  {phase:'pick',player:1},{phase:'pick',player:1},
+  {phase:'pick',player:2},{phase:'pick',player:2},
+  {phase:'pick',player:1},{phase:'pick',player:1},
+  {phase:'pick',player:2},
 ];
 let SEQ=SEQ_BAN_PICK;
 let BANS_EACH=4;

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>旧雨杯 · A组抽签 · 导播</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<style>
+  :root {
+    --pink: #f472b6; --pink-light: #fbcfe8; --lavender: #a78bfa;
+    --gold: #fbbf24; --text: #fff0ff; --text-dim: #d8b4fe;
+    --text-muted: rgba(216,180,254,0.4);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background-color: #0f0025;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, #2d0a5e 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 100%, #0a1a4e 0%, transparent 55%);
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh; color: var(--text);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px 24px;
+  }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 130% 28% at 50% -8%, rgba(167,139,250,0.2) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 18% at 15% 108%, rgba(244,114,182,0.14) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0;
+    background:
+      radial-gradient(1.5px 1.5px at 8%  12%, rgba(255,255,255,0.9), transparent),
+      radial-gradient(1px   1px   at 18% 45%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(2px   2px   at 32%  8%, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1px   1px   at 47% 28%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1.5px 1.5px at 58% 72%, rgba(255,255,255,0.9), transparent),
+      radial-gradient(2px   2px   at 82% 55%, rgba(255,255,255,0.7), transparent),
+      radial-gradient(1px   1px   at 91% 35%, rgba(255,255,255,0.8), transparent),
+      radial-gradient(1.5px 1.5px at 25% 82%, rgba(255,255,255,0.6), transparent),
+      radial-gradient(2px   2px   at 40% 62%, rgba(255,192,235,0.8), transparent),
+      radial-gradient(1px   1px   at 77% 78%, rgba(216,180,254,0.9), transparent);
+    pointer-events: none; z-index: 0;
+    animation: starTwinkle 6s ease-in-out infinite alternate;
+  }
+  @keyframes starTwinkle { from { opacity: 0.55; } to { opacity: 1; } }
+
+  .wrap {
+    position: relative; z-index: 2;
+    width: 100%; max-width: 760px;
+    display: flex; flex-direction: column; align-items: center; gap: 22px;
+  }
+
+  /* ── Title ── */
+  .title-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 800;
+    letter-spacing: 4px; color: var(--pink-light);
+    border: 1.5px solid rgba(244,114,182,0.4); padding: 7px 24px; border-radius: 100px;
+    background: rgba(244,114,182,0.08); text-transform: uppercase;
+  }
+  .badge-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--pink); box-shadow: 0 0 8px var(--pink);
+    animation: pulseDot 2s ease-in-out infinite;
+  }
+  @keyframes pulseDot { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.5);opacity:0.65;} }
+  .title-h1 {
+    font-family: 'Nunito', sans-serif; font-size: 52px; font-weight: 900;
+    background: linear-gradient(135deg, #f9a8d4 0%, #c084fc 45%, #7dd3fc 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    letter-spacing: 10px; filter: drop-shadow(0 0 24px rgba(192,132,252,0.5)); line-height: 1.1;
+  }
+
+  /* ── Match panel ── */
+  .match-panel {
+    width: 100%; background: rgba(167,139,250,0.06);
+    border: 1.5px solid rgba(192,132,252,0.25); border-radius: 22px;
+    padding: 36px 28px; position: relative; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    min-height: 170px; justify-content: center;
+    box-shadow: 0 8px 40px rgba(167,139,250,0.08), inset 0 1px 0 rgba(255,255,255,0.04);
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .match-panel::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(244,114,182,0.05), transparent 55%),
+      radial-gradient(ellipse at 80% 50%, rgba(125,211,252,0.04), transparent 55%);
+    border-radius: inherit; pointer-events: none;
+  }
+  /* 抽签中：高亮边框 */
+  .match-panel.drawing {
+    border-color: rgba(192,132,252,0.6);
+    box-shadow: 0 0 32px rgba(192,132,252,0.28), 0 8px 40px rgba(167,139,250,0.14), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+
+  .match-label {
+    font-family: 'Nunito', sans-serif; font-size: 10px; font-weight: 800;
+    letter-spacing: 4px; color: var(--text-muted); margin-bottom: 4px;
+  }
+  .pool-label {
+    font-size: 10px; letter-spacing: 3px; color: var(--text-muted);
+    margin-bottom: 12px; font-family: 'Nunito', sans-serif;
+  }
+  .vs-row {
+    display: flex; align-items: center; gap: 24px;
+    flex-wrap: wrap; justify-content: center; position: relative; z-index: 1;
+  }
+  .player { text-align: center; }
+  .player-name {
+    font-family: 'Nunito', sans-serif; font-size: 34px; font-weight: 900;
+    background: linear-gradient(135deg, #f9a8d4, #c084fc, #93c5fd);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    letter-spacing: 2px; filter: drop-shadow(0 0 12px rgba(192,132,252,0.55));
+  }
+  /* 抽签滚动时的字符抖动 */
+  .match-panel.drawing .player-name {
+    animation: glitch 0.08s linear infinite;
+  }
+  @keyframes glitch {
+    0%,100% { transform: translateX(0) skewX(0deg); }
+    20%  { transform: translateX(-8px) skewX(-3deg); }
+    40%  { transform: translateX(8px)  skewX(3deg); }
+    60%  { transform: translateX(-4px) skewX(-1.5deg); }
+    80%  { transform: translateX(4px)  skewX(1.5deg); }
+  }
+  .player-seed {
+    font-family: 'Nunito', sans-serif; font-size: 10px; font-weight: 700;
+    color: var(--text-muted); letter-spacing: 2px; margin-top: 5px;
+  }
+  .vs-text {
+    font-family: 'Nunito', sans-serif; font-size: 36px; font-weight: 900;
+    background: linear-gradient(135deg, #fbbf24, #fde68a, #fbbf24);
+    background-size: 200% 100%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    filter: drop-shadow(0 0 12px rgba(251,191,36,0.6));
+    animation: shimmer 2s linear infinite; flex-shrink: 0;
+  }
+  @keyframes shimmer { from{background-position:100% center;} to{background-position:-200% center;} }
+  .waiting-text {
+    font-size: 14px; letter-spacing: 4px; color: var(--text-muted);
+    font-family: 'Nunito', sans-serif;
+  }
+  .complete-text {
+    display: none; font-family: 'Nunito', sans-serif; font-size: 18px; font-weight: 900;
+    letter-spacing: 5px;
+    background: linear-gradient(135deg, #fbbf24, #fde68a, #fbbf24); background-size: 200% 100%;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    animation: shimmer 2s linear infinite; filter: drop-shadow(0 0 8px rgba(251,191,36,0.5));
+    margin-top: 8px;
+  }
+  .complete-text.show { display: block; }
+
+  /* ── History ── */
+  .history-wrap { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+  .history-item {
+    display: flex; align-items: center; gap: 10px; padding: 12px 18px;
+    background: rgba(167,139,250,0.05); border: 1px solid rgba(167,139,250,0.15);
+    border-radius: 12px; font-size: 14px;
+  }
+  .history-item.new-item { animation: fadeInUp 0.45s cubic-bezier(.34,1.56,.64,1) forwards; }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(14px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .h-num {
+    font-family: 'Nunito', sans-serif; font-size: 10px; font-weight: 800;
+    color: var(--pink); min-width: 32px; background: rgba(244,114,182,0.1);
+    padding: 3px 8px; border-radius: 100px; text-align: center;
+  }
+  .h-a, .h-b { flex: 1; text-align: center; font-weight: 700; color: var(--text); }
+  .h-vs { font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 900; color: var(--gold); flex-shrink: 0; }
+
+  /* ── Status ── */
+  .status-bar {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 10px; letter-spacing: 2px; color: var(--text-muted);
+    font-family: 'Nunito', sans-serif;
+  }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #444; flex-shrink: 0; transition: all 0.4s; }
+  .status-dot.ok   { background: #20c8a0; box-shadow: 0 0 8px rgba(32,200,160,0.7); }
+  .status-dot.warn { background: #fbbf24; animation: dotPulse 1s infinite; }
+  .status-dot.err  { background: #ff3366; }
+  @keyframes dotPulse { 0%,100%{opacity:0.6;} 50%{opacity:1;} }
+
+  .anim-in { animation: fadeInUp 0.5s cubic-bezier(.34,1.56,.64,1) forwards; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="title-badge">
+    <span class="badge-dot"></span>
+    WUTHERING WAVES ESPORTS · A 组
+    <span class="badge-dot"></span>
+  </div>
+  <div class="title-h1">A 组</div>
+
+  <div class="match-panel" id="matchPanel">
+    <div class="match-label">✦ CURRENT DRAW ✦</div>
+    <div id="matchDisplay">
+      <div class="waiting-text">等待抽签 ✦</div>
+    </div>
+    <div class="complete-text" id="completeBanner">⭐ 抽签完成 · A 组全部对阵已确定 ⭐</div>
+  </div>
+
+  <div class="history-wrap" id="historyList"></div>
+
+  <div class="status-bar">
+    <div class="status-dot warn" id="statusDot"></div>
+    <span id="statusText">正在连接信令服务器...</span>
+  </div>
+
+</div>
+<script>
+  // ══════════════════════════════════
+  //  与主控端 draw_A.html 保持相同频道名
+  // ══════════════════════════════════
+  const DRAW_CHANNEL  = 'wuwa_draw_A_114514';
+  const EVENT_CHANNEL = DRAW_CHANNEL + '_ev';
+
+  let obsPlayers   = [];
+  let rollingTimer = null;
+  let knownDrawnLen = 0;
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function setStatus(cls, msg) {
+    document.getElementById('statusDot').className = 'status-dot ' + cls;
+    document.getElementById('statusText').textContent = msg;
+  }
+
+  function clearRolling() {
+    if (rollingTimer) { clearInterval(rollingTimer); rollingTimer = null; }
+    document.getElementById('matchPanel').classList.remove('drawing');
+  }
+
+  // ─────────────────────────────────────────
+  //  动画事件
+  // ─────────────────────────────────────────
+  function handleAnimEvent(data) {
+    const display = document.getElementById('matchDisplay');
+    const panel   = document.getElementById('matchPanel');
+
+    switch (data.event) {
+
+      case 'rolling':
+        if (data.players) obsPlayers = data.players;
+        clearRolling();
+        panel.classList.add('drawing');
+        rollingTimer = setInterval(() => {
+          if (!obsPlayers.length) return;
+          const r = esc(obsPlayers[Math.floor(Math.random() * obsPlayers.length)]);
+          display.innerHTML = `
+            <div class="vs-row">
+              <div class="player"><div class="player-name">${r}</div></div>
+            </div>`;
+        }, 80);
+        break;
+
+      case 'result':
+        clearRolling();
+        display.innerHTML = `
+          <div class="vs-row anim-in">
+            <div class="player">
+              <div class="player-name">${esc(data.player.name)}</div>
+              <div class="player-seed">第 ${data.num} 位 · 入选 A 组</div>
+            </div>
+          </div>`;
+        break;
+    }
+  }
+
+  // ─────────────────────────────────────────
+  //  全量状态：刷新后恢复 & 历史记录
+  // ─────────────────────────────────────────
+  function renderState(state) {
+    const drawn    = state.drawn   || [];
+    const complete = !!state.complete;
+    if (state.players) obsPlayers = state.players;
+
+    if (!rollingTimer) {
+      const display = document.getElementById('matchDisplay');
+      if (drawn.length > 0) {
+        const latest = drawn[drawn.length - 1];
+        display.innerHTML = `
+          <div class="vs-row">
+            <div class="player">
+              <div class="player-name">${esc(latest.name)}</div>
+              <div class="player-seed">第 ${drawn.length} 位 · 入选 A 组</div>
+            </div>
+          </div>`;
+      } else {
+        display.innerHTML = '<div class="waiting-text">等待抽签 ✦</div>';
+      }
+    }
+
+    document.getElementById('completeBanner').classList.toggle('show', complete);
+
+    const list = document.getElementById('historyList');
+    list.innerHTML = '';
+    drawn.forEach((p, idx) => {
+      const item = document.createElement('div');
+      item.className = 'history-item' + (idx >= knownDrawnLen ? ' new-item' : '');
+      item.innerHTML = `
+        <span class="h-num">${String(idx + 1).padStart(2,'0')}</span>
+        <span class="h-a">${esc(p.name)}</span>`;
+      list.appendChild(item);
+    });
+    knownDrawnLen = drawn.length;
+  }
+
+  // ── MQTT 连接 ──
+  const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
+    clientId: 'draw_obs_' + (Math.random() * 1e9 | 0).toString(36),
+    reconnectPeriod: 3000, connectTimeout: 10000, clean: true
+  });
+
+  client.on('connect', () => {
+    client.subscribe(DRAW_CHANNEL);   // 全量状态（retain，刷新可恢复）
+    client.subscribe(EVENT_CHANNEL);  // 动画事件（实时，不持久）
+    setStatus('ok', '已连接 · ' + DRAW_CHANNEL);
+  });
+
+  client.on('message', (topic, msg) => {
+    try {
+      const data = JSON.parse(msg.toString());
+      if (topic === EVENT_CHANNEL) {
+        handleAnimEvent(data);   // 播动画
+      } else {
+        renderState(data);       // 更新历史
+      }
+    } catch(e) {}
+  });
+
+  client.on('error',     () => setStatus('err',  '连接错误'));
+  client.on('offline',   () => setStatus('warn', '离线，重连中...'));
+  client.on('reconnect', () => setStatus('warn', '重连中...'));
+</script>
+</body>
+</html>

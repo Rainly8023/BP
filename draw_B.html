@@ -465,17 +465,17 @@
 
   @keyframes glitch {
     0%, 100% { transform: translateX(0) skewX(0deg); }
-    20%  { transform: translateX(-4px) skewX(-2deg); }
-    40%  { transform: translateX(4px)  skewX(2deg); }
-    60%  { transform: translateX(-2px) skewX(-1deg); }
-    80%  { transform: translateX(2px)  skewX(1deg); }
+    20%  { transform: translateX(-8px) skewX(-3deg); }
+    40%  { transform: translateX(8px)  skewX(3deg); }
+    60%  { transform: translateX(-4px) skewX(-1.5deg); }
+    80%  { transform: translateX(4px)  skewX(1.5deg); }
   }
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(20px) scale(0.92); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
   }
 
-  .drawing .result-player-name { animation: glitch 0.22s ease infinite; }
+  .drawing .result-player-name { animation: glitch 0.08s linear infinite; }
   .result-anim { animation: fadeInUp 0.5s cubic-bezier(.34,1.56,.64,1) forwards; }
 
   .burst {
@@ -631,6 +631,7 @@
     box-shadow: 0 8px 22px rgba(244,114,182,0.35);
   }
 </style>
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 </head>
 <body>
 <div class="wrapper">
@@ -643,6 +644,7 @@
     </div>
     <h1>B 组</h1>
     <div class="subtitle">16强对阵 · 抽签系统</div>
+    <div id="sync-badge" style="font-size:10px;letter-spacing:2px;margin-top:6px;color:rgba(216,180,254,0.35);font-family:'Nunito',sans-serif;transition:color 0.4s">● 直播同步未连接</div>
     <div class="divider">
       <div class="divider-line"></div>
       <span class="divider-gem">✦ ✿ ✦</span>
@@ -654,7 +656,7 @@
     <div class="progress-fill" id="progressFill" style="width:0%"></div>
   </div>
 
-  <div class="slots-label">✦ 参赛选手 ✦</div>
+  <div class="slots-label" style="margin-bottom:12px">✦ B 组 · 已入选选手 ✦</div>
   <div class="slots-grid" id="slotsGrid"></div>
 
   <div class="result-area" id="resultArea">
@@ -675,7 +677,7 @@
 
   <div class="complete-banner" id="completeBanner">
     <div class="complete-title">⭐ 抽签完成 ⭐</div>
-    <div class="complete-sub">B 组 · 全部对阵已确定</div>
+    <div class="complete-sub">B 组 · 8 位选手已全部确定</div>
   </div>
 
   <div id="historySection" style="display:none">
@@ -684,28 +686,32 @@
   </div>
 
   <div class="edit-section">
-    <div class="edit-label">✦ 修改选手名单 ✦</div>
-    <div class="edit-grid" id="editGrid"></div>
+    <div class="edit-label">✦ 修改候选名单（B 组池子）✦</div>
+    <div id="editGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px"></div>
     <button class="btn-save" onclick="saveNames()">✦ 确认更新名单 ✦</button>
   </div>
 
 </div>
 <script>
-  const DEFAULT_NAMES = ['选手I','选手J','选手K','选手L','选手M','选手N','选手O','选手P'];
-  let players = [...DEFAULT_NAMES];
+  // ── 候选池（在下方编辑区修改真实名单）──
+  const DEFAULT_NAMES = [
+    '选手01','选手02','选手03','选手04',
+    '选手05','选手06','选手07','选手08',
+  ];
+  const DRAW_COUNT = 8; // 本组抽取人数（等于池子总人数）
+
+  let players   = [...DEFAULT_NAMES];
+  let drawn     = [];
   let remaining = [];
-  let pairs = [];
   let isDrawing = false;
 
   function esc(str) {
-    return String(str)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
   function init() {
-    remaining = [...players.map((n,i) => ({name:n, seed:i+1}))];
-    pairs = [];
+    remaining = players.map((n, i) => ({ name: n, idx: i + 1 }));
+    drawn = [];
     renderSlots();
     renderEdit();
     updateProgress();
@@ -721,17 +727,16 @@
   function renderSlots() {
     const grid = document.getElementById('slotsGrid');
     grid.innerHTML = '';
-    players.forEach((name, i) => {
-      const drawn = pairs.some(p => p.a.seed === i+1 || p.b.seed === i+1);
+    for (let i = 0; i < DRAW_COUNT; i++) {
+      const d = drawn[i];
       const div = document.createElement('div');
-      div.className = 'slot' + (drawn ? ' filled' : '');
+      div.className = 'slot' + (d ? ' filled' : '');
       div.innerHTML = `
-        <div class="slot-num">${String(i+1).padStart(2,'0')}</div>
-        <div class="slot-name ${drawn ? '' : 'placeholder'}">${esc(name)}</div>
-        <div class="slot-icon">${drawn ? '⭐' : String(i+1)}</div>
-      `;
+        <div class="slot-num">${String(i + 1).padStart(2, '0')}</div>
+        <div class="slot-name ${d ? '' : 'placeholder'}">${d ? esc(d.name) : '—'}</div>
+        <div class="slot-icon">${d ? '⭐' : String(i + 1)}</div>`;
       grid.appendChild(div);
-    });
+    }
   }
 
   function renderEdit() {
@@ -741,23 +746,22 @@
       const div = document.createElement('div');
       div.className = 'edit-row';
       div.innerHTML = `
-        <span class="edit-lbl">${String(i+1).padStart(2,'0')}</span>
-        <input class="edit-input" id="ei-${i}" value="${esc(name)}" placeholder="选手名称">
-      `;
+        <span class="edit-lbl">${String(i + 1).padStart(2, '0')}</span>
+        <input class="edit-input" id="ei-${i}" value="${esc(name)}" placeholder="选手名称">`;
       grid.appendChild(div);
     });
   }
 
   function saveNames() {
     players = players.map((_, i) => {
-      const val = document.getElementById('ei-'+i).value.trim();
-      return val || DEFAULT_NAMES[i];
+      const val = document.getElementById('ei-' + i).value.trim();
+      return val || DEFAULT_NAMES[i] || `选手${String(i+1).padStart(2,'0')}`;
     });
     init();
   }
 
   function updateProgress() {
-    document.getElementById('progressFill').style.width = (pairs.length / 4 * 100) + '%';
+    document.getElementById('progressFill').style.width = (drawn.length / DRAW_COUNT * 100) + '%';
   }
 
   function spawnBursts(container) {
@@ -769,94 +773,116 @@
       b.textContent = chars[Math.floor(Math.random() * chars.length)];
       const angle = (i / 10) * Math.PI * 2;
       const dist  = 45 + Math.random() * 45;
-      b.style.cssText = `
-        left:50%; top:50%;
-        color:${colors[Math.floor(Math.random() * colors.length)]};
-        font-size:${11 + Math.random() * 10}px;
-        --tx:${Math.cos(angle) * dist}px;
-        --ty:${Math.sin(angle) * dist}px;
-        --rot:${Math.random() * 360}deg;
-        animation-delay:${i * 0.035}s;
-      `;
+      b.style.cssText = `left:50%;top:50%;color:${colors[Math.floor(Math.random()*colors.length)]};font-size:${11+Math.random()*10}px;--tx:${Math.cos(angle)*dist}px;--ty:${Math.sin(angle)*dist}px;--rot:${Math.random()*360}deg;animation-delay:${i*0.035}s;`;
       container.appendChild(b);
       setTimeout(() => b.remove(), 900);
     }
   }
 
   async function doDraw() {
-    if (isDrawing || remaining.length < 2) return;
+    if (isDrawing || remaining.length === 0 || drawn.length >= DRAW_COUNT) return;
     isDrawing = true;
     document.getElementById('drawBtn').disabled = true;
 
-    const idx1 = Math.floor(Math.random() * remaining.length);
-    let idx2;
-    do { idx2 = Math.floor(Math.random() * remaining.length); } while (idx2 === idx1);
-    const p1 = remaining[idx1];
-    const p2 = remaining[idx2];
-    remaining = remaining.filter((_, i) => i !== idx1 && i !== idx2);
+    const idx    = Math.floor(Math.random() * remaining.length);
+    const picked = remaining[idx];
+    remaining    = remaining.filter((_, i) => i !== idx);
 
     const display    = document.getElementById('resultDisplay');
     const resultArea = document.getElementById('resultArea');
-    resultArea.classList.add('drawing');
+    const num        = drawn.length + 1;
+    let ticker = null;
+    try {
+      pushEvent({ event: 'rolling', players });
+      resultArea.classList.add('drawing');
+      ticker = setInterval(() => {
+        const r = esc(players[Math.floor(Math.random() * players.length)]);
+        display.innerHTML = `
+          <div style="font-size:10px;letter-spacing:3px;color:var(--text-muted);margin-bottom:12px;font-family:'Nunito',sans-serif">✦ 第 ${num} 位 · B 组 ✦</div>
+          <div class="result-names">
+            <div class="result-player"><div class="result-player-name">${r}</div></div>
+          </div>`;
+      }, 80);
+      await new Promise(r => setTimeout(r, 1400));
+      clearInterval(ticker); ticker = null;
+      resultArea.classList.remove('drawing');
+      spawnBursts(resultArea);
 
-    const ticker = setInterval(() => {
-      const r1 = esc(players[Math.floor(Math.random() * players.length)]);
-      const r2 = esc(players[Math.floor(Math.random() * players.length)]);
+      pushEvent({ event: 'result', player: picked, num });
       display.innerHTML = `
-        <div class="result-names">
-          <div class="result-player"><div class="result-player-name">${r1}</div></div>
-          <div class="vs-text">VS</div>
-          <div class="result-player"><div class="result-player-name">${r2}</div></div>
+        <div class="result-names result-anim">
+          <div class="result-player">
+            <div class="result-player-name">${esc(picked.name)}</div>
+            <div class="result-player-seed">第 ${num} 位 · 入选 B 组</div>
+          </div>
         </div>`;
-    }, 80);
 
-    await new Promise(r => setTimeout(r, 1400));
-    clearInterval(ticker);
-    resultArea.classList.remove('drawing');
-    spawnBursts(resultArea);
+      drawn.push(picked);
+      pushState();
+      renderSlots();
+      updateProgress();
+      addHistory(picked, drawn.length);
 
-    display.innerHTML = `
-      <div class="result-names result-anim">
-        <div class="result-player">
-          <div class="result-player-name">${esc(p1.name)}</div>
-          <div class="result-player-seed">SEED ${p1.seed}</div>
-        </div>
-        <div class="vs-text">VS</div>
-        <div class="result-player">
-          <div class="result-player-name">${esc(p2.name)}</div>
-          <div class="result-player-seed">SEED ${p2.seed}</div>
-        </div>
-      </div>`;
-
-    pairs.push({a: p1, b: p2});
-    renderSlots();
-    updateProgress();
-    addHistory(p1, p2, pairs.length);
-
-    if (pairs.length === 4) {
-      document.getElementById('completeBanner').classList.add('show');
-      document.getElementById('drawBtn').disabled = true;
-      document.getElementById('drawBtn').textContent = '⭐ 抽签完成';
-    } else {
+      if (drawn.length >= DRAW_COUNT) {
+        document.getElementById('completeBanner').classList.add('show');
+        document.getElementById('drawBtn').disabled = true;
+        document.getElementById('drawBtn').textContent = '⭐ 抽签完成';
+      } else {
+        document.getElementById('drawBtn').disabled = false;
+      }
+    } catch(e) {
+      console.error('抽签出错:', e);
       document.getElementById('drawBtn').disabled = false;
+    } finally {
+      if (ticker) { clearInterval(ticker); resultArea.classList.remove('drawing'); }
+      isDrawing = false;
     }
-    isDrawing = false;
   }
 
-  function addHistory(p1, p2, num) {
+  function addHistory(player, num) {
     document.getElementById('historySection').style.display = 'block';
     const item = document.createElement('div');
     item.className = 'history-item';
     item.innerHTML = `
-      <span class="history-num">M${num}</span>
-      <span class="history-a">${esc(p1.name)}</span>
-      <span class="history-vs">VS</span>
-      <span class="history-b">${esc(p2.name)}</span>`;
+      <span class="history-num">${String(num).padStart(2,'0')}</span>
+      <span class="history-a">${esc(player.name)}</span>`;
     document.getElementById('historyList').appendChild(item);
   }
 
-  function resetAll() { isDrawing = false; init(); }
+  function resetAll() { isDrawing = false; init(); pushState(); }
 
+  // ══════════════════════════════════════
+  //  MQTT 直播同步（与 draw_B_obs.html 配对）
+  // ══════════════════════════════════════
+  const DRAW_CHANNEL  = 'wuwa_draw_B_114514';
+  const EVENT_CHANNEL = DRAW_CHANNEL + '_ev';
+  let _mqttClient = null;
+
+  function initMQTT() {
+    if (typeof mqtt === 'undefined') return;
+    _mqttClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
+      clientId: 'draw_ctrl_' + (Math.random() * 1e9 | 0).toString(36),
+      reconnectPeriod: 3000, connectTimeout: 10000, clean: true
+    });
+    const badge = document.getElementById('sync-badge');
+    _mqttClient.on('connect',   () => { if (badge) { badge.textContent='● 直播同步已连接'; badge.style.color='#20c8a0'; } });
+    _mqttClient.on('error',     () => { if (badge) { badge.textContent='● 同步断开';       badge.style.color='#ff3366'; } });
+    _mqttClient.on('offline',   () => { if (badge) { badge.textContent='● 同步离线';       badge.style.color='#fbbf24'; } });
+    _mqttClient.on('reconnect', () => { if (badge) { badge.textContent='● 重连中...';      badge.style.color='#fbbf24'; } });
+  }
+
+  function pushState() {
+    if (!_mqttClient || !_mqttClient.connected) return;
+    const state = { group: 'B', players, drawn, complete: drawn.length >= DRAW_COUNT };
+    _mqttClient.publish(DRAW_CHANNEL, JSON.stringify(state), { qos: 1, retain: true });
+  }
+
+  function pushEvent(data) {
+    if (!_mqttClient || !_mqttClient.connected) return;
+    _mqttClient.publish(EVENT_CHANNEL, JSON.stringify(data), { qos: 0, retain: false });
+  }
+
+  initMQTT();
   init();
 </script>
 </body>
