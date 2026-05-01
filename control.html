@@ -3,34 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <title>旧雨杯 · BP控制端</title>
-<link rel="stylesheet" href="./theme-wuwa-deep.css">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=Oswald:wght@500;700&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100%;min-height:100vh;
-  background:
-    radial-gradient(ellipse 110% 75% at 100% -5%,rgba(34,211,238,0.16) 0%,transparent 52%),
-    radial-gradient(ellipse 85% 55% at 0% 105%,rgba(56,189,248,0.09) 0%,transparent 48%),
-    linear-gradient(168deg,var(--void) 0%,var(--bg) 48%,#030810 100%);
-  color:var(--text);font-family:var(--font);}
+:root{
+  --p1:#ff6b30;--p2:#40aaff;--ban:#e02020;--gold:#ffcc20;--teal:#20e8a0;
+  --bg:#080502;--panel:rgba(15,9,2,0.96);--border:rgba(200,140,20,0.35);
+  --glow:rgba(240,170,40,0.55);--text:#fff8e0;--muted:#9a7840;
+  --font:'Noto Sans SC','Oswald',sans-serif;
+  --pk1:#ffd060;--pk2:#ffe8a0;
+  --pk-glow:rgba(255,210,80,0.55);--pk-border:rgba(255,200,60,0.45);
+  --pk-shadow:rgba(220,160,20,0.35);
+}
+html,body{width:100%;min-height:100vh;background:var(--bg);color:var(--text);font-family:var(--font);}
 
 /* 背景 */
 body::before{content:'';position:fixed;inset:0;z-index:0;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='52'%3E%3Cpolygon points='30,2 58,17 58,35 30,50 2,35 2,17' fill='none' stroke='rgba(56,189,248,0.06)' stroke-width='0.6'/%3E%3C/svg%3E");
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='52'%3E%3Cpolygon points='30,2 58,17 58,35 30,50 2,35 2,17' fill='none' stroke='rgba(200,150,20,0.09)' stroke-width='0.6'/%3E%3C/svg%3E");
   background-size:60px 52px;pointer-events:none;}
-
-/* 《鸣潮》风立绘点缀（使用仓库内 images/pd.jpg，可自行替换） */
-#wuwa-deco-ctrl{position:fixed;right:-4%;bottom:0;z-index:1;width:min(42vw,480px);height:min(88vh,720px);pointer-events:none;
-  background:url('./images/pd.jpg') right bottom/contain no-repeat;opacity:0.16;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,0.45) 35%,#000 100%);
-  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,0.45) 35%,#000 100%);}
 
 /* 图片边框四角（control端稍微淡一些） */
 .ctrl-frame-corner{
   position:fixed;z-index:1;pointer-events:none;
   width:160px;height:160px;
-  background-image:url('./images/pd.jpg');
+  background-image:url('D:/Webiste/Bp/images2/aw.jpg');
   background-size:cover;background-position:center 15%;
-  opacity:0.1;
+  opacity:0.12;
 }
 #cfc-tl{top:0;left:0;
   -webkit-mask:radial-gradient(ellipse 150px 150px at 0% 0%,rgba(0,0,0,1) 0%,rgba(0,0,0,0.4) 50%,transparent 70%);
@@ -48,7 +46,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 /* 粉色外框 */
 #ctrl-outer-border{position:fixed;inset:3px;z-index:2;pointer-events:none;
   border:1px solid var(--pk-border);
-  box-shadow:0 0 14px var(--pk-shadow),0 0 28px rgba(100,170,240,0.12);}
+  box-shadow:0 0 14px var(--pk-shadow),0 0 32px rgba(232,116,154,0.08);}
 .ctrl-pk-corner{position:fixed;z-index:3;pointer-events:none;width:16px;height:16px;}
 .ctrl-pk-corner.tl{top:3px;left:3px;border-top:2px solid var(--pk1);border-left:2px solid var(--pk1);box-shadow:0 0 8px var(--pk-glow);}
 .ctrl-pk-corner.tr{top:3px;right:3px;border-top:2px solid var(--pk1);border-right:2px solid var(--pk1);box-shadow:0 0 8px var(--pk-glow);}
@@ -73,12 +71,12 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
   padding:10px 18px;position:relative;overflow:hidden;
 }
 #ctrl-header::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,transparent,rgba(34,211,238,0.06) 50%,transparent);}
+  background:linear-gradient(90deg,transparent,rgba(247,168,196,0.04) 50%,transparent);}
 #ctrl-header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--pk-border) 30%,rgba(56,189,248,0.45) 50%,var(--pk-border) 70%,transparent);}
-#ctrl-title{font-size:16px;font-weight:700;letter-spacing:4px;color:var(--ink-display);}
+  background:linear-gradient(90deg,transparent,var(--pk-border) 30%,rgba(80,160,255,0.5) 50%,var(--pk-border) 70%,transparent);}
+#ctrl-title{font-size:16px;font-weight:700;letter-spacing:4px;color:var(--pk1);}
 #ctrl-badge{font-size:10px;padding:3px 12px;border-radius:2px;
-  border:1px solid var(--pk-border);color:var(--ink-accent);background:rgba(34,211,238,0.08);letter-spacing:2px;}
+  border:1px solid var(--pk-border);color:var(--pk1);background:rgba(247,168,196,0.08);letter-spacing:2px;}
 #sync-ok{font-size:10px;padding:3px 12px;border-radius:2px;
   border:1px solid var(--teal);color:var(--teal);background:rgba(30,200,150,0.08);letter-spacing:2px;}
 
@@ -86,7 +84,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 #mode-toggle-bar{
   display:flex;align-items:center;gap:12px;
   padding:8px 14px;
-  background:rgba(8,18,32,0.72);
+  background:rgba(18,11,0,0.85);
   border:1px solid var(--border);border-radius:4px;
   position:relative;z-index:10;
 }
@@ -102,15 +100,15 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
   flex:1;padding:7px 12px;border-radius:3px;
   font-family:var(--font);font-size:11px;font-weight:700;letter-spacing:2px;
   cursor:pointer;transition:all 0.22s;
-  border:1px solid rgba(56,189,248,0.22);
-  background:rgba(6,14,26,0.55);color:var(--muted);
+  border:1px solid rgba(160,110,10,0.3);
+  background:rgba(18,11,0,0.5);color:var(--muted);
 }
-.mode-btn:hover{color:var(--text);border-color:rgba(94,234,212,0.45);}
+.mode-btn:hover{color:var(--text);border-color:rgba(220,160,40,0.5);}
 .mode-btn.m-active{
-  background:rgba(56,189,248,0.12);
-  border-color:rgba(92,183,255,0.55);
+  background:rgba(58,143,255,0.15);
+  border-color:rgba(58,143,255,0.55);
   color:var(--p2);
-  box-shadow:0 0 14px rgba(56,189,248,0.18);
+  box-shadow:0 0 10px rgba(58,143,255,0.2);
 }
 #mode-btn-ban-pick.m-active{
   background:rgba(200,30,30,0.18);
@@ -125,21 +123,21 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 .timer-dur-btn{
   padding:3px 8px;border-radius:2px;font-family:var(--font);font-size:10px;font-weight:700;
   letter-spacing:1px;cursor:pointer;
-  background:rgba(6,14,26,0.65);color:var(--muted);
-  border:1px solid rgba(56,189,248,0.22);transition:all 0.15s;
+  background:rgba(18,11,0,0.5);color:var(--muted);
+  border:1px solid rgba(160,110,10,0.3);transition:all 0.15s;
 }
-.timer-dur-btn:hover{color:var(--text);border-color:rgba(94,234,212,0.45);}
-.timer-dur-btn.t-active{background:rgba(244,215,125,0.12);border-color:rgba(244,215,125,0.45);color:var(--gold);}
+.timer-dur-btn:hover{color:var(--text);border-color:rgba(220,160,40,0.5);}
+.timer-dur-btn.t-active{background:rgba(240,170,40,0.15);border-color:rgba(240,170,40,0.5);color:var(--gold);}
 .g-card{user-select:none;}
 
 /* 玩家名称 */
 #player-names{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .name-block{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:10px 14px;display:flex;flex-direction:column;gap:5px;}
 .name-block label{font-size:9px;letter-spacing:3px;color:var(--muted);}
-.name-input{background:var(--soft);border:1px solid var(--border);border-radius:2px;
+.name-input{background:rgba(18,11,0,0.9);border:1px solid var(--border);border-radius:2px;
   color:var(--text);font-family:var(--font);font-size:13px;font-weight:700;padding:5px 10px;outline:none;letter-spacing:2px;width:100%;}
 .name-input:focus{border-color:var(--pk1);}
-.name-sub-input{background:var(--soft);border:1px solid rgba(56,189,248,0.18);border-radius:2px;
+.name-sub-input{background:rgba(18,11,0,0.9);border:1px solid rgba(160,110,10,0.25);border-radius:2px;
   color:var(--muted);font-family:var(--font);font-size:11px;padding:4px 10px;outline:none;width:100%;}
 
 /* 主网格 */
@@ -148,12 +146,12 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 /* BP状态 */
 #bp-status{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:12px;display:flex;flex-direction:column;gap:8px;}
 .bp-sec-label{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;
-  padding-bottom:4px;border-bottom:1px solid rgba(56,189,248,0.14);}
+  padding-bottom:4px;border-bottom:1px solid rgba(40,80,160,0.18);}
 .seq-list{display:flex;flex-direction:column;gap:3px;}
 .seq-item{display:flex;align-items:center;gap:7px;padding:4px 8px;border-radius:2px;font-size:11px;border:1px solid transparent;transition:all 0.2s;}
 .seq-item.s-done{opacity:0.3;}
-.seq-item.s-current{background:rgba(34,211,238,0.1);border-color:var(--pk1);animation:seqpulse 1.4s ease-in-out infinite;}
-@keyframes seqpulse{0%,100%{background:rgba(34,211,238,0.05);}50%{background:rgba(34,211,238,0.14);}}
+.seq-item.s-current{background:rgba(247,168,196,0.08);border-color:var(--pk1);animation:seqpulse 1.4s ease-in-out infinite;}
+@keyframes seqpulse{0%,100%{background:rgba(247,168,196,0.05);}50%{background:rgba(247,168,196,0.14);}}
 .seq-item.s-ban{border-left:2px solid var(--ban)!important;}
 .seq-item.s-pick{border-left:2px solid var(--gold)!important;}
 .seq-ph-icon{width:30px;font-size:9px;letter-spacing:1px;text-align:center;padding:1px 3px;border-radius:1px;flex-shrink:0;}
@@ -161,19 +159,19 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 .icon-pick{background:rgba(212,160,32,0.14);color:var(--gold);}
 .seq-pname{font-size:11px;font-weight:700;letter-spacing:1px;}
 .seq-done-mark{margin-left:auto;color:var(--teal);font-size:10px;}
-.bp-action-box{background:rgba(8,18,34,0.88);border:1px solid var(--pk-border);border-radius:3px;padding:10px;display:flex;flex-direction:column;gap:7px;}
-.action-lbl{font-size:9px;letter-spacing:2px;color:var(--ink-accent);}
+.bp-action-box{background:rgba(18,11,0,0.88);border:1px solid var(--pk-border);border-radius:3px;padding:10px;display:flex;flex-direction:column;gap:7px;}
+.action-lbl{font-size:9px;letter-spacing:2px;color:var(--pk1);}
 .action-sel{font-size:15px;font-weight:700;color:var(--gold);letter-spacing:2px;min-height:22px;}
 
 /* Buttons */
 .btn{padding:6px 14px;border-radius:2px;font-family:var(--font);font-size:11px;font-weight:700;
   letter-spacing:2px;cursor:pointer;border:1px solid;transition:all 0.15s;text-transform:uppercase;}
-.btn-primary{background:rgba(244,215,125,0.12);color:var(--gold);border-color:rgba(244,215,125,0.45);}
-.btn-primary:hover:not(:disabled){background:rgba(244,215,125,0.22);}
+.btn-primary{background:rgba(240,170,40,0.18);color:var(--glow);border-color:var(--glow);}
+.btn-primary:hover:not(:disabled){background:rgba(240,170,40,0.32);}
 .btn-primary:disabled{opacity:0.3;cursor:not-allowed;}
 .btn-danger{background:rgba(200,30,30,0.14);color:#ff7060;border-color:rgba(200,30,30,0.35);}
 .btn-danger:hover{background:rgba(200,30,30,0.26);}
-.btn-ghost{background:transparent;color:var(--muted);border-color:rgba(56,189,248,0.28);}
+.btn-ghost{background:transparent;color:var(--muted);border-color:rgba(160,110,10,0.35);}
 .btn-ghost:hover{color:var(--text);border-color:var(--muted);}
 .btn-teal{background:rgba(30,200,150,0.14);color:var(--teal);border-color:var(--teal);}
 .btn-teal:hover{background:rgba(30,200,150,0.26);}
@@ -187,33 +185,33 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 .score-ctrl-num{font-family:'Oswald',sans-serif;font-size:30px;font-weight:700;}
 .sc-p1{color:var(--p1);}.sc-p2{color:var(--p2);}
 .score-btns{display:flex;flex-direction:column;gap:3px;}
-.score-btn{width:26px;height:20px;background:rgba(34,211,238,0.08);border:1px solid var(--border);
+.score-btn{width:26px;height:20px;background:rgba(160,110,10,0.18);border:1px solid var(--border);
   border-radius:2px;color:var(--text);cursor:pointer;font-size:13px;font-family:var(--font);}
-.score-btn:hover{background:rgba(34,211,238,0.16);border-color:var(--pk1);}
+.score-btn:hover{background:rgba(247,168,196,0.15);border-color:var(--pk1);}
 
 /* 角色选择 */
 #char-panel{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:12px;display:flex;flex-direction:column;gap:8px;}
 #char-filter-row{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
 .el-btn{padding:3px 9px;border-radius:2px;cursor:pointer;font-size:9px;letter-spacing:2px;
-  background:transparent;color:var(--muted);border:1px solid rgba(56,189,248,0.22);
+  background:transparent;color:var(--muted);border:1px solid rgba(160,110,10,0.35);
   font-family:var(--font);transition:all 0.15s;}
-.el-btn.active,.el-btn:hover{color:var(--ink-accent);border-color:var(--pk1);background:rgba(34,211,238,0.08);}
-#char-search{flex:1;max-width:200px;background:var(--soft);border:1px solid var(--border);
+.el-btn.active,.el-btn:hover{color:var(--pk1);border-color:var(--pk1);background:rgba(247,168,196,0.08);}
+#char-search{flex:1;max-width:200px;background:rgba(18,11,0,0.9);border:1px solid var(--border);
   border-radius:2px;color:var(--text);font-family:var(--font);font-size:11px;padding:4px 10px;outline:none;}
 #char-search:focus{border-color:var(--pk1);}
 #char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
   gap:5px;overflow-y:auto;max-height:460px;
-  scrollbar-width:thin;  scrollbar-color:rgba(56,189,248,0.35) transparent;}
-.g-card{background:var(--soft);border:1px solid rgba(56,189,248,0.2);
+  scrollbar-width:thin;scrollbar-color:rgba(247,168,196,0.2) transparent;}
+.g-card{background:rgba(18,11,0,0.9);border:1px solid rgba(160,110,10,0.35);
   border-radius:3px;padding:5px;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:3px;
   transition:all 0.12s;position:relative;overflow:hidden;}
-.g-card:hover:not(.g-na){border-color:var(--pk1);background:rgba(34,211,238,0.08);}
-.g-card.g-sel{border-color:var(--gold);background:rgba(244,215,125,0.08);}
+.g-card:hover:not(.g-na){border-color:var(--pk1);background:rgba(247,168,196,0.06);}
+.g-card.g-sel{border-color:var(--gold);background:rgba(212,160,32,0.1);}
 .g-card.g-na{opacity:0.2;cursor:not-allowed;}
 .g-card.g-na::after{content:'';position:absolute;inset:0;
   background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(0,0,0,0.25) 5px,rgba(0,0,0,0.25) 7px);}
-.g-avatar{width:64px;height:64px;border-radius:3px;background:rgba(12,22,38,0.9);overflow:hidden;}
+.g-avatar{width:64px;height:64px;border-radius:3px;background:rgba(18,11,0,0.9);overflow:hidden;}
 .g-avatar img{width:100%;height:100%;object-fit:cover;object-position:top center;}
 .g-name{font-size:10px;font-weight:700;letter-spacing:1px;text-align:center;color:var(--text);}
 .g-el{font-size:8px;letter-spacing:1px;text-align:center;}
@@ -223,23 +221,23 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 /* 角色提示卡 */
 #char-tooltip{
   position:fixed;z-index:9998;
-  background:rgba(10,18,32,0.96);
+  background:rgba(18,11,0,0.97);
   border:1px solid var(--pk-border);
   border-radius:4px;padding:10px 14px;
   min-width:168px;pointer-events:none;
   opacity:0;transition:opacity 0.12s;
-  box-shadow:0 4px 28px rgba(0,0,0,0.55),0 0 18px rgba(34,211,238,0.12);
+  box-shadow:0 4px 24px var(--pk-shadow),0 0 12px rgba(247,168,196,0.12);
 }
 #char-tooltip.show{opacity:1;}
 .tt-name{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--text);margin-bottom:4px;}
-.tt-el{font-size:9px;letter-spacing:2px;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid rgba(56,189,248,0.2);}
+.tt-el{font-size:9px;letter-spacing:2px;margin-bottom:6px;padding-bottom:5px;border-bottom:1px solid rgba(160,110,10,0.3);}
 .tt-row{display:flex;align-items:flex-start;gap:6px;margin-bottom:3px;}
 .tt-label{font-size:8px;letter-spacing:1px;color:var(--muted);width:28px;flex-shrink:0;padding-top:1px;}
 .tt-val{font-size:10px;font-weight:700;color:var(--text);}
 .tt-syn{display:flex;gap:4px;flex-wrap:wrap;}
 .tt-syn-tag{font-size:9px;padding:1px 6px;border-radius:2px;
-  background:rgba(34,211,238,0.08);border:1px solid rgba(94,234,212,0.28);
-  color:var(--ink-accent);letter-spacing:1px;}
+  background:rgba(247,168,196,0.1);border:1px solid rgba(247,168,196,0.22);
+  color:var(--pk1);letter-spacing:1px;}
 
 /* 全息控制 */
 #holo-ctrl{background:var(--panel);border:1px solid rgba(30,200,150,0.28);border-radius:4px;padding:12px 16px;display:flex;flex-direction:column;gap:8px;}
@@ -247,7 +245,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 #holo-enemies-edit{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
 .holo-input-row{display:flex;align-items:center;gap:5px;}
 .holo-idx{font-size:10px;color:var(--teal);width:14px;flex-shrink:0;}
-.holo-name-input{flex:1;background:var(--soft);border:1px solid rgba(30,200,150,0.22);
+.holo-name-input{flex:1;background:rgba(18,11,0,0.9);border:1px solid rgba(30,200,150,0.22);
   border-radius:2px;color:var(--text);font-family:var(--font);font-size:11px;padding:4px 8px;outline:none;}
 .holo-name-input:focus{border-color:var(--teal);}
 #holo-score-ctrl{display:flex;align-items:center;gap:10px;}
@@ -255,10 +253,9 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 
 /* Toast */
 #toast{position:fixed;top:18px;left:50%;transform:translateX(-50%);
-  background:linear-gradient(90deg,rgba(34,211,238,0.95),rgba(56,189,248,0.88));color:#031018;
+  background:var(--pk1);color:#2a0a18;
   padding:6px 20px;border-radius:2px;font-size:12px;font-weight:700;letter-spacing:2px;
-  z-index:9999;opacity:0;transition:opacity 0.25s;pointer-events:none;white-space:nowrap;
-  box-shadow:0 0 24px rgba(34,211,238,0.35);}
+  z-index:9999;opacity:0;transition:opacity 0.25s;pointer-events:none;white-space:nowrap;}
 #toast.show{opacity:1;}
 </style>
 <script src="./mqtt.min.js"></script>
@@ -295,7 +292,6 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
 </script>
 </head>
 <body>
-<div id="wuwa-deco-ctrl" aria-hidden="true"></div>
 
 <!-- 图片边框四角 -->
 <div class="ctrl-frame-corner" id="cfc-tl"></div>
@@ -350,7 +346,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
         <div class="action-sel" id="action-selected">— 请在右侧选择角色 —</div>
         <div id="timer-box">
           <svg id="timer-ring-ctrl" width="52" height="52" viewBox="0 0 52 52">
-            <circle cx="26" cy="26" r="21" fill="none" stroke="rgba(56,189,248,0.22)" stroke-width="3"/>
+            <circle cx="26" cy="26" r="21" fill="none" stroke="rgba(160,110,10,0.18)" stroke-width="3"/>
             <circle id="timer-arc-ctrl" cx="26" cy="26" r="21" fill="none"
               stroke="#ffcc20" stroke-width="3" stroke-linecap="round"
               stroke-dasharray="131.9" stroke-dashoffset="0"
@@ -400,71 +396,6 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
         <input id="char-search" placeholder="搜索角色..." oninput="filterGrid()">
       </div>
       <div id="char-grid"></div>
-    </div>
-  </div>
-
-  <!-- ══ 投屏控制 ══ -->
-  <div id="stream-ctrl" style="
-    background:var(--panel);border:1px solid rgba(232,184,75,0.25);
-    border-radius:4px;padding:12px 16px;display:flex;flex-direction:column;gap:10px;">
-    <div style="font-size:9px;letter-spacing:4px;color:#e8b84b;
-      border-bottom:1px solid rgba(232,184,75,0.18);padding-bottom:5px;
-      display:flex;align-items:center;justify-content:space-between;">
-      <span>📡 选手投屏控制</span>
-      <span style="font-size:8px;color:var(--muted);letter-spacing:2px;">SCREEN SHARE</span>
-    </div>
-    <!-- 状态指示 -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <div id="sc-p1-card" style="
-        padding:10px 12px;border:1px solid rgba(255,85,0,0.2);
-        background:rgba(255,85,0,0.04);border-radius:3px;
-        display:flex;align-items:center;justify-content:space-between;">
-        <div>
-          <div style="font-size:8px;letter-spacing:3px;color:var(--p1);margin-bottom:3px;">玩家一 P1</div>
-          <div id="sc-p1-status" style="font-size:10px;font-weight:700;color:#555;letter-spacing:1px;">未连接</div>
-        </div>
-        <div id="sc-p1-dot" style="width:10px;height:10px;border-radius:50%;background:#333;"></div>
-      </div>
-      <div id="sc-p2-card" style="
-        padding:10px 12px;border:1px solid rgba(0,153,255,0.2);
-        background:rgba(0,153,255,0.04);border-radius:3px;
-        display:flex;align-items:center;justify-content:space-between;">
-        <div>
-          <div style="font-size:8px;letter-spacing:3px;color:var(--p2);margin-bottom:3px;">玩家二 P2</div>
-          <div id="sc-p2-status" style="font-size:10px;font-weight:700;color:#555;letter-spacing:1px;">未连接</div>
-        </div>
-        <div id="sc-p2-dot" style="width:10px;height:10px;border-radius:50%;background:#333;"></div>
-      </div>
-    </div>
-    <!-- 切换按钮 -->
-    <div style="display:flex;gap:6px;">
-      <button onclick="streamShow(0)" id="sc-btn-bp"
-        style="flex:1;padding:9px 4px;font-size:10px;letter-spacing:2px;font-weight:700;
-          border:1px solid rgba(232,184,75,0.5);color:#e8b84b;background:rgba(232,184,75,0.1);
-          cursor:pointer;border-radius:2px;transition:all 0.2s;"
-        onmouseover="this.style.background='rgba(232,184,75,0.2)'"
-        onmouseout="this.style.background='rgba(232,184,75,0.1)'">
-        🎮 BP 画面
-      </button>
-      <button onclick="streamShow(1)" id="sc-btn-p1"
-        style="flex:1;padding:9px 4px;font-size:10px;letter-spacing:2px;font-weight:700;
-          border:1px solid rgba(255,85,0,0.35);color:#ff7040;background:transparent;
-          cursor:pointer;border-radius:2px;transition:all 0.2s;"
-        onmouseover="this.style.background='rgba(255,85,0,0.12)'"
-        onmouseout="this.style.background='transparent'">
-        📺 玩家一
-      </button>
-      <button onclick="streamShow(2)" id="sc-btn-p2"
-        style="flex:1;padding:9px 4px;font-size:10px;letter-spacing:2px;font-weight:700;
-          border:1px solid rgba(0,153,255,0.35);color:#40aaff;background:transparent;
-          cursor:pointer;border-radius:2px;transition:all 0.2s;"
-        onmouseover="this.style.background='rgba(0,153,255,0.12)'"
-        onmouseout="this.style.background='transparent'">
-        📺 玩家二
-      </button>
-    </div>
-    <div id="sc-current" style="font-size:9px;letter-spacing:2px;color:var(--muted);text-align:center;">
-      当前显示：BP 画面
     </div>
   </div>
 
@@ -539,8 +470,7 @@ const CHARS=[
   {name:'灯灯',el:'Electro',img:'./images/dd.jpg'},
   {name:'卜灵',el:'Electro',img:'./images/bl.jpg'},
   {name:'鉴心',el:'Aero',img:'./images/jx1.jpg'},
-  {name:'漂泊者·气动',el:'Aero',img:'./images/pd.jpg'},
-  {name:'嘉贝丽娜',el:'Fusion',img:'./images/jb.jpg'},
+  {name:'漂泊者·气动',el:'Aero',img:'./images/qd.png'},
 ];
 const EL_ZH={Fusion:'热熔',Glacio:'冷凝',Electro:'导电',Aero:'气动',Spectro:'衍射',Havoc:'湮灭'};
 const CHAR_TIPS={
@@ -591,42 +521,34 @@ const CHAR_TIPS={
   '卜灵':{role:'辅助',synergy:['相里要','渊武']},
   '鉴心':{role:'主C',synergy:['维里奈','守岸人']},
   '漂泊者·气动':{role:'主C',synergy:['忌炎','秋水']},
-  '嘉贝丽娜':{role:'主C',synergy:['维里奈','守岸人']},
 };
 const ELEMENTS=['全部','Fusion','Glacio','Electro','Aero','Spectro','Havoc'];
 const SEQ_BAN_PICK=[
-  // 第1轮BAN：1号先手，各禁2个
+  // 第1轮BAN：各禁2个
   {phase:'ban',player:1},{phase:'ban',player:2},
   {phase:'ban',player:1},{phase:'ban',player:2},
-  // 第1轮PICK：1号先手（共10pick，P1选5 P2选5）
+  // 第1组PICK：2号先手
+  {phase:'pick',player:2},{phase:'pick',player:1},
+  {phase:'pick',player:2},{phase:'pick',player:2},
+  {phase:'pick',player:1},{phase:'pick',player:1},
+  // 第2轮BAN：2号先手 各禁2个
+  {phase:'ban',player:2},{phase:'ban',player:1},
+  {phase:'ban',player:2},{phase:'ban',player:1},
+  // 第2组PICK：1号先手
+  {phase:'pick',player:1},{phase:'pick',player:2},
+  {phase:'pick',player:2},{phase:'pick',player:1},
+  {phase:'pick',player:1},{phase:'pick',player:2},
+  // 第3组PICK：2号先手（反转）
+  {phase:'pick',player:2},{phase:'pick',player:1},
+  {phase:'pick',player:1},{phase:'pick',player:2},
+  {phase:'pick',player:2},{phase:'pick',player:1},
+];
+const SEQ_PICK_ONLY=[
+  // 1号先選1個，2号選2個，1号再選2個，2号再選2個
   {phase:'pick',player:1},
   {phase:'pick',player:2},{phase:'pick',player:2},
   {phase:'pick',player:1},{phase:'pick',player:1},
   {phase:'pick',player:2},{phase:'pick',player:2},
-  {phase:'pick',player:1},{phase:'pick',player:1},
-  {phase:'pick',player:2},
-  // 第2轮BAN：2号先手，各禁2个
-  {phase:'ban',player:2},{phase:'ban',player:1},
-  {phase:'ban',player:2},{phase:'ban',player:1},
-  // 第2轮PICK：2号先手（共8pick，P2选4 P1选4）
-  {phase:'pick',player:2},
-  {phase:'pick',player:1},{phase:'pick',player:1},
-  {phase:'pick',player:2},{phase:'pick',player:2},
-  {phase:'pick',player:1},{phase:'pick',player:1},
-  {phase:'pick',player:2},
-];
-// 修改后的 24进18 序列 (总共18人，P1:9人, P2:9人)
-const SEQ_PICK_ONLY = [
-  { phase: 'pick', player: 1 }, // P1 选 1
-  { phase: 'pick', player: 2 }, { phase: 'pick', player: 2 }, // P2 选 2
-  { phase: 'pick', player: 1 }, { phase: 'pick', player: 1 }, // P1 选 2
-  { phase: 'pick', player: 2 }, { phase: 'pick', player: 2 }, // P2 选 2
-  { phase: 'pick', player: 1 }, { phase: 'pick', player: 1 }, // P1 选 2
-  { phase: 'pick', player: 2 }, { phase: 'pick', player: 2 }, // P2 选 2
-  { phase: 'pick', player: 1 }, { phase: 'pick', player: 1 }, // P1 选 2
-  { phase: 'pick', player: 2 }, { phase: 'pick', player: 2 }, // P2 选 2
-  { phase: 'pick', player: 1 }, { phase: 'pick', player: 1 }, // P1 选 2
-  { phase: 'pick', player: 2 }                               // P2 补 1 (共18)
 ];
 let SEQ=SEQ_BAN_PICK;
 let BANS_EACH=4;
@@ -732,9 +654,8 @@ function renderGrid(){
 
 function selectChar(name){
   if(isUnavail(name))return;
-  const prev=S.selected?S.selected.name:null;
   S.selected=CHARS.find(c=>c.name===name);
-  if(prev!==name)_timerStart();
+  saveState();
   renderGrid();renderActionBar();
 }
 
@@ -749,6 +670,7 @@ function confirmAction(){
   if(S.step>=SEQ.length)S.done=true;
   saveState();renderAll();
   if(S.done){toast('BP 完成！双方阵容已确定',3000);recordBPStats();}
+  else _timerStart();
 }
 function recordBPStats(){
   if(S.statsRecorded)return;
@@ -768,9 +690,25 @@ function resetBP(){
   S.timerStart=null;_timerStop();
   S.step=0;S.p1bans=[];S.p2bans=[];S.p1picks=[];S.p2picks=[];S.selected=null;S.done=false;S.statsRecorded=false;S.bpTimeline=[];
   saveState();renderAll();toast('BP 已重置');
+  _timerStart();
+}
+
+function skipAction(){
+  if(S.done||S.step>=SEQ.length||!S.timerStart)return;
+  S.timerStart=null;_timerStop();
+  const cur=SEQ[S.step];
+  S.bpTimeline.push({step:S.step,phase:cur.phase,player:cur.player,char:null,ts:Date.now()});
+  if(cur.phase==='ban'){if(cur.player===1)S.p1bans.push(null);else S.p2bans.push(null);}
+  else{if(cur.player===1)S.p1picks.push(null);else S.p2picks.push(null);}
+  S.selected=null;S.step++;
+  if(S.step>=SEQ.length)S.done=true;
+  saveState();renderAll();
+  toast('⏱ 超时，自动空过');
+  if(!S.done)_timerStart();
 }
 /* ── 倒计时 ── */
 let _timerRaf=null;
+let _skipTimeout=null;
 
 function setTimerDur(secs){
   S.timerDuration=secs;
@@ -781,13 +719,22 @@ function setTimerDur(secs){
 
 function _timerStart(){
   if(S.done||S.step>=SEQ.length)return;
+  if(_skipTimeout){clearTimeout(_skipTimeout);_skipTimeout=null;}
   S.timerStart=Date.now();
   saveState();
   _timerRun();
+  if(S.timerDuration){
+    _skipTimeout=setTimeout(()=>{
+      if(S.timerStart&&Date.now()-S.timerStart>=S.timerDuration*1000-200){
+        skipAction();
+      }
+    },S.timerDuration*1000+200);
+  }
 }
 
 function _timerStop(){
   if(_timerRaf){cancelAnimationFrame(_timerRaf);_timerRaf=null;}
+  if(_skipTimeout){clearTimeout(_skipTimeout);_skipTimeout=null;}
   _timerDraw(1);
 }
 
@@ -852,7 +799,7 @@ document.addEventListener('keydown',e=>{
   } else if(e.key==='Escape'){
     e.preventDefault();
     if(S.selected){
-      S.selected=null;S.timerStart=null;_timerStop();
+      S.selected=null;
       saveState();renderGrid();renderActionBar();
     }
   }
@@ -904,43 +851,6 @@ function resetHolo(){
   saveState();renderHoloCtrl();toast('挑战已重置');
 }
 
-/* ══ 投屏控制 ══ */
-function streamShow(player){
-  localStorage.setItem('wuwa_stream_cmd',JSON.stringify({cmd:'show',player,ts:Date.now()}));
-  window.dispatchEvent(new StorageEvent('storage',{key:'wuwa_stream_cmd'}));
-  const labels={0:'BP 画面',1:'玩家一画面',2:'玩家二画面'};
-  document.getElementById('sc-current').textContent='当前显示：'+labels[player];
-  ['sc-btn-bp','sc-btn-p1','sc-btn-p2'].forEach((id,i)=>{
-    const btn=document.getElementById(id);
-    if(btn){
-      btn.style.opacity=(i===player)?'1':'0.55';
-      btn.style.background=(i===player)?'rgba(232,184,75,0.22)':'transparent';
-      btn.style.borderColor=(i===player)?'rgba(232,184,75,0.7)':'rgba(232,184,75,0.25)';
-    }
-  });
-  toast(labels[player]+' ✦ 已切换');
-}
-
-/* 轮询投屏连接状态 */
-setInterval(()=>{
-  try{
-    const st=JSON.parse(localStorage.getItem('wuwa_stream_status')||'{}');
-    [1,2].forEach(p=>{
-      const connected=!!st['p'+p];
-      const dot=document.getElementById('sc-p'+p+'-dot');
-      const txt=document.getElementById('sc-p'+p+'-status');
-      if(dot){
-        dot.style.background=connected?'#00e8a0':'#444';
-        dot.style.boxShadow=connected?'0 0 8px rgba(0,232,160,0.8)':'none';
-      }
-      if(txt){
-        txt.textContent=connected?'● 已连接':'○ 未连接';
-        txt.style.color=connected?'#00e8a0':'#555';
-      }
-    });
-  }catch(e2){}
-},500);
-
 // 角色提示卡交互
 (function(){
   const tip=document.getElementById('char-tooltip');
@@ -970,25 +880,6 @@ setInterval(()=>{
 })();
 
 buildFilterBtns();renderAll();saveState();_timerDraw(1);
-
-// 收到选手端 MQTT 推送后，重新读取状态并刷新界面
-window.addEventListener('storage',e=>{
-  if(e.key!=='wuwa_bp_state')return;
-  try{
-    const inc=JSON.parse(localStorage.getItem('wuwa_bp_state'));
-    if(!inc)return;
-    // 选手进度超前（选手确认了操作）才覆盖
-    if(inc.step>S.step||(inc.done&&!S.done)){
-      const sel=S.selected;
-      Object.assign(S,inc);
-      S.selected=sel;
-      S.filterEl=S.filterEl||'全部';
-      S.search=S.search||'';
-      renderAll();
-      toast('选手已确认操作',1500);
-    }
-  }catch(e2){}
-});
 </script>
 </body>
 </html>
