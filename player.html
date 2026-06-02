@@ -406,7 +406,7 @@ function isMyTurn(){
   if(!S||S.done||S.step>=SEQ.length)return false;
   return SEQ[S.step].player===myPlayer;
 }
-function allUsed(){return[...((S&&S.p1bans)||[]),...((S&&S.p2bans)||[]),...((S&&S.p1picks)||[]),...((S&&S.p2picks)||[])].map(c=>c.name);}
+function allUsed(){return[...((S&&S.p1bans)||[]),...((S&&S.p2bans)||[]),...((S&&S.p1picks)||[]),...((S&&S.p2picks)||[])].filter(c=>c).map(c=>c.name);}
 function isUnavail(n){return allUsed().includes(n);}
 
 /* ── 玩家选择 ── */

@@ -367,6 +367,7 @@ body::before{content:'';position:fixed;inset:0;z-index:0;
         <div class="btn-row">
           <button class="btn btn-primary" id="confirm-btn" onclick="confirmAction()" disabled>确 认</button>
           <button class="btn btn-teal" id="random-btn" onclick="randomPick()">随 机</button>
+          <button class="btn btn-danger" id="skip-btn" onclick="skipAction()">跳 过</button>
           <button class="btn btn-ghost" onclick="resetBP()">重 置 BP</button>
         </div>
       </div>
@@ -581,6 +582,7 @@ function setMode(mode){
   S.step=0;S.p1bans=[];S.p2bans=[];S.p1picks=[];S.p2picks=[];
   S.selected=null;S.done=false;S.statsRecorded=false;S.bpTimeline=[];
   saveState();renderAll();toast(mode==='pick_only'?'已切换：24进16 仅选角色':'已切换：16强 BAN/PICK',2500);
+  _timerStart();
 }
 
 function saveState(){
@@ -594,8 +596,8 @@ function toast(msg,d=2000){
 }
 function imgErr(img,n){img.style.display='none';img.parentNode.insertAdjacentHTML('beforeend',
   `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:rgba(160,200,255,0.7);text-align:center;padding:3px;line-height:1.3;">${n}</div>`);}
-function bannedNames(){return[...S.p1bans,...S.p2bans].map(c=>c.name);}
-function pickedNames(){return[...S.p1picks,...S.p2picks].map(c=>c.name);}
+function bannedNames(){return[...S.p1bans,...S.p2bans].filter(c=>c).map(c=>c.name);}
+function pickedNames(){return[...S.p1picks,...S.p2picks].filter(c=>c).map(c=>c.name);}
 function isUnavail(name){return bannedNames().includes(name)||pickedNames().includes(name);}
 
 function renderAll(){renderSeq();renderGrid();renderActionBar();renderScores();renderHoloCtrl();}
@@ -618,13 +620,15 @@ function renderActionBar(){
   if(S.done||S.step>=SEQ.length){
     document.getElementById('action-label').textContent='BP 完成';
     document.getElementById('action-selected').textContent='双方阵容已确定';
-    document.getElementById('confirm-btn').disabled=true;return;
+    document.getElementById('confirm-btn').disabled=true;
+    document.getElementById('skip-btn').disabled=true;return;
   }
   const cur=SEQ[S.step];
   const pn=cur.player===1?(S.p1name||'玩家一'):(S.p2name||'玩家二');
   document.getElementById('action-label').textContent=`${pn} · ${cur.phase==='ban'?'禁用阶段':'选择阶段'}`;
   document.getElementById('action-selected').textContent=S.selected?S.selected.name:'— 请在右侧点击角色 —';
   document.getElementById('confirm-btn').disabled=!S.selected;
+  document.getElementById('skip-btn').disabled=!S.timerStart;
 }
 
 function buildFilterBtns(){
@@ -799,7 +803,7 @@ document.addEventListener('keydown',e=>{
   } else if(e.key==='Escape'){
     e.preventDefault();
     if(S.selected){
-      S.selected=null;
+      S.selected=null;S.timerStart=null;_timerStop();
       saveState();renderGrid();renderActionBar();
     }
   }
