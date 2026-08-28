@@ -1,2018 +1,1712 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8"><title>旧雨杯 · 鸣潮娱乐赛</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>旧雨杯 · 鸣潮电竞职业联赛 BP</title>
+<link rel="stylesheet" href="./theme-wuwa-deep.css">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Oswald:wght@400;600;700&display=swap');
-*{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --p1:#e85c30;--p2:#3a8fff;
-  --ban:#cc2020;--gold:#d4a020;--teal:#20c8a0;
-  --text:#d8eeff;--muted:#4a7090;
-  --ice1:#a8d8f7;--ice2:#6ab8f0;--ice3:#c8ecff;
-  --ice-glow:rgba(168,216,247,0.65);
-  --ice-shadow:rgba(80,160,230,0.45);
-  --font:'Noto Sans SC','Oswald',sans-serif;
-}
-html,body{width:1920px;height:1080px;overflow:hidden;background:transparent;font-family:var(--font);color:var(--text);}
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Sans+SC:wght@400;500;700;900&family=Rajdhani:wght@600;700&family=Oswald:wght@500;600;700&display=swap');
 
-/* ── backgrounds ── */
-#bg-main{position:fixed;inset:0;z-index:0;background:url('./3.jpg') center/cover no-repeat;}
-#bg-dim{position:fixed;inset:0;z-index:1;
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  /* 英雄联盟电竞核心色谱 */
+  --blue-team: #00d2ff;
+  --blue-team-glow: rgba(0, 210, 255, 0.65);
+  --blue-team-dark: #003666;
+  --blue-team-gradient: linear-gradient(135deg, #00d2ff 0%, #0066cc 100%);
+
+  --red-team: #ff3366;
+  --red-team-glow: rgba(255, 51, 102, 0.65);
+  --red-team-dark: #660022;
+  --red-team-gradient: linear-gradient(135deg, #ff3366 0%, #cc0033 100%);
+
+  --ban-red: #ff2233;
+  --gold-hex: #e5b960;
+  --gold-glow: rgba(229, 185, 96, 0.55);
+  --gold-dark: #8c6a28;
+
+  --bg-deep: #030712;
+  --panel-glass: rgba(5, 12, 28, 0.88);
+  --panel-glass-border: rgba(56, 189, 248, 0.22);
+  --panel-card: rgba(8, 18, 40, 0.85);
+
+  --text-main: #f0f6fc;
+  --text-muted: #7390b0;
+  --text-dim: #41556e;
+
+  --font-esports: 'Rajdhani', 'Oswald', 'Noto Sans SC', sans-serif;
+  --font-title: 'Oswald', 'Noto Sans SC', sans-serif;
+  --font-body: 'Noto Sans SC', 'Rajdhani', sans-serif;
+}
+
+html, body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  background: #02050e;
+  font-family: var(--font-body);
+  color: var(--text-main);
+  user-select: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   1. 动态宇宙与赛博背景 (Dynamic Esports Ambient Background)
+   ══════════════════════════════════════════════════════════════════════════ */
+#bg-main {
+  position: fixed; inset: 0; z-index: 0;
+  background: url('./3.jpg') center/cover no-repeat;
+  filter: brightness(0.4) saturate(1.2);
+}
+
+#bg-overlay {
+  position: fixed; inset: 0; z-index: 1;
   background:
-    linear-gradient(90deg,
-      rgba(2,6,20,0.98) 0%,rgba(2,6,20,0.98) 14.8%,
-      rgba(4,10,30,0.88) 19%,rgba(4,10,30,0.76) 25%,
-      rgba(4,10,30,0.76) 75%,rgba(4,10,30,0.88) 81%,
-      rgba(2,6,20,0.98) 85.2%,rgba(2,6,20,0.98) 100%),
-    linear-gradient(180deg,
-      rgba(2,6,20,0.99) 0%,rgba(2,6,20,0.9) 8%,
-      rgba(2,6,20,0.72) 13%,rgba(2,6,20,0.68) 17%,
-      rgba(2,6,20,0.68) 80%,rgba(2,6,20,0.9) 87%,
-      rgba(2,6,20,1) 100%);}
-#bg-side-l{position:fixed;left:0;top:130px;bottom:100px;width:284px;z-index:2;pointer-events:none;
-  background:url('./1.jpg') right center/cover no-repeat;opacity:0.12;
-  -webkit-mask:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.5) 55%,transparent 100%);
-  mask:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.5) 55%,transparent 100%);}
-#bg-side-r{position:fixed;right:0;top:130px;bottom:100px;width:284px;z-index:2;pointer-events:none;
-  background:url('./1.jpg') left center/cover no-repeat;opacity:0.12;transform:scaleX(-1);
-  -webkit-mask:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.5) 55%,transparent 100%);
-  mask:linear-gradient(90deg,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.5) 55%,transparent 100%);}
-#scanlines{position:fixed;inset:0;z-index:3;pointer-events:none;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,8,30,0.04) 2px,rgba(0,8,30,0.04) 4px);}
-#pcanvas{position:fixed;inset:0;z-index:3;pointer-events:none;}
-
-/* ── ice border ── */
-.fl-top{position:fixed;top:0;left:0;right:0;height:3px;z-index:25;pointer-events:none;
-  background:linear-gradient(90deg,transparent 0%,rgba(80,140,220,0.3) 4%,var(--ice2) 14%,var(--ice3) 38%,#fff 50%,var(--ice3) 62%,var(--ice2) 86%,rgba(80,140,220,0.3) 96%,transparent 100%);
-  box-shadow:0 0 16px var(--ice-glow),0 0 40px var(--ice-shadow),0 3px 80px rgba(60,130,220,0.15);}
-.fl-bottom{position:fixed;bottom:0;left:0;right:0;height:3px;z-index:25;pointer-events:none;
-  background:linear-gradient(90deg,transparent 0%,rgba(80,140,220,0.3) 4%,var(--ice2) 14%,var(--ice3) 38%,#fff 50%,var(--ice3) 62%,var(--ice2) 86%,rgba(80,140,220,0.3) 96%,transparent 100%);
-  box-shadow:0 0 16px var(--ice-glow),0 0 40px var(--ice-shadow),0 -3px 80px rgba(60,130,220,0.15);}
-.fl-left{position:fixed;left:0;top:0;bottom:0;width:3px;z-index:25;pointer-events:none;
-  background:linear-gradient(180deg,transparent 0%,rgba(80,140,220,0.3) 4%,var(--ice2) 14%,var(--ice1) 50%,var(--ice2) 86%,rgba(80,140,220,0.3) 96%,transparent 100%);
-  box-shadow:0 0 16px var(--ice-glow),0 0 40px var(--ice-shadow),3px 0 80px rgba(60,130,220,0.12);}
-.fl-right{position:fixed;right:0;top:0;bottom:0;width:3px;z-index:25;pointer-events:none;
-  background:linear-gradient(180deg,transparent 0%,rgba(80,140,220,0.3) 4%,var(--ice2) 14%,var(--ice1) 50%,var(--ice2) 86%,rgba(80,140,220,0.3) 96%,transparent 100%);
-  box-shadow:0 0 16px var(--ice-glow),0 0 40px var(--ice-shadow),-3px 0 80px rgba(60,130,220,0.12);}
-.fl-ti{position:fixed;top:6px;left:55px;right:55px;height:1px;z-index:24;pointer-events:none;
-  background:linear-gradient(90deg,transparent,rgba(120,190,255,0.2) 15%,rgba(120,190,255,0.2) 85%,transparent);}
-.fl-bi{position:fixed;bottom:6px;left:55px;right:55px;height:1px;z-index:24;pointer-events:none;
-  background:linear-gradient(90deg,transparent,rgba(120,190,255,0.2) 15%,rgba(120,190,255,0.2) 85%,transparent);}
-.fl-li{position:fixed;left:6px;top:55px;bottom:55px;width:1px;z-index:24;pointer-events:none;
-  background:linear-gradient(180deg,transparent,rgba(120,190,255,0.18) 15%,rgba(120,190,255,0.18) 85%,transparent);}
-.fl-ri{position:fixed;right:6px;top:55px;bottom:55px;width:1px;z-index:24;pointer-events:none;
-  background:linear-gradient(180deg,transparent,rgba(120,190,255,0.18) 15%,rgba(120,190,255,0.18) 85%,transparent);}
-.fc{position:fixed;z-index:26;pointer-events:none;}
-.fc.tl{top:0;left:0;width:80px;height:80px;border-top:3px solid var(--ice1);border-left:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),-6px -6px 40px var(--ice-shadow);}
-.fc.tr{top:0;right:0;width:80px;height:80px;border-top:3px solid var(--ice1);border-right:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),6px -6px 40px var(--ice-shadow);}
-.fc.bl{bottom:0;left:0;width:80px;height:80px;border-bottom:3px solid var(--ice1);border-left:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),-6px 6px 40px var(--ice-shadow);}
-.fc.br{bottom:0;right:0;width:80px;height:80px;border-bottom:3px solid var(--ice1);border-right:3px solid var(--ice1);box-shadow:0 0 24px var(--ice-glow),6px 6px 40px var(--ice-shadow);}
-.fd{position:fixed;z-index:28;pointer-events:none;transform:rotate(45deg);}
-.fd.tl{top:10px;left:10px;width:13px;height:13px;background:var(--ice3);box-shadow:0 0 16px var(--ice-glow),0 0 32px var(--ice-shadow);}
-.fd.tr{top:10px;right:10px;width:13px;height:13px;background:var(--ice3);box-shadow:0 0 16px var(--ice-glow),0 0 32px var(--ice-shadow);}
-.fd.bl{bottom:10px;left:10px;width:13px;height:13px;background:var(--ice3);box-shadow:0 0 16px var(--ice-glow),0 0 32px var(--ice-shadow);}
-.fd.br{bottom:10px;right:10px;width:13px;height:13px;background:var(--ice3);box-shadow:0 0 16px var(--ice-glow),0 0 32px var(--ice-shadow);}
-.fm{position:fixed;z-index:27;pointer-events:none;transform:rotate(45deg);width:10px;height:10px;
-  background:rgba(200,236,255,0.95);box-shadow:0 0 14px var(--ice-glow),0 0 28px rgba(100,180,255,0.5);}
-.fm.top{top:9px;left:calc(50% - 5px);}
-.fm.bottom{bottom:9px;left:calc(50% - 5px);}
-.fm.left{left:9px;top:calc(50% - 5px);}
-.fm.right{right:9px;top:calc(50% - 5px);}
-.fq{position:fixed;z-index:27;pointer-events:none;transform:rotate(45deg);width:7px;height:7px;
-  background:rgba(168,216,247,0.85);box-shadow:0 0 10px var(--ice-glow);}
-.fq.t1{top:10px;left:25%;}.fq.t2{top:10px;right:25%;}
-.fq.b1{bottom:10px;left:25%;}.fq.b2{bottom:10px;right:25%;}
-.fq.l1{left:10px;top:25%;}.fq.l2{left:10px;bottom:25%;}
-.fq.r1{right:10px;top:25%;}.fq.r2{right:10px;bottom:25%;}
-
-/* ── PV layer ── */
-#pv-layer{position:fixed;inset:0;z-index:100;background:#000;display:none;align-items:center;justify-content:center;}
-#pv-layer.show{display:flex;}
-#pv-video{width:1920px;height:1080px;object-fit:cover;}
-#pv-title{position:absolute;top:32px;left:50%;transform:translateX(-50%);
-  font-size:11px;letter-spacing:5px;color:rgba(255,255,255,0.3);z-index:101;}
-#pv-controls{position:absolute;bottom:36px;right:56px;z-index:101;}
-.pv-btn{font-family:var(--font);font-size:11px;letter-spacing:3px;padding:6px 18px;border-radius:2px;
-  cursor:pointer;border:1px solid rgba(168,216,247,0.4);color:rgba(168,216,247,0.7);
-  background:rgba(0,0,0,0.5);transition:all 0.2s;}
-.pv-btn:hover{color:var(--ice3);border-color:var(--ice3);}
-#pv-overlay{position:absolute;inset:0;z-index:102;display:none;align-items:center;
-  justify-content:center;flex-direction:column;gap:12px;pointer-events:none;}
-#pv-overlay.show{display:flex;}
-#pv-countdown{font-family:'Oswald',sans-serif;font-size:130px;font-weight:700;
-  color:rgba(168,216,247,0.9);text-shadow:0 0 50px var(--ice-glow),0 0 100px var(--ice-shadow);
-  animation:cdpulse 1s ease-in-out;}
-@keyframes cdpulse{0%{transform:scale(1.5);opacity:0;}100%{transform:scale(1);opacity:1;}}
-#pv-countdown-label{font-size:16px;letter-spacing:6px;color:rgba(255,255,255,0.35);}
-
-/* ── main grid ── */
-#app{
-  position:relative;z-index:10;width:1920px;height:1080px;
-  display:grid;
-  grid-template-rows:90px 40px 1fr 100px;
-  grid-template-columns:284px 1fr 284px;
+    radial-gradient(ellipse 1200px 700px at 50% 30%, rgba(3, 10, 30, 0.4) 0%, rgba(2, 5, 14, 0.95) 75%),
+    radial-gradient(circle 800px at 0% 50%, rgba(0, 100, 200, 0.18) 0%, transparent 60%),
+    radial-gradient(circle 800px at 100% 50%, rgba(200, 30, 60, 0.18) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(2, 6, 18, 0.98) 0%, rgba(3, 8, 22, 0.75) 15%, rgba(3, 8, 22, 0.75) 85%, rgba(1, 3, 10, 0.98) 100%);
 }
 
-/* ── header ── */
-#header{grid-column:1/-1;grid-row:1;display:grid;grid-template-columns:380px 1fr 380px;
-  align-items:center;position:relative;overflow:hidden;z-index:10;}
-#header::before{content:'';position:absolute;inset:0;
-  background:url('./3.jpg') center 15%/cover no-repeat;opacity:0.25;}
-#header::after{content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(2,6,20,0.82) 0%,rgba(2,6,20,0.75) 100%),
-    linear-gradient(90deg,rgba(2,6,20,0.5) 0%,transparent 18%,transparent 82%,rgba(2,6,20,0.5) 100%);}
-.hdr-line{position:absolute;bottom:0;left:0;right:0;height:1px;z-index:3;
-  background:linear-gradient(90deg,transparent 0%,var(--ice2) 8%,var(--ice3) 35%,#fff 50%,var(--ice3) 65%,var(--ice2) 92%,transparent 100%);
-  box-shadow:0 0 12px var(--ice-glow),0 2px 24px var(--ice-shadow);}
-#p1-header-area{display:flex;align-items:center;gap:12px;padding:8px 20px;height:100%;position:relative;z-index:3;}
-#p1-header-area::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,rgba(232,92,48,0.16) 0%,transparent 100%);}
-#p1-header-area::after{content:'';position:absolute;left:0;top:12%;bottom:12%;width:3px;
-  background:linear-gradient(180deg,transparent,var(--p1),transparent);box-shadow:0 0 12px var(--p1);}
-#p2-header-area{display:flex;align-items:center;gap:12px;flex-direction:row-reverse;
-  padding:8px 20px;height:100%;position:relative;z-index:3;}
-#p2-header-area::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(270deg,rgba(58,143,255,0.16) 0%,transparent 100%);}
-#p2-header-area::after{content:'';position:absolute;right:0;top:12%;bottom:12%;width:3px;
-  background:linear-gradient(180deg,transparent,var(--p2),transparent);box-shadow:0 0 12px var(--p2);}
-.guild-img{width:64px;height:64px;border-radius:4px;object-fit:cover;flex-shrink:0;}
-.guild-img.p1g{border:1px solid rgba(232,92,48,0.55);box-shadow:0 0 14px rgba(232,92,48,0.3);}
-.guild-img.p2g{border:1px solid rgba(58,143,255,0.55);box-shadow:0 0 14px rgba(58,143,255,0.3);}
-.player-info{display:flex;flex-direction:column;gap:3px;flex:1;}
-.player-label{font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;}
-.player-name-hdr{font-size:18px;font-weight:700;letter-spacing:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.p1c{color:var(--p1);text-shadow:0 0 14px rgba(232,92,48,0.5);}
-.p2c{color:var(--p2);text-shadow:0 0 14px rgba(58,143,255,0.5);}
-.player-sub-hdr{font-size:10px;color:var(--muted);letter-spacing:1px;}
-.p2-wrap{display:flex;flex-direction:column;gap:3px;align-items:flex-end;flex:1;}
-#center-header{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:4px;padding:0 16px;position:relative;z-index:3;}
-#logo-row{display:flex;align-items:center;gap:12px;}
-#logo-img{height:38px;width:auto;object-fit:contain;filter:drop-shadow(0 0 10px var(--ice-glow));}
-#main-title{font-family:'Oswald','Noto Sans SC',sans-serif;font-size:28px;font-weight:700;
-  letter-spacing:8px;color:#d8eeff;text-transform:uppercase;
-  text-shadow:0 0 20px var(--ice-glow),0 0 50px var(--ice-shadow);}
-#sub-title{font-size:10px;letter-spacing:5px;color:var(--muted);text-transform:uppercase;}
-#phase-tag{font-size:10px;letter-spacing:3px;padding:3px 18px;border-radius:2px;
-  border:1px solid rgba(106,184,240,0.55);color:var(--ice2);
-  background:rgba(60,130,220,0.12);margin-top:2px;text-shadow:0 0 8px var(--ice-glow);}
-
-/* ── sponsor bar ── */
-#sponsor-bar{grid-column:1/-1;grid-row:2;
-  display:flex;align-items:center;justify-content:center;gap:22px;
-  position:relative;overflow:hidden;z-index:10;}
-#sponsor-bar::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(2,6,20,0.97) 0%,rgba(3,7,24,0.94) 100%);}
-#sponsor-bar::after{content:'';position:absolute;bottom:0;left:3%;right:3%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(106,184,240,0.3) 30%,rgba(168,216,247,0.3) 70%,transparent);}
-.sp-div{width:1px;height:20px;flex-shrink:0;position:relative;z-index:1;
-  background:linear-gradient(180deg,transparent,rgba(106,184,240,0.25),transparent);}
-.sp-item{display:flex;align-items:center;gap:7px;position:relative;z-index:1;}
-.sp-gif{height:26px;width:auto;max-width:90px;object-fit:contain;border-radius:2px;}
-.sp-img{height:24px;width:auto;max-width:66px;object-fit:contain;border-radius:2px;}
-.sp-text{font-size:12px;font-weight:700;letter-spacing:2px;white-space:nowrap;}
-.sp-sub{font-size:8px;letter-spacing:2px;color:var(--muted);white-space:nowrap;}
-.c-ice{color:var(--ice1);text-shadow:0 0 8px var(--ice-glow);}
-.c-gold{color:var(--gold);text-shadow:0 0 8px rgba(212,160,32,0.4);}
-.c-blue{color:var(--ice2);text-shadow:0 0 8px var(--ice-glow);}
-.c-teal{color:var(--teal);text-shadow:0 0 8px rgba(30,200,150,0.4);}
-.c-white{color:var(--ice3);text-shadow:0 0 8px var(--ice-glow);}
-
-/* ══════════════════════════════════════
-   SIDE PANELS — PORTRAIT CARD DESIGN
-══════════════════════════════════════ */
-.player-panel{
-  grid-row:3/4;
-  display:flex;flex-direction:column;
-  position:relative;z-index:10;overflow:hidden;
-}
-#p1-panel{
-  background:linear-gradient(100deg,rgba(2,4,16,0.97) 0%,rgba(5,11,32,0.93) 100%);
-  border-right:1px solid rgba(106,184,240,0.14);
-}
-#p2-panel{
-  background:linear-gradient(260deg,rgba(2,4,16,0.97) 0%,rgba(5,11,32,0.93) 100%);
-  border-left:1px solid rgba(106,184,240,0.14);
-}
-#p1-panel::before,#p2-panel::before{
-  content:'';position:absolute;inset:0;z-index:0;
-  background:url('./3.jpg') center/cover no-repeat;opacity:0.07;
-}
-#p1-panel::after{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;z-index:1;
-  background:linear-gradient(180deg,transparent 0%,var(--p1) 20%,var(--p1) 80%,transparent 100%);
-  box-shadow:0 0 14px rgba(232,92,48,0.35);
-}
-.p2-vline{position:absolute;right:0;top:0;bottom:0;width:2px;z-index:1;
-  background:linear-gradient(180deg,transparent 0%,var(--p2) 20%,var(--p2) 80%,transparent 100%);
-  box-shadow:0 0 14px rgba(58,143,255,0.35);}
-
-.panel-player-hdr{
-  height:32px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:700;letter-spacing:5px;text-transform:uppercase;
-  border-bottom:1px solid rgba(106,184,240,0.14);
-  position:relative;z-index:2;
-}
-.ph-p1{background:linear-gradient(90deg,rgba(232,92,48,0.3) 0%,rgba(232,92,48,0.05) 100%);
-  color:var(--p1);text-shadow:0 0 12px rgba(232,92,48,0.45);}
-.ph-p2{background:linear-gradient(270deg,rgba(58,143,255,0.3) 0%,rgba(58,143,255,0.05) 100%);
-  color:var(--p2);text-shadow:0 0 12px rgba(58,143,255,0.45);}
-
-/* section labels */
-.section-lbl{
-  flex-shrink:0;
-  font-size:8px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;
-  padding:5px 10px 4px;
-  border-bottom:1px solid rgba(60,120,200,0.08);
-  display:flex;align-items:center;gap:6px;
-  position:relative;z-index:2;
-}
-.section-lbl.ban-lbl::before{
-  content:'';display:inline-block;width:6px;height:6px;border-radius:50%;
-  background:var(--ban);box-shadow:0 0 6px var(--ban);
-}
-.section-lbl.pick-lbl::before{
-  content:'';display:inline-block;width:6px;height:6px;border-radius:50%;
-  background:var(--ice2);box-shadow:0 0 6px var(--ice2);
+#pcanvas {
+  position: fixed; inset: 0; z-index: 2; pointer-events: none;
 }
 
-/* ── BAN cards (2×2 grid) ── */
-.ban-section{flex-shrink:0;position:relative;z-index:2;}
-.ban-cards-row{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  column-gap:3px;row-gap:5px;
-  padding:4px 6px;
+/* 赛博网格与扫描线 */
+#scanlines {
+  position: fixed; inset: 0; z-index: 3; pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0, 20, 60, 0.05) 3px, rgba(0, 20, 60, 0.05) 6px);
 }
 
-.ban-card{
-  height:54px;
-  position:relative;overflow:hidden;border-radius:3px;
-  background:rgba(5,10,32,0.95);
-  border:1px solid rgba(60,100,180,0.18);
-  transition:border-color 0.35s,box-shadow 0.35s;
+/* ══════════════════════════════════════════════════════════════════════════
+   2. 英雄联盟官方赛事外框 (Hextech Stadium Outer Frame)
+   ══════════════════════════════════════════════════════════════════════════ */
+.frame-edge-t, .frame-edge-b {
+  position: fixed; left: 0; right: 0; height: 3px; z-index: 50; pointer-events: none;
+  background: linear-gradient(90deg, transparent 0%, var(--blue-team) 15%, #ffffff 50%, var(--red-team) 85%, transparent 100%);
+  box-shadow: 0 0 20px rgba(0, 210, 255, 0.5), 0 0 35px rgba(255, 51, 102, 0.5);
 }
-.ban-card img{
-  width:100%;height:100%;
-  object-fit:cover;object-position:top center;
-  display:block;
+.frame-edge-t { top: 0; }
+.frame-edge-b { bottom: 0; }
+
+.frame-corner {
+  position: fixed; z-index: 51; pointer-events: none; width: 48px; height: 48px;
 }
-.ban-card .bc-empty-txt{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:9px;color:rgba(60,100,160,0.28);letter-spacing:1px;
-}
-.ban-card .bc-overlay{
-  position:absolute;inset:0;
-  background:rgba(110,8,8,0.38);
-  display:flex;align-items:center;justify-content:center;
-}
-.ban-card .bc-overlay svg{width:30px;height:30px;filter:drop-shadow(0 0 8px rgba(255,50,50,0.8));}
-.ban-card .bc-name{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:4px 5px;
-  background:linear-gradient(0deg,rgba(0,0,0,0.92),rgba(0,0,0,0.5),transparent);
-  font-size:9px;font-weight:700;letter-spacing:1px;
-  color:rgba(255,160,160,0.85);text-decoration:line-through;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.ban-card .bc-badge{
-  position:absolute;top:3px;right:3px;
-  font-size:7px;letter-spacing:1px;padding:1px 4px;border-radius:1px;
-  background:rgba(120,8,8,0.8);color:rgba(255,140,140,0.9);
-  border:1px solid rgba(180,25,25,0.55);
-}
-.ban-card.active{
-  border-color:rgba(200,25,25,0.7);
-  animation:ban-pulse 1.4s ease-in-out infinite;
-}
-@keyframes ban-pulse{
-  0%,100%{box-shadow:0 0 10px rgba(180,20,20,0.3),inset 0 0 12px rgba(180,20,20,0.06);}
-  50%{box-shadow:0 0 24px rgba(210,30,30,0.6),inset 0 0 28px rgba(210,30,30,0.12);}
+.frame-corner.tl { top: 6px; left: 6px; border-top: 3px solid var(--blue-team); border-left: 3px solid var(--blue-team); box-shadow: -4px -4px 16px var(--blue-team-glow); }
+.frame-corner.tr { top: 6px; right: 6px; border-top: 3px solid var(--red-team); border-right: 3px solid var(--red-team); box-shadow: 4px -4px 16px var(--red-team-glow); }
+.frame-corner.bl { bottom: 6px; left: 6px; border-bottom: 3px solid var(--blue-team); border-left: 3px solid var(--blue-team); box-shadow: -4px 4px 16px var(--blue-team-glow); }
+.frame-corner.br { bottom: 6px; right: 6px; border-bottom: 3px solid var(--red-team); border-right: 3px solid var(--red-team); box-shadow: 4px 4px 16px var(--red-team-glow); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   3. 主布局栅格 (Main Layout Grid)
+   ══════════════════════════════════════════════════════════════════════════ */
+#app {
+  position: relative; z-index: 10;
+  width: 1920px; height: 1080px;
+  display: grid;
+  grid-template-rows: 92px 34px 1fr 94px;
+  grid-template-columns: 290px 1fr 290px;
 }
 
-/* ── PICK portrait cards — vertical list ── */
-.pick-section{flex:1;display:flex;flex-direction:column;min-height:0;position:relative;z-index:2;}
-.pick-cards-col{
-  flex:1;min-height:0;
-  display:flex;
-  flex-direction:column;
-  gap:1px;
-  padding:2px 4px 4px;
+/* ══════════════════════════════════════════════════════════════════════════
+   4. 顶部对决比分台 (Top Esports Header & Scoreboard)
+   ══════════════════════════════════════════════════════════════════════════ */
+#header {
+  grid-column: 1 / -1; grid-row: 1;
+  display: grid;
+  grid-template-columns: 460px 1fr 460px;
+  align-items: center;
+  position: relative;
+  background: linear-gradient(180deg, rgba(4, 9, 24, 0.98) 0%, rgba(2, 6, 18, 0.92) 100%);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
 }
-
-.pick-card{
-  flex:1;min-height:0;
-  position:relative;overflow:hidden;border-radius:2px;
-  background:rgba(4,8,24,0.98);
-  border:1px solid rgba(50,88,155,0.14);
-  display:flex;align-items:stretch;
-  transition:border-color 0.35s,box-shadow 0.35s;
-}
-
-/* Text side */
-.pc-text-side{
-  flex:1;min-width:0;
-  display:flex;flex-direction:column;justify-content:center;
-  padding:0 8px 0 11px;
-  position:relative;z-index:2;
-}
-#p2-panel .pc-text-side{
-  padding:0 11px 0 8px;
-  align-items:flex-end;text-align:right;
-}
-
-/* Portrait side */
-.pc-port-side{
-  width:108px;flex-shrink:0;
-  position:relative;overflow:hidden;
-}
-#p2-panel .pc-port-side{order:-1;}
-.pc-port-side img{
-  width:100%;height:100%;
-  object-fit:cover;object-position:top center;
-  display:block;
-}
-/* Fade blend from portrait into text area */
-#p1-panel .pc-port-side::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:38px;z-index:1;
-  background:linear-gradient(90deg,rgba(4,8,24,0.95),transparent);
-}
-#p2-panel .pc-port-side::before{
-  content:'';position:absolute;right:0;top:0;bottom:0;width:38px;z-index:1;
-  background:linear-gradient(270deg,rgba(4,8,24,0.95),transparent);
-}
-
-/* Text elements */
-.pc-seq{font-size:7px;letter-spacing:2px;color:rgba(90,140,220,0.42);margin-bottom:2px;}
-.pc-name{
-  font-size:13px;font-weight:700;letter-spacing:1px;
-  color:#d8eeff;text-shadow:0 0 10px rgba(168,216,247,0.28);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.pc-el{font-size:9px;letter-spacing:1px;margin-top:2px;}
-
-/* Empty state */
-.pick-card .pc-empty-v{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  color:rgba(50,88,155,0.16);font-size:8px;letter-spacing:2px;
-}
-
-/* active waiting slot */
-.pick-card.active{
-  border-color:rgba(106,184,240,0.42);
-  animation:pick-pulse 1.4s ease-in-out infinite;
-}
-@keyframes pick-pulse{
-  0%,100%{box-shadow:0 0 8px rgba(106,184,240,0.15);}
-  50%{box-shadow:0 0 20px rgba(106,184,240,0.38);}
-}
-.pick-card.p1-active{
-  border-color:rgba(232,92,48,0.5);
-  animation:pick-pulse-p1 1.4s ease-in-out infinite;
-}
-@keyframes pick-pulse-p1{
-  0%,100%{box-shadow:0 0 8px rgba(232,92,48,0.18);}
-  50%{box-shadow:0 0 20px rgba(232,92,48,0.45);}
-}
-.pick-card.p2-active{
-  border-color:rgba(58,143,255,0.5);
-  animation:pick-pulse-p2 1.4s ease-in-out infinite;
-}
-@keyframes pick-pulse-p2{
-  0%,100%{box-shadow:0 0 8px rgba(58,143,255,0.18);}
-  50%{box-shadow:0 0 20px rgba(58,143,255,0.45);}
-}
-/* filled pick card */
-.pick-card.p1-filled{
-  border-color:rgba(232,92,48,0.28);
-  box-shadow:inset 0 0 0 0 transparent;
-}
-.pick-card.p2-filled{
-  border-color:rgba(58,143,255,0.28);
-}
-
-/* element colors */
-.el-Fusion{color:#ff7040;}.el-Glacio{color:#60c8ff;}.el-Electro{color:#b070ff;}
-.el-Aero{color:#40d890;}.el-Spectro{color:#ffe040;}.el-Havoc{color:#d060d0;}
-
-/* Ban section only in center bottom row — hide from side panels */
-#p1-panel .ban-section,#p2-panel .ban-section{display:none;}
-#p1-panel .panel-player-hdr,#p2-panel .panel-player-hdr{display:none;}
-#p1-panel .section-lbl,#p2-panel .section-lbl{display:none;}
-
-/* ── 24进16 仅PICK 模式 ── */
-.mode-pick-only #ban-row{display:none;}
-
-/* ══════════════════════════════════════
-   CENTER COLUMN
-══════════════════════════════════════ */
-#center{
-  grid-row:3/4;grid-column:2;
-  display:flex;flex-direction:column;
-  position:relative;z-index:5;
-}
-
-/* ── BP sequence bar ── */
-#bp-seq-bar{
-  height:46px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  gap:4px;padding:0 20px;
-  position:relative;z-index:10;
-  background:rgba(2,5,18,0.92);
-  border-bottom:1px solid rgba(106,184,240,0.12);
-}
-.seq-block{
-  flex:1;max-width:52px;min-width:28px;height:26px;
-  border-radius:2px;
-  display:flex;align-items:center;justify-content:center;
-  gap:4px;
-  position:relative;overflow:hidden;
-  transition:background 0.3s,border-color 0.3s,box-shadow 0.3s;
-}
-.seq-block .sb-dot{
-  width:5px;height:5px;border-radius:50%;flex-shrink:0;
-}
-.sb-p1-dot{background:var(--p1);}
-.sb-p2-dot{background:var(--p2);}
-/* default states */
-.seq-block.sb-ban{
-  background:rgba(100,10,10,0.1);
-  border:1px solid rgba(140,20,20,0.22);
-  color:rgba(180,70,70,0.4);
-}
-.seq-block.sb-pick{
-  background:rgba(20,55,120,0.1);
-  border:1px solid rgba(40,90,170,0.18);
-  color:rgba(90,150,220,0.38);
-}
-.seq-block.sb-done.sb-ban{
-  background:rgba(90,8,8,0.48);
-  border-color:rgba(160,25,25,0.5);
-  color:rgba(210,90,90,0.8);
-}
-.seq-block.sb-done.sb-pick{
-  background:rgba(14,44,100,0.48);
-  border-color:rgba(50,110,200,0.42);
-  color:rgba(110,170,250,0.8);
-}
-/* current step */
-.seq-block.sb-cur.sb-ban{
-  background:rgba(190,25,25,0.22);
-  border-color:rgba(220,40,40,0.75);
-  color:#ff9999;
-  box-shadow:0 0 16px rgba(200,30,30,0.45);
-  animation:seqcur-ban 1.3s ease-in-out infinite;
-}
-@keyframes seqcur-ban{
-  0%,100%{box-shadow:0 0 10px rgba(200,30,30,0.3);}
-  50%{box-shadow:0 0 24px rgba(220,40,40,0.65);}
-}
-.seq-block.sb-cur.sb-pick-p1{
-  background:rgba(232,92,48,0.18);
-  border-color:rgba(232,92,48,0.8);
-  color:#ffbb88;
-  box-shadow:0 0 16px rgba(232,92,48,0.4);
-  animation:seqcur-p1 1.3s ease-in-out infinite;
-}
-@keyframes seqcur-p1{
-  0%,100%{box-shadow:0 0 10px rgba(232,92,48,0.25);}
-  50%{box-shadow:0 0 24px rgba(232,92,48,0.6);}
-}
-.seq-block.sb-cur.sb-pick-p2{
-  background:rgba(58,143,255,0.18);
-  border-color:rgba(58,143,255,0.8);
-  color:#88ccff;
-  box-shadow:0 0 16px rgba(58,143,255,0.4);
-  animation:seqcur-p2 1.3s ease-in-out infinite;
-}
-@keyframes seqcur-p2{
-  0%,100%{box-shadow:0 0 10px rgba(58,143,255,0.25);}
-  50%{box-shadow:0 0 24px rgba(58,143,255,0.6);}
-}
-/* current indicator arrow */
-.seq-block.sb-cur::after{
-  content:'▲';
-  position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
-  font-size:7px;opacity:0.7;
-}
-
-/* ── video / game area ── */
-#video-area{flex:1;background:transparent;position:relative;}
-.vc{position:absolute;z-index:4;pointer-events:none;width:24px;height:24px;}
-.vc.tl{top:7px;left:7px;border-top:2px solid rgba(168,216,247,0.8);border-left:2px solid rgba(168,216,247,0.8);box-shadow:0 0 12px var(--ice-glow);}
-.vc.tr{top:7px;right:7px;border-top:2px solid rgba(168,216,247,0.8);border-right:2px solid rgba(168,216,247,0.8);box-shadow:0 0 12px var(--ice-glow);}
-.vc.bl{bottom:7px;left:7px;border-bottom:2px solid rgba(168,216,247,0.8);border-left:2px solid rgba(168,216,247,0.8);}
-.vc.br{bottom:7px;right:7px;border-bottom:2px solid rgba(168,216,247,0.8);border-right:2px solid rgba(168,216,247,0.8);}
-.vf-l{position:absolute;top:0;left:0;bottom:0;width:28px;z-index:3;pointer-events:none;background:linear-gradient(90deg,rgba(2,5,18,0.35),transparent);}
-.vf-r{position:absolute;top:0;right:0;bottom:0;width:28px;z-index:3;pointer-events:none;background:linear-gradient(270deg,rgba(2,5,18,0.35),transparent);}
-.vf-t{position:absolute;top:0;left:0;right:0;height:20px;z-index:3;pointer-events:none;background:linear-gradient(180deg,rgba(2,5,18,0.28),transparent);}
-
-/* ── spotlight overlay ── */
-#spotlight{
-  position:absolute;inset:0;z-index:20;
-  display:flex;align-items:center;justify-content:center;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity 0.28s ease;
-}
-#spotlight.show{opacity:1;}
-/* tinted radial glow behind card */
-#spotlight.show.spot-ban{background:radial-gradient(ellipse 60% 70% at center,rgba(180,15,15,0.16) 0%,transparent 70%);}
-#spotlight.show.spot-pick-p1{background:radial-gradient(ellipse 60% 70% at center,rgba(232,92,48,0.13) 0%,transparent 70%);}
-#spotlight.show.spot-pick-p2{background:radial-gradient(ellipse 60% 70% at center,rgba(58,143,255,0.13) 0%,transparent 70%);}
-
-#spot-card{
-  position:relative;
-  width:296px;height:380px;
-  border-radius:5px;overflow:hidden;
-  transform:scale(0.88);
-  transition:transform 0.38s cubic-bezier(0.175,0.885,0.32,1.275);
-}
-#spotlight.show #spot-card{transform:scale(1);}
-
-#spot-img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;}
-
-/* ban tint */
-#spot-ban-tint{
-  position:absolute;inset:0;
-  background:rgba(100,5,5,0.58);
-  display:none;
-  align-items:center;justify-content:center;
-}
-#spotlight.spot-ban #spot-ban-tint{display:flex;}
-#spot-ban-x{
-  font-size:96px;font-weight:900;
-  color:rgba(255,70,70,0.92);
-  text-shadow:0 0 30px rgba(255,0,0,0.8),0 0 60px rgba(200,0,0,0.5);
-  line-height:1;
-}
-/* border glow per type */
-#spotlight.spot-ban #spot-card{
-  border:2px solid rgba(200,30,30,0.85);
-  box-shadow:0 0 40px rgba(200,30,30,0.5),0 0 80px rgba(180,20,20,0.2),inset 0 0 30px rgba(150,10,10,0.15);
-}
-#spotlight.spot-pick-p1 #spot-card{
-  border:2px solid rgba(232,92,48,0.85);
-  box-shadow:0 0 40px rgba(232,92,48,0.5),0 0 80px rgba(200,70,20,0.2),inset 0 0 30px rgba(200,70,20,0.08);
-}
-#spotlight.spot-pick-p2 #spot-card{
-  border:2px solid rgba(58,143,255,0.85);
-  box-shadow:0 0 40px rgba(58,143,255,0.5),0 0 80px rgba(30,100,220,0.2),inset 0 0 30px rgba(30,100,220,0.08);
-}
-/* info bar */
-#spot-info{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:30px 12px 10px;
-  background:linear-gradient(0deg,rgba(2,5,18,0.97) 0%,rgba(2,5,18,0.68) 55%,transparent 100%);
-}
-#spot-name{
-  font-size:21px;font-weight:700;letter-spacing:3px;
-  color:#e8f4ff;text-shadow:0 0 16px rgba(168,216,247,0.5);
-}
-#spot-action{font-size:9px;letter-spacing:4px;margin-top:3px;}
-#spotlight.spot-ban #spot-action{color:rgba(255,110,110,0.8);}
-#spotlight.spot-pick-p1 #spot-action{color:rgba(255,155,90,0.8);}
-#spotlight.spot-pick-p2 #spot-action{color:rgba(100,175,255,0.8);}
-/* top badge */
-#spot-badge{
-  position:absolute;top:10px;left:10px;
-  font-size:9px;letter-spacing:3px;padding:3px 10px;border-radius:2px;
-  font-weight:700;text-transform:uppercase;
-}
-#spotlight.spot-ban #spot-badge{
-  background:rgba(150,10,10,0.85);color:#ff9999;
-  border:1px solid rgba(200,30,30,0.6);
-  text-shadow:0 0 8px var(--ban);
-}
-#spotlight.spot-pick-p1 #spot-badge{
-  background:rgba(180,60,15,0.75);color:#ffcc99;
-  border:1px solid rgba(232,92,48,0.5);
-}
-#spotlight.spot-pick-p2 #spot-badge{
-  background:rgba(20,80,180,0.75);color:#99ccff;
-  border:1px solid rgba(58,143,255,0.5);
-}
-
-/* ── BAN row (center bottom) ── */
-#ban-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:6px 18px;position:relative;z-index:10;overflow:hidden;flex-shrink:0;
-}
-#ban-row::before{content:'';position:absolute;inset:0;background:rgba(2,5,18,0.96);}
-#ban-row::after{content:'';position:absolute;inset:0;background:url('./1.jpg') center 80%/cover no-repeat;opacity:0.04;}
-.br-line{position:absolute;left:0;right:0;height:1px;z-index:2;
-  background:linear-gradient(90deg,transparent,var(--ice2) 16%,var(--ice3) 50%,var(--ice2) 84%,transparent);}
-.br-line.top{top:0;}.br-line.bottom{bottom:0;}
-#ban-center-label{position:absolute;left:50%;transform:translateX(-50%);z-index:3;
-  font-size:9px;letter-spacing:5px;font-weight:700;color:var(--ban);padding:3px 16px;
-  border:1px solid rgba(200,30,30,0.35);background:rgba(130,10,10,0.15);border-radius:2px;
-  text-shadow:0 0 10px var(--ban);}
-.ban-group{display:flex;gap:5px;position:relative;z-index:3;}
-.ban-avatar{width:56px;height:56px;border-radius:3px;background:rgba(5,10,32,0.97);
-  border:1px solid rgba(60,120,200,0.2);overflow:hidden;position:relative;transition:border-color 0.3s;}
-.ban-avatar img{width:100%;height:100%;object-fit:cover;object-position:top;}
-.ban-avatar.empty{border-style:dashed;border-color:rgba(60,120,200,0.12);}
-.ban-avatar.p1-ban{border-color:rgba(232,92,48,0.55);box-shadow:0 0 8px rgba(232,92,48,0.22);}
-.ban-avatar.p2-ban{border-color:rgba(58,143,255,0.55);box-shadow:0 0 8px rgba(58,143,255,0.22);}
-.ban-avatar.filled::after{content:'✕';position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(130,8,8,0.35);font-size:20px;font-weight:900;color:#fff;
-  text-shadow:0 0 10px #ff2020;}
-
-/* ── bottom bar ── */
-#bottom{grid-column:1/-1;grid-row:4;display:flex;align-items:stretch;
-  position:relative;z-index:10;overflow:hidden;}
-#bottom::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(0deg,rgba(2,4,14,1) 0%,rgba(3,7,24,0.97) 100%);}
-#bottom::after{content:'';position:absolute;inset:0;
-  background:url('./1.jpg') center bottom/cover no-repeat;opacity:0.04;}
-.bt-line{position:absolute;top:0;left:0;right:0;height:1px;z-index:2;
-  background:linear-gradient(90deg,transparent,var(--ice2) 12%,var(--ice1) 50%,var(--ice2) 88%,transparent);
-  box-shadow:0 0 8px var(--ice-glow);}
-
-#status-area{width:300px;flex-shrink:0;border-right:1px solid rgba(106,184,240,0.1);
-  padding:10px 18px;display:flex;flex-direction:column;justify-content:center;gap:8px;
-  position:relative;z-index:3;}
-#status-phase-row{display:flex;align-items:center;gap:8px;}
-#status-who{font-size:14px;font-weight:700;letter-spacing:2px;}
-#status-phase{font-size:10px;letter-spacing:2px;color:var(--muted);}
-#status-seq{display:flex;gap:3px;flex-wrap:wrap;}
-.seq-dot{width:20px;height:6px;border-radius:1px;background:rgba(40,80,160,0.16);
-  border:1px solid rgba(40,80,160,0.16);transition:all 0.3s;}
-.seq-dot.ban-dot{border-color:rgba(200,30,30,0.26);}
-.seq-dot.pick-dot{border-color:rgba(106,184,240,0.3);}
-.seq-dot.done-dot{opacity:0.2;}
-.seq-dot.cur-dot{background:rgba(168,216,247,0.42);border-color:var(--ice1);
-  box-shadow:0 0 7px var(--ice-glow);animation:dotpulse 1s ease-in-out infinite;}
-@keyframes dotpulse{0%,100%{opacity:0.75;}50%{opacity:1;}}
-
-#score-area{flex:1;display:flex;align-items:center;justify-content:center;gap:40px;
-  padding:0 20px;position:relative;z-index:3;}
-.score-block{display:flex;flex-direction:column;align-items:center;gap:3px;}
-.score-label{font-size:8px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;}
-.score-num{font-family:'Oswald',sans-serif;font-size:58px;font-weight:700;line-height:1;
-  text-shadow:0 0 24px currentColor,0 0 55px currentColor;}
-.score-p1{color:var(--p1);}.score-p2{color:var(--p2);}
-.score-divider{font-size:40px;color:rgba(60,100,160,0.42);font-weight:300;margin-top:16px;}
-
-#holo-area{width:500px;flex-shrink:0;border-left:1px solid rgba(30,200,150,0.14);
-  padding:8px 14px;display:flex;flex-direction:column;gap:5px;position:relative;z-index:3;}
-#holo-title{font-size:9px;letter-spacing:4px;color:var(--teal);
-  border-bottom:1px solid rgba(30,200,150,0.12);padding-bottom:3px;
-  text-shadow:0 0 8px rgba(30,200,150,0.4);}
-#holo-enemies{display:flex;gap:7px;align-items:center;flex-wrap:wrap;}
-.enemy-slot{display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;}
-.enemy-avatar{width:44px;height:44px;border-radius:3px;background:rgba(4,14,40,0.92);
-  border:1px solid rgba(30,200,150,0.16);
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;font-weight:700;color:var(--teal);}
-.enemy-name{font-size:8px;color:var(--muted);letter-spacing:1px;max-width:50px;
-  text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.enemy-slot.defeated .enemy-avatar{filter:grayscale(0.9);opacity:0.35;}
-.enemy-slot.defeated::after{content:'✓';position:absolute;top:1px;right:1px;
-  width:14px;height:14px;background:var(--teal);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;font-size:8px;color:#000;font-weight:700;z-index:2;}
-.enemy-slot.current .enemy-avatar{border-color:var(--teal);animation:enpulse 1.2s ease-in-out infinite;}
-@keyframes enpulse{0%,100%{box-shadow:0 0 8px rgba(30,200,150,0.4);}50%{box-shadow:0 0 18px rgba(30,200,150,0.7);}}
-#holo-score-row{display:flex;align-items:center;justify-content:space-between;position:relative;}
-#holo-score-display{font-size:10px;color:var(--teal);letter-spacing:2px;}
-#holo-score-num{font-family:'Oswald',sans-serif;font-size:24px;font-weight:700;color:var(--teal);
-  text-shadow:0 0 12px rgba(30,200,150,0.5);}
-
-/* ── 音效解锁提示 ── */
-#sfx-unlock{
-  position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
-  z-index:200;cursor:pointer;
-  padding:7px 22px;border-radius:3px;
-  background:rgba(2,6,20,0.88);
-  border:1px solid rgba(168,216,247,0.35);
-  color:rgba(168,216,247,0.7);
-  font-family:'Noto Sans SC',sans-serif;font-size:11px;letter-spacing:3px;
-  box-shadow:0 0 18px rgba(106,184,240,0.18);
-  transition:opacity 0.5s;
-  animation:sfxpulse 2s ease-in-out infinite;
-}
-@keyframes sfxpulse{0%,100%{box-shadow:0 0 12px rgba(106,184,240,0.15);}50%{box-shadow:0 0 24px rgba(106,184,240,0.35);}}
-#sfx-unlock.hidden{opacity:0;pointer-events:none;}
-
-/* ── BP countdown timer ── */
-#bp-timer{
-  position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
-  z-index:15;
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  opacity:0;transition:opacity 0.4s ease;
-  pointer-events:none;
-}
-#bp-timer.t-show{opacity:1;}
-#bp-timer-sub{
-  font-size:10px;letter-spacing:5px;font-weight:700;
-  color:rgba(160,200,245,0.65);
-  text-shadow:none;
-}
-
-/* ── floating score + death flash ── */
-.score-float{
-  position:fixed;z-index:50;
-  font-family:'Oswald',sans-serif;font-size:32px;font-weight:700;
-  color:var(--teal);text-shadow:0 0 16px rgba(30,200,150,0.8);
-  pointer-events:none;
-  animation:float-up 1.4s ease-out forwards;
-}
-@keyframes float-up{
-  0%{opacity:1;transform:translateY(0) scale(1.2);}
-  60%{opacity:1;transform:translateY(-50px) scale(1);}
-  100%{opacity:0;transform:translateY(-90px) scale(0.8);}
-}
-#death-flash{position:fixed;inset:0;z-index:60;background:rgba(200,20,20,0);pointer-events:none;display:none;}
-#death-flash.active{display:block;animation:death-flash 0.8s ease-out forwards;}
-@keyframes death-flash{0%{background:rgba(200,20,20,0.45);}30%{background:rgba(200,20,20,0.6);}100%{background:rgba(200,20,20,0);}}
-#death-text{
-  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-  z-index:61;pointer-events:none;display:none;
-  font-family:'Oswald',sans-serif;font-size:72px;font-weight:700;
-  color:#fff;letter-spacing:8px;
-  text-shadow:0 0 30px rgba(200,20,20,0.8),0 0 60px rgba(200,20,20,0.5);
-}
-#death-text.active{display:block;animation:death-text-anim 1.2s ease-out forwards;}
-@keyframes death-text-anim{
-  0%{opacity:0;transform:translate(-50%,-50%) scale(1.5);}
-  20%{opacity:1;transform:translate(-50%,-50%) scale(1);}
-  70%{opacity:1;}
-  100%{opacity:0;transform:translate(-50%,-50%) scale(0.9);}
-}
-
-/* ═══════════════════════════════════════════════════
-   今州杯-风格美学重塑：去赛博朋克，还素雅深空
-   ─ 移除所有冰晶角标 / 扫描线 / 霓虹边框
-   ─ 立绘无框浮于深色背景
-   ─ 字体更大更素，留白优先
-═══════════════════════════════════════════════════ */
-
-/* 移除全部装饰性 chrome */
-#scanlines,
-.fl-top,.fl-bottom,.fl-left,.fl-right,
-.fl-ti,.fl-bi,.fl-li,.fl-ri,
-.fc,.fd,.fm,.fq { display:none !important; }
-
-/* 背景遮罩：更柔和，保留星空感 */
-#bg-dim {
-  background:
-    linear-gradient(90deg,
-      rgba(3,6,18,0.97) 0%,  rgba(3,6,18,0.94) 13%,
-      rgba(4,9,24,0.68) 22%, rgba(4,9,24,0.46) 32%,
-      rgba(4,9,24,0.46) 68%, rgba(4,9,24,0.68) 78%,
-      rgba(3,6,18,0.94) 87%, rgba(3,6,18,0.97) 100%),
-    linear-gradient(180deg,
-      rgba(3,6,18,0.99) 0%,  rgba(3,6,18,0.84) 9%,
-      rgba(3,6,18,0.56) 17%, rgba(3,6,18,0.44) 24%,
-      rgba(3,6,18,0.44) 76%, rgba(3,6,18,0.84) 90%,
-      rgba(3,6,18,1)    100%);
-}
-
-/* 侧边面板：半透明深蓝，无高亮竖线 */
-#p1-panel {
-  background:rgba(4,8,22,0.86) !important;
-  border-right:1px solid rgba(90,130,210,0.07) !important;
-}
-#p2-panel {
-  background:rgba(4,8,22,0.86) !important;
-  border-left:1px solid rgba(90,130,210,0.07) !important;
-}
-#p1-panel::after { display:none !important; }
-.p2-vline        { display:none !important; }
-#p1-panel::before,#p2-panel::before { opacity:0.03 !important; }
-
-/* 立绘卡片：无边框，人物浮于背景 */
-.pick-card {
-  background:transparent !important;
-  border:none !important;
-  border-bottom:1px solid rgba(70,100,170,0.06) !important;
-  box-shadow:none !important;
-  animation:none !important;
-}
-.pick-card.p1-filled,
-.pick-card.p2-filled {
-  background:rgba(5,9,24,0.9) !important;
-  border-bottom-color:rgba(70,100,170,0.05) !important;
-}
-/* 选中等待态：只用左/右色条示意，不发光 */
-.pick-card.p1-active {
-  background:rgba(10,8,20,0.88) !important;
-  border-left:2px solid rgba(232,92,48,0.55) !important;
-  animation:none !important; box-shadow:none !important;
-}
-.pick-card.p2-active {
-  background:rgba(8,10,20,0.88) !important;
-  border-right:2px solid rgba(58,143,255,0.55) !important;
-  animation:none !important; box-shadow:none !important;
-}
-
-/* 文字：更大、不发光 */
-.pc-name {
-  font-size:15px !important;
-  letter-spacing:2px !important;
-  color:rgba(210,228,255,0.96) !important;
-  text-shadow:none !important;
-}
-.pc-seq { color:rgba(90,130,190,0.32) !important; font-size:8px !important; }
-.pc-el  { opacity:0.68 !important; font-size:9px !important; }
-
-/* 立绘区域更宽，渐变更柔 */
-.pc-port-side { width:130px !important; }
-#p1-panel .pc-port-side::before {
-  width:50px !important;
-  background:linear-gradient(90deg,rgba(4,8,22,0.92),transparent) !important;
-}
-#p2-panel .pc-port-side::before {
-  width:50px !important;
-  background:linear-gradient(270deg,rgba(4,8,22,0.92),transparent) !important;
-}
-
-/* 空格：极简占位 */
-.pick-card .pc-empty-v {
-  color:rgba(50,80,150,0.12) !important;
-  font-size:11px !important;
-  letter-spacing:4px !important;
-}
-
-/* Header：去掉橙/蓝侧栏，标题更素雅 */
-#p1-header-area::before,
-#p2-header-area::before { opacity:0 !important; }
-#p1-header-area::after,
-#p2-header-area::after  { display:none !important; }
-#header::before { opacity:0.12 !important; }
-.hdr-line {
-  background:linear-gradient(90deg,
-    transparent,rgba(110,150,220,0.22) 25%,
-    rgba(170,200,255,0.28) 50%,
-    rgba(110,150,220,0.22) 75%,transparent) !important;
-  box-shadow:none !important;
-}
-#main-title {
-  letter-spacing:14px !important;
-  font-size:26px !important;
-  color:rgba(210,228,255,0.95) !important;
-  text-shadow:none !important;
-}
-#sub-title  { color:rgba(120,150,200,0.4) !important; letter-spacing:6px !important; }
-#phase-tag  {
-  border-color:rgba(100,140,210,0.2) !important;
-  background:transparent !important;
-  color:rgba(120,155,220,0.55) !important;
-  text-shadow:none !important;
-}
-.player-name-hdr { text-shadow:none !important; }
-.player-label     { color:rgba(100,130,180,0.45) !important; }
-.player-sub-hdr   { color:rgba(90,120,170,0.38) !important; }
-
-/* Sponsor bar */
-#sponsor-bar::after {
-  background:linear-gradient(90deg,transparent,rgba(90,130,200,0.18) 30%,
-    rgba(90,130,200,0.18) 70%,transparent) !important;
-}
-
-/* BP 序列条：无霓虹 */
-#bp-seq-bar {
-  background:rgba(3,5,16,0.92) !important;
-  border-bottom:1px solid rgba(70,100,170,0.07) !important;
-}
-
-/* 视频区角标：去掉 */
-.vc { display:none !important; }
-.vf-l,.vf-r,.vf-t { display:none !important; }
-
-/* Ban 行：更素 */
-#ban-row::before { background:rgba(3,5,16,0.95) !important; }
-#ban-row::after  { opacity:0.02 !important; }
-.br-line {
-  background:linear-gradient(90deg,transparent,rgba(90,130,210,0.18) 30%,
-    rgba(130,170,255,0.18) 50%,rgba(90,130,210,0.18) 70%,transparent) !important;
-  box-shadow:none !important;
-}
-#ban-center-label {
-  border-color:rgba(160,20,20,0.2) !important;
-  background:rgba(80,5,5,0.08) !important;
-  text-shadow:none !important;
-  letter-spacing:6px !important;
-}
-.ban-avatar {
-  border-color:rgba(50,75,140,0.14) !important;
-  box-shadow:none !important;
-}
-.ban-avatar.p1-ban { border-color:rgba(232,92,48,0.35) !important; box-shadow:none !important; }
-.ban-avatar.p2-ban { border-color:rgba(58,143,255,0.35) !important; box-shadow:none !important; }
-
-/* 底部状态栏 */
-#bottom::before {
-  background:linear-gradient(0deg,rgba(2,4,14,0.98),rgba(3,6,20,0.95)) !important;
-}
-.bt-line {
-  background:linear-gradient(90deg,transparent,rgba(90,130,210,0.18) 20%,
-    rgba(130,170,255,0.18) 50%,rgba(90,130,210,0.18) 80%,transparent) !important;
-  box-shadow:none !important;
-}
-.score-num {
-  text-shadow:0 0 40px currentColor !important;
-  font-size:54px !important;
-}
-#holo-title {
-  color:rgba(30,190,145,0.65) !important;
-  text-shadow:none !important;
-}
-
-/* ── 今州杯风格艺术细线框 ── */
-.ef-edge {
-  position:fixed;pointer-events:none;z-index:30;
-}
-/* 四边极细线：中段稍亮、两端渐淡 */
-.ef-top {
-  top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,
-    transparent 0%,rgba(180,210,255,0.12) 8%,
-    rgba(210,230,255,0.38) 32%,rgba(235,245,255,0.48) 50%,
-    rgba(210,230,255,0.38) 68%,rgba(180,210,255,0.12) 92%,
-    transparent 100%);
-}
-.ef-bottom {
-  bottom:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,
-    transparent 0%,rgba(180,210,255,0.10) 8%,
-    rgba(210,230,255,0.32) 32%,rgba(235,245,255,0.40) 50%,
-    rgba(210,230,255,0.32) 68%,rgba(180,210,255,0.10) 92%,
-    transparent 100%);
-}
-.ef-left {
-  left:0;top:0;bottom:0;width:1px;
-  background:linear-gradient(180deg,
-    transparent 0%,rgba(180,210,255,0.12) 10%,
-    rgba(210,230,255,0.30) 50%,
-    rgba(180,210,255,0.12) 90%,transparent 100%);
-}
-.ef-right {
-  right:0;top:0;bottom:0;width:1px;
-  background:linear-gradient(180deg,
-    transparent 0%,rgba(180,210,255,0.12) 10%,
-    rgba(210,230,255,0.30) 50%,
-    rgba(180,210,255,0.12) 90%,transparent 100%);
-}
-/* L 型角标：四角，38×38px，线条 1px */
-.ef-corner {
-  position:fixed;pointer-events:none;z-index:31;
-  width:38px;height:38px;
-  border-color:rgba(200,220,255,0.42);
-  border-style:solid;
-  border-width:0;
-}
-.ef-corner.tl{top:14px;left:14px;border-top-width:1px;border-left-width:1px;}
-.ef-corner.tr{top:14px;right:14px;border-top-width:1px;border-right-width:1px;}
-.ef-corner.bl{bottom:14px;left:14px;border-bottom-width:1px;border-left-width:1px;}
-.ef-corner.br{bottom:14px;right:14px;border-bottom-width:1px;border-right-width:1px;}
-/* 角尖小点 */
-.ef-dot {
-  position:fixed;pointer-events:none;z-index:32;
-  width:3px;height:3px;border-radius:50%;
-  background:rgba(210,230,255,0.55);
-}
-.ef-dot.tl{top:13px;left:13px;}
-.ef-dot.tr{top:13px;right:13px;}
-.ef-dot.bl{bottom:13px;left:13px;}
-.ef-dot.br{bottom:13px;right:13px;}
-/* 四边中点刻度线 */
-.ef-tick {
-  position:fixed;pointer-events:none;z-index:30;
-  background:rgba(200,220,255,0.28);
-}
-.ef-tick.t{top:0;left:50%;transform:translateX(-50%);width:1px;height:6px;}
-.ef-tick.b{bottom:0;left:50%;transform:translateX(-50%);width:1px;height:6px;}
-.ef-tick.l{left:0;top:50%;transform:translateY(-50%);width:6px;height:1px;}
-.ef-tick.r{right:0;top:50%;transform:translateY(-50%);width:6px;height:1px;}
-
-/* ═══════════════════════════════════════════════════
-   三区域完整重设计：今州杯风格
-═══════════════════════════════════════════════════ */
-
-/* ── AREA 1 · Header：深色菱形徽章 + 大号选手名 ── */
-
-/* Grid 行高调大，给 header 更多空间 */
-#app { grid-template-rows:105px 38px 1fr 95px !important; }
-
-/* header 背景重做：左右暗、中心透 */
-#header::before { opacity:0.18 !important; }
 #header::after {
-  background:
-    linear-gradient(90deg,
-      rgba(2,5,16,0.96) 0%,rgba(2,5,16,0.90) 18%,
-      transparent 36%,transparent 64%,
-      rgba(2,5,16,0.90) 82%,rgba(2,5,16,0.96) 100%),
-    linear-gradient(180deg,rgba(2,5,16,0.88),rgba(2,5,16,0.72)) !important;
+  content: ''; position: absolute; bottom: -1px; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--blue-team) 30%, #fff 50%, var(--red-team) 70%, transparent);
 }
 
-/* 中心徽章：深色倒梯形 */
+/* 蓝方选手信息 (Left - Blue Side) */
+.team-header-box {
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 28px; height: 100%; position: relative;
+}
+.team-header-box.blue {
+  background: linear-gradient(90deg, rgba(0, 160, 255, 0.22) 0%, rgba(0, 160, 255, 0.03) 80%, transparent 100%);
+}
+.team-header-box.blue::before {
+  content: ''; position: absolute; left: 0; top: 12%; bottom: 12%; width: 4px;
+  background: var(--blue-team); box-shadow: 0 0 16px var(--blue-team-glow);
+}
+.team-logo-wrap {
+  width: 64px; height: 64px; border-radius: 6px; overflow: hidden; position: relative; flex-shrink: 0;
+  border: 2px solid rgba(0, 210, 255, 0.6); box-shadow: 0 0 16px rgba(0, 210, 255, 0.35);
+  background: rgba(4, 14, 36, 0.9);
+}
+.team-logo-wrap.red {
+  border-color: rgba(255, 51, 102, 0.6); box-shadow: 0 0 16px rgba(255, 51, 102, 0.35);
+}
+.team-logo-img { width: 100%; height: 100%; object-fit: cover; }
+
+.team-text-meta { display: flex; flex-direction: column; gap: 3px; }
+.team-side-tag {
+  font-family: var(--font-esports); font-size: 11px; font-weight: 700; letter-spacing: 3px;
+  text-transform: uppercase; display: flex; align-items: center; gap: 6px;
+}
+.team-side-tag.blue { color: var(--blue-team); text-shadow: 0 0 10px var(--blue-team-glow); }
+.team-side-tag.red { color: var(--red-team); text-shadow: 0 0 10px var(--red-team-glow); }
+
+.team-player-name {
+  font-family: var(--font-title); font-size: 22px; font-weight: 700; letter-spacing: 2px;
+  color: #ffffff; text-shadow: 0 0 16px rgba(255, 255, 255, 0.3);
+  max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.team-subtitle {
+  font-size: 11px; color: var(--text-muted); letter-spacing: 1px;
+}
+
+/* 红方选手信息 (Right - Red Side) */
+.team-header-box.red {
+  flex-direction: row-reverse; text-align: right;
+  background: linear-gradient(270deg, rgba(255, 51, 102, 0.22) 0%, rgba(255, 51, 102, 0.03) 80%, transparent 100%);
+}
+.team-header-box.red::before {
+  content: ''; position: absolute; right: 0; top: 12%; bottom: 12%; width: 4px;
+  background: var(--red-team); box-shadow: 0 0 16px var(--red-team-glow);
+}
+
+/* 比分晶石展示 (Score Gem Indicators) */
+.score-gems { display: flex; gap: 6px; align-items: center; margin-top: 2px; }
+.score-gem {
+  width: 12px; height: 12px; transform: rotate(45deg);
+  background: rgba(20, 40, 70, 0.8); border: 1px solid rgba(80, 140, 200, 0.4);
+  transition: all 0.3s;
+}
+.score-gem.active.blue {
+  background: var(--blue-team); border-color: #fff;
+  box-shadow: 0 0 12px var(--blue-team-glow);
+}
+.score-gem.active.red {
+  background: var(--red-team); border-color: #fff;
+  box-shadow: 0 0 12px var(--red-team-glow);
+}
+
+/* 中央赛事标题与阶段 (Center Tournament HUD) */
 #center-header {
-  position:relative;
-  padding:0 30px !important;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  position: relative; z-index: 5;
 }
-#center-header::before {
-  content:'';
-  position:absolute;
-  inset:0;
-  z-index:0;
-  background:linear-gradient(180deg,rgba(4,7,20,0.95) 0%,rgba(5,9,24,0.90) 100%);
-  clip-path:polygon(6% 0%,94% 0%,88% 100%,12% 100%);
+.match-title-row {
+  display: flex; align-items: center; gap: 14px;
 }
-/* 分隔细线（徽章两侧） */
-#center-header::after {
-  content:'';
-  position:absolute;
-  inset:15% 0;
-  z-index:0;
-  box-shadow:
-    -1px 0 0 rgba(180,210,255,0.14) inset,
-     1px 0 0 rgba(180,210,255,0.14) inset;
-  pointer-events:none;
+.match-logo {
+  height: 38px; width: auto; object-fit: contain; filter: drop-shadow(0 0 12px var(--gold-glow));
 }
-#center-header > * { position:relative;z-index:1; }
-
-#main-title {
-  font-size:30px !important;
-  letter-spacing:18px !important;
-  font-weight:700 !important;
-  color:rgba(225,238,255,0.97) !important;
-  text-shadow:none !important;
+.match-title-text {
+  font-family: var(--font-title); font-size: 26px; font-weight: 700; letter-spacing: 8px;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #ffffff 0%, #d8e8f8 60%, #a4c2e6 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 24px rgba(0, 180, 255, 0.4);
 }
-#sub-title {
-  font-size:9px !important;
-  letter-spacing:7px !important;
-  color:rgba(140,165,210,0.38) !important;
-}
-#phase-tag {
-  font-size:9px !important;
-  letter-spacing:5px !important;
+.match-stage-tag {
+  font-family: var(--font-esports); font-size: 11px; font-weight: 700; letter-spacing: 4px;
+  color: var(--gold-hex); padding: 2px 18px; border-radius: 2px;
+  background: rgba(229, 185, 96, 0.12); border: 1px solid rgba(229, 185, 96, 0.45);
+  box-shadow: 0 0 12px rgba(229, 185, 96, 0.2); text-transform: uppercase;
 }
 
-/* 选手名：大号白字，不发光 */
-.player-name-hdr {
-  font-size:26px !important;
-  letter-spacing:4px !important;
-  font-weight:900 !important;
-  color:rgba(235,242,255,0.97) !important;
-  text-shadow:none !important;
+/* ══════════════════════════════════════════════════════════════════════════
+   5. 赞助商微光跑马条 (Sponsor Ticker Bar)
+   ══════════════════════════════════════════════════════════════════════════ */
+#sponsor-bar {
+  grid-column: 1 / -1; grid-row: 2;
+  display: flex; align-items: center; justify-content: center; gap: 32px;
+  background: linear-gradient(180deg, rgba(2, 6, 18, 0.96) 0%, rgba(4, 10, 28, 0.94) 100%);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.12);
+  position: relative; overflow: hidden; z-index: 9;
 }
-.player-label {
-  font-size:8px !important;
-  letter-spacing:4px !important;
-  color:rgba(120,150,200,0.38) !important;
-}
-.player-sub-hdr {
-  font-size:9px !important;
-  color:rgba(100,130,180,0.36) !important;
-}
-/* 去掉橙/蓝侧色块干扰 */
-#p1-header-area::before,#p2-header-area::before{opacity:0 !important;}
-#p1-header-area::after,#p2-header-area::after{display:none !important;}
+.sp-item { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; letter-spacing: 2px; }
+.sp-item img { height: 20px; width: auto; object-fit: contain; }
+.sp-sep { width: 1px; height: 16px; background: linear-gradient(180deg, transparent, rgba(56, 189, 248, 0.3), transparent); }
 
-/* ── AREA 2 · Bottom bar：今州杯播出条风格 ── */
-
-/* 背景更轻，透出一点纹理 */
-#bottom::before {
-  background:linear-gradient(180deg,rgba(6,11,28,0.98),rgba(4,8,22,1)) !important;
-}
-#bottom::after { opacity:0.06 !important; }
-
-/* 状态区 → 播出标签样式 */
-#status-area {
-  width:260px !important;
-  border-right:1px solid rgba(100,140,210,0.08) !important;
-  padding:0 20px !important;
-  gap:4px !important;
-}
-#status-who {
-  font-size:18px !important;
-  font-weight:700 !important;
-  letter-spacing:3px !important;
-}
-#status-phase {
-  font-size:9px !important;
-  letter-spacing:3px !important;
-}
-/* seq 点更小更轻 */
-.seq-dot {
-  width:14px !important;
-  height:4px !important;
-}
-
-/* 分数区：缩小一点，和下方协调 */
-#score-area { gap:28px !important; padding:0 16px !important; }
-.score-num  { font-size:52px !important; }
-.score-divider { font-size:34px !important; }
-
-/* Holo 区 → 今州杯游戏模式卡片风格 */
-#holo-area {
-  border-left:1px solid rgba(100,140,210,0.08) !important;
-  padding:6px 14px !important;
-  gap:6px !important;
-}
-#holo-title {
-  font-size:8px !important;
-  letter-spacing:5px !important;
-  color:rgba(120,170,220,0.45) !important;
-  border-bottom:1px solid rgba(100,140,210,0.08) !important;
-  padding-bottom:4px !important;
-  text-shadow:none !important;
-}
-/* enemy-slot → 今州杯风格模式卡 */
-#holo-enemies { gap:6px !important; align-items:stretch !important; }
-.enemy-slot {
-  flex-direction:column !important;
-  align-items:stretch !important;
-  gap:0 !important;
-  border-radius:3px !important;
-  overflow:hidden !important;
-}
-.enemy-avatar {
-  width:72px !important;
-  height:52px !important;
-  border-radius:0 !important;
-  border:1px solid rgba(80,120,200,0.16) !important;
-  font-size:13px !important;
-  font-weight:700 !important;
-  background:rgba(6,12,32,0.92) !important;
-}
-.enemy-name {
-  font-size:8px !important;
-  max-width:72px !important;
-  color:rgba(160,185,230,0.7) !important;
-  letter-spacing:1px !important;
-  white-space:nowrap !important;
-  padding:2px 0 !important;
-}
-.enemy-slot.current .enemy-avatar {
-  border-color:rgba(140,200,255,0.5) !important;
-  background:rgba(10,22,50,0.94) !important;
-  box-shadow:none !important;
-  animation:none !important;
-}
-.enemy-slot.defeated .enemy-avatar { filter:grayscale(1) !important; opacity:0.25 !important; }
-
-/* ── AREA 3 · 侧边面板：星空透视 + 细线分隔 ── */
-
-/* 面板半透明 → 让底层粒子 & 背景图穿透 */
-#p1-panel {
-  background:rgba(5,10,28,0.60) !important;
+/* ══════════════════════════════════════════════════════════════════════════
+   6. 选角侧翼面板 (Blue & Red Pick Columns - LOL Esports Card Design)
+   ══════════════════════════════════════════════════════════════════════════ */
+.player-column {
+  grid-row: 3 / 4;
+  display: flex; flex-direction: column;
+  background: linear-gradient(180deg, rgba(3, 8, 22, 0.92) 0%, rgba(2, 5, 16, 0.96) 100%);
+  position: relative; z-index: 10;
+  border-right: 1px solid rgba(56, 189, 248, 0.15);
 }
 #p2-panel {
-  background:rgba(5,10,28,0.60) !important;
+  border-right: none;
+  border-left: 1px solid rgba(255, 51, 102, 0.15);
 }
-#p1-panel::before,#p2-panel::before { opacity:0.08 !important; }
 
-/* 立绘卡片：完全透明背景，只留细线 */
-.pick-card {
-  background:transparent !important;
-  border:none !important;
-  border-bottom:1px solid rgba(160,200,255,0.10) !important;
-  box-shadow:none !important;
-  animation:none !important;
+/* 侧边顶端角色阵营条 */
+.col-header {
+  height: 36px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 14px; font-family: var(--font-esports); font-size: 12px; font-weight: 700; letter-spacing: 3px;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.15);
 }
-/* 已填充：给一层极浅深色让立绘更突出 */
-.pick-card.p1-filled,
-.pick-card.p2-filled {
-  background:rgba(5,10,26,0.38) !important;
-  border-bottom:1px solid rgba(160,200,255,0.08) !important;
+.col-header.blue {
+  background: linear-gradient(90deg, rgba(0, 160, 255, 0.25) 0%, transparent 100%);
+  color: var(--blue-team); border-bottom-color: rgba(0, 210, 255, 0.25);
 }
-/* 等待选择：仅用左/右侧细彩线 */
-.pick-card.p1-active {
-  background:rgba(232,92,48,0.04) !important;
-  border-left:2px solid rgba(232,92,48,0.55) !important;
-  border-bottom:1px solid rgba(160,200,255,0.08) !important;
+.col-header.red {
+  background: linear-gradient(270deg, rgba(255, 51, 102, 0.25) 0%, transparent 100%);
+  color: var(--red-team); border-bottom-color: rgba(255, 51, 102, 0.25);
+  flex-direction: row-reverse;
 }
-.pick-card.p2-active {
-  background:rgba(58,143,255,0.04) !important;
-  border-right:2px solid rgba(58,143,255,0.55) !important;
-  border-bottom:1px solid rgba(160,200,255,0.08) !important;
+
+/* 选角卡片容器 */
+.pick-cards-container {
+  flex: 1; display: flex; flex-direction: column; gap: 3px; padding: 4px 6px;
+  min-height: 0; overflow: hidden;
 }
-/* 渐变融合宽一点 */
-.pc-port-side { width:136px !important; }
-#p1-panel .pc-port-side::before {
-  width:55px !important;
-  background:linear-gradient(90deg,rgba(5,10,28,0.85),transparent) !important;
+
+/* 英雄联盟电竞风格 单个选角卡片 (Esports Pick Slot Card) */
+.es-pick-card {
+  flex: 1; min-height: 0;
+  position: relative; border-radius: 4px; overflow: hidden;
+  background: rgba(6, 14, 32, 0.88);
+  border: 1px solid rgba(40, 80, 140, 0.28);
+  display: flex; align-items: center; justify-content: space-between;
+  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-#p2-panel .pc-port-side::before {
-  width:55px !important;
-  background:linear-gradient(270deg,rgba(5,10,28,0.85),transparent) !important;
+
+/* 独立人像立绘视窗 (Face-Centered Portrait Window) */
+.es-pick-portrait-box {
+  width: 116px;
+  height: 100%;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  display: block;
 }
-/* 名字更大更白 */
-.pc-name {
-  font-size:16px !important;
-  letter-spacing:3px !important;
-  color:rgba(225,238,255,0.97) !important;
-  font-weight:700 !important;
+
+.es-pick-portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%; /* 完美正中面部与眼睛！ */
+  display: block;
+  transition: transform 0.4s ease;
 }
-.pc-seq { color:rgba(100,140,200,0.28) !important; }
-.pc-el  { opacity:0.60 !important; font-size:9px !important; }
-.pick-card .pc-empty-v {
-  color:rgba(120,160,220,0.10) !important;
-  font-size:13px !important;
-  letter-spacing:6px !important;
+.es-pick-card:hover .es-pick-portrait-img { transform: scale(1.06); }
+
+/* 蓝方左内侧羽化 */
+#p1-pick-cards .es-pick-portrait-box::before {
+  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(90deg, rgba(6, 14, 32, 0.95) 0%, rgba(6, 14, 32, 0.4) 25%, transparent 60%);
 }
+/* 红方右内侧羽化 */
+#p2-pick-cards .es-pick-portrait-box::before {
+  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(270deg, rgba(6, 14, 32, 0.95) 0%, rgba(6, 14, 32, 0.4) 25%, transparent 60%);
+}
+
+/* 文字与标签层 */
+.es-pick-meta {
+  position: relative; z-index: 3; flex: 1; min-width: 0;
+  display: flex; flex-direction: column; justify-content: center; gap: 2px;
+  padding: 0 12px;
+}
+#p2-pick-cards .es-pick-meta {
+  text-align: right;
+}
+
+.es-pick-slot-tag {
+  font-family: var(--font-esports); font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  color: var(--text-dim);
+}
+.es-pick-name-zh {
+  font-family: var(--font-title); font-size: 16px; font-weight: 700; letter-spacing: 2px;
+  color: #ffffff; text-shadow: 0 0 12px rgba(0, 0, 0, 0.9), 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+.es-pick-badge-row {
+  display: flex; align-items: center; gap: 5px; margin-top: 1px;
+}
+#p2-pick-cards .es-pick-badge-row { justify-content: flex-end; }
+
+.es-element-badge {
+  font-size: 9px; font-weight: 700; letter-spacing: 1px; padding: 1px 6px; border-radius: 2px;
+  display: inline-flex; align-items: center; gap: 3px;
+  background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 空卡状态 */
+.es-pick-card.empty {
+  background: rgba(4, 10, 24, 0.5);
+  border-style: dashed; border-color: rgba(56, 189, 248, 0.18);
+}
+.es-pick-card.empty .es-empty-hint {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-esports); font-size: 12px; font-weight: 600; letter-spacing: 4px;
+  color: rgba(56, 189, 248, 0.25); text-transform: uppercase;
+}
+
+/* 正在选择中状态 (Picking Active State) */
+.es-pick-card.active.blue {
+  border: 1.5px solid var(--blue-team);
+  background: rgba(0, 160, 255, 0.12);
+  box-shadow: 0 0 24px rgba(0, 210, 255, 0.45), inset 0 0 20px rgba(0, 210, 255, 0.2);
+  animation: es-pulse-blue 1.4s ease-in-out infinite;
+}
+@keyframes es-pulse-blue {
+  0%, 100% { box-shadow: 0 0 16px rgba(0, 210, 255, 0.35), inset 0 0 12px rgba(0, 210, 255, 0.15); }
+  50% { box-shadow: 0 0 32px rgba(0, 210, 255, 0.75), inset 0 0 24px rgba(0, 210, 255, 0.35); }
+}
+.es-pick-card.active.red {
+  border: 1.5px solid var(--red-team);
+  background: rgba(255, 51, 102, 0.12);
+  box-shadow: 0 0 24px rgba(255, 51, 102, 0.45), inset 0 0 20px rgba(255, 51, 102, 0.2);
+  animation: es-pulse-red 1.4s ease-in-out infinite;
+}
+@keyframes es-pulse-red {
+  0%, 100% { box-shadow: 0 0 16px rgba(255, 51, 102, 0.35), inset 0 0 12px rgba(255, 51, 102, 0.15); }
+  50% { box-shadow: 0 0 32px rgba(255, 51, 102, 0.75), inset 0 0 24px rgba(255, 51, 102, 0.35); }
+}
+
+.es-picking-flag {
+  position: absolute; right: 12px; font-family: var(--font-esports);
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  animation: es-blink 1s ease-in-out infinite;
+}
+#p2-pick-cards .es-picking-flag { right: auto; left: 12px; }
+@keyframes es-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* 已锁定冲击效果 (Locked In Visual) */
+.es-pick-card.locked {
+  border-color: rgba(255, 255, 255, 0.35);
+}
+.es-pick-card.locked.blue {
+  border-left: 3px solid var(--blue-team);
+}
+.es-pick-card.locked.red {
+  border-right: 3px solid var(--red-team);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   7. 禁用区域 (Ban Slots & Trays)
+   ══════════════════════════════════════════════════════════════════════════ */
+.ban-section-tray {
+  padding: 4px 6px 6px;
+  background: rgba(3, 7, 18, 0.95);
+  border-top: 1px solid rgba(56, 189, 248, 0.15);
+}
+.ban-tray-lbl {
+  font-family: var(--font-esports); font-size: 9px; font-weight: 700; letter-spacing: 3px;
+  color: var(--ban-red); margin-bottom: 4px; padding-left: 4px;
+  display: flex; align-items: center; gap: 6px;
+}
+.ban-tray-lbl::before {
+  content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ban-red); box-shadow: 0 0 6px var(--ban-red);
+}
+.ban-cards-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+}
+
+.es-ban-slot {
+  height: 48px; border-radius: 3px; position: relative; overflow: hidden;
+  background: rgba(8, 14, 28, 0.9);
+  border: 1px solid rgba(255, 40, 40, 0.25);
+  transition: all 0.3s ease;
+}
+.es-ban-slot.empty {
+  border-style: dashed; border-color: rgba(255, 50, 50, 0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-esports); font-size: 9px; color: rgba(255, 60, 60, 0.3); letter-spacing: 1px;
+}
+.es-ban-slot.active {
+  border-color: var(--ban-red);
+  box-shadow: 0 0 16px rgba(255, 40, 40, 0.5);
+  animation: es-pulse-ban 1.2s ease-in-out infinite;
+}
+@keyframes es-pulse-ban {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 40, 40, 0.3); }
+  50% { box-shadow: 0 0 24px rgba(255, 40, 40, 0.8); }
+}
+
+.es-ban-artwork {
+  width: 100%; height: 100%; object-fit: cover; object-position: center 20%;
+  filter: grayscale(0.7) brightness(0.65) contrast(1.2);
+}
+/* 猩红斜切斩击激光线 */
+.es-ban-slash {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 46%, rgba(255, 40, 40, 0.95) 49%, rgba(255, 255, 255, 0.9) 50%, rgba(255, 40, 40, 0.95) 51%, transparent 54%);
+  box-shadow: 0 0 14px rgba(255, 30, 30, 0.8);
+  pointer-events: none;
+}
+.es-ban-badge-x {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 900; color: rgba(255, 60, 60, 0.9);
+  text-shadow: 0 0 12px rgba(255, 0, 0, 0.8);
+}
+.es-ban-name-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 1px 3px; font-size: 8px; font-weight: 700; text-align: center;
+  background: rgba(0, 0, 0, 0.85); color: #ff8888; text-decoration: line-through;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   8. 中央舞台与全息聚光灯 (Center Broadcast Stage & Spotlight)
+   ══════════════════════════════════════════════════════════════════════════ */
+#center {
+  grid-column: 2 / 3; grid-row: 3 / 4;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+}
+
+/* 赛程步骤时间轴 (Sequence Timeline Tracker) */
+#bp-seq-bar {
+  height: 28px; background: rgba(3, 8, 20, 0.85);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  padding: 0 12px;
+}
+.seq-node {
+  height: 10px; flex: 1; max-width: 44px; border-radius: 2px;
+  background: rgba(20, 36, 64, 0.5); border: 1px solid rgba(60, 110, 180, 0.3);
+  position: relative; transition: all 0.3s;
+}
+.seq-node.done { opacity: 0.55; }
+.seq-node.done.ban { background: rgba(180, 20, 20, 0.6); border-color: rgba(255, 50, 50, 0.6); }
+.seq-node.done.pick.p1 { background: rgba(0, 140, 255, 0.6); border-color: rgba(0, 210, 255, 0.6); }
+.seq-node.done.pick.p2 { background: rgba(255, 40, 80, 0.6); border-color: rgba(255, 51, 102, 0.6); }
+
+.seq-node.cur {
+  height: 14px; transform: scaleY(1.2);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.8);
+  animation: seq-pulse 1s ease-in-out infinite;
+}
+.seq-node.cur.ban { background: var(--ban-red); border-color: #fff; box-shadow: 0 0 16px var(--ban-red); }
+.seq-node.cur.p1 { background: var(--blue-team); border-color: #fff; box-shadow: 0 0 16px var(--blue-team-glow); }
+.seq-node.cur.p2 { background: var(--red-team); border-color: #fff; box-shadow: 0 0 16px var(--red-team-glow); }
+
+@keyframes seq-pulse {
+  0%, 100% { opacity: 1; filter: brightness(1.2); }
+  50% { opacity: 0.7; filter: brightness(0.9); }
+}
+
+/* OBS 视频透出区域 (Video / Game Feed Transparent Area) */
+#video-area {
+  flex: 1; position: relative; background: transparent;
+}
+/* 科技感取景框四角 (Cyber HUD Brackets) */
+.hud-corner { position: absolute; width: 28px; height: 28px; pointer-events: none; }
+.hud-corner.tl { top: 8px; left: 8px; border-top: 2px solid var(--blue-team); border-left: 2px solid var(--blue-team); box-shadow: 0 0 10px var(--blue-team-glow); }
+.hud-corner.tr { top: 8px; right: 8px; border-top: 2px solid var(--red-team); border-right: 2px solid var(--red-team); box-shadow: 0 0 10px var(--red-team-glow); }
+.hud-corner.bl { bottom: 8px; left: 8px; border-bottom: 2px solid var(--blue-team); border-left: 2px solid var(--blue-team); }
+.hud-corner.br { bottom: 8px; right: 8px; border-bottom: 2px solid var(--red-team); border-right: 2px solid var(--red-team); }
+
+/* 英雄联盟电竞中央环形倒计时器 (Center Hextech Ring Countdown) */
+#bp-timer-widget {
+  position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 15; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+}
+#bp-timer-widget.visible { opacity: 1; }
+
+.timer-svg-box { position: relative; width: 120px; height: 120px; }
+.timer-num-display {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Oswald', var(--font-esports); font-size: 52px; font-weight: 700;
+  color: #ffffff; text-shadow: 0 0 20px rgba(0, 210, 255, 0.7);
+}
+.timer-sub-label {
+  font-family: var(--font-esports); font-size: 11px; font-weight: 700; letter-spacing: 3px;
+  margin-top: 4px; padding: 2px 14px; border-radius: 2px;
+  background: rgba(3, 8, 22, 0.85); border: 1px solid rgba(56, 189, 248, 0.35);
+  text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   9. 英雄联盟官方赛事级 英雄锁定宏大动画 (Hero Lock-in Cinematic Showcase)
+   ══════════════════════════════════════════════════════════════════════════ */
+#spotlight {
+  position: absolute; inset: 0; z-index: 60;
+  display: flex; align-items: center; justify-content: center;
+  pointer-events: none; opacity: 0;
+  transition: opacity 0.35s ease;
+}
+#spotlight.show {
+  opacity: 1;
+}
+
+/* 场景全屏暗化与能量氛围 (Cinematic Backdrop) */
+.spot-bg-overlay {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at center, rgba(3, 10, 26, 0.85) 0%, rgba(2, 5, 16, 0.95) 70%, rgba(0, 0, 0, 0.98) 100%);
+  opacity: 0; transition: opacity 0.4s ease;
+}
+#spotlight.show .spot-bg-overlay { opacity: 1; }
+
+/* 放射能量核心光环 (Radial Energy Core) */
+.spot-flare-core {
+  position: absolute; width: 800px; height: 800px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 210, 255, 0.35) 0%, rgba(0, 160, 255, 0.1) 45%, transparent 70%);
+  filter: blur(40px); pointer-events: none; opacity: 0;
+  transform: scale(0.5); transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+}
+#spotlight.spot-red .spot-flare-core {
+  background: radial-gradient(circle, rgba(255, 51, 102, 0.4) 0%, rgba(255, 30, 80, 0.12) 45%, transparent 70%);
+}
+#spotlight.spot-ban .spot-flare-core {
+  background: radial-gradient(circle, rgba(255, 30, 30, 0.5) 0%, rgba(180, 10, 20, 0.15) 45%, transparent 70%);
+}
+#spotlight.show .spot-flare-core { opacity: 1; transform: scale(1.2); }
+
+/* 动态外圈冲击波 (Expanding Shockwave) */
+.spot-shockwave {
+  position: absolute; width: 200px; height: 200px; border-radius: 50%;
+  border: 3px solid rgba(0, 210, 255, 0.8);
+  box-shadow: 0 0 40px rgba(0, 210, 255, 0.6);
+  opacity: 0; pointer-events: none;
+}
+#spotlight.spot-red .spot-shockwave {
+  border-color: rgba(255, 51, 102, 0.85); box-shadow: 0 0 40px rgba(255, 51, 102, 0.6);
+}
+#spotlight.spot-ban .spot-shockwave {
+  border-color: rgba(255, 30, 30, 0.9); box-shadow: 0 0 50px rgba(255, 30, 30, 0.8);
+}
+#spotlight.show .spot-shockwave {
+  animation: spotShockwavePulse 1.2s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+}
+@keyframes spotShockwavePulse {
+  0% { transform: scale(0.2); opacity: 1; }
+  100% { transform: scale(4.8); opacity: 0; }
+}
+
+/* 科技符文环 (Rotating Tech Rune Ring) */
+.spot-rune-ring {
+  position: absolute; width: 640px; height: 640px; border-radius: 50%;
+  border: 1.5px dashed rgba(0, 210, 255, 0.4);
+  box-shadow: 0 0 30px rgba(0, 210, 255, 0.2), inset 0 0 30px rgba(0, 210, 255, 0.1);
+  opacity: 0; pointer-events: none;
+}
+#spotlight.spot-red .spot-rune-ring {
+  border-color: rgba(255, 51, 102, 0.4); box-shadow: 0 0 30px rgba(255, 51, 102, 0.2);
+}
+#spotlight.spot-ban .spot-rune-ring {
+  border-color: rgba(255, 30, 30, 0.5); box-shadow: 0 0 35px rgba(255, 30, 30, 0.3);
+}
+#spotlight.show .spot-rune-ring {
+  opacity: 1; animation: spotRuneRotate 12s linear infinite;
+}
+@keyframes spotRuneRotate {
+  0% { transform: rotate(0deg) scale(0.9); }
+  50% { transform: rotate(180deg) scale(1.02); }
+  100% { transform: rotate(360deg) scale(0.9); }
+}
+
+/* 3D 核心英雄卡片展示窗 (3D Hero Showcase Card) */
+.spot-card-wrapper {
+  position: relative; width: 440px; height: 580px; border-radius: 12px; overflow: hidden;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 70px rgba(0, 210, 255, 0.45);
+  border: 2px solid var(--blue-team);
+  background: #020612;
+  transform: perspective(1000px) rotateX(12deg) scale(0.7) translateY(40px);
+  opacity: 0;
+  transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease, border-color 0.4s, box-shadow 0.4s;
+}
+#spotlight.spot-red .spot-card-wrapper {
+  border-color: var(--red-team);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 70px rgba(255, 51, 102, 0.45);
+}
+#spotlight.spot-ban .spot-card-wrapper {
+  border-color: var(--ban-red);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95), 0 0 80px rgba(255, 30, 30, 0.6);
+}
+#spotlight.show .spot-card-wrapper {
+  opacity: 1;
+  transform: perspective(1000px) rotateX(0deg) scale(1) translateY(0);
+}
+
+/* 英雄人像与高光特效 */
+.spot-hero-art-box {
+  position: absolute; inset: 0; overflow: hidden;
+}
+.spot-img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center 20%;
+  transform: scale(1.08); transition: transform 3.5s cubic-bezier(0.1, 0.8, 0.2, 1);
+}
+#spotlight.show .spot-img {
+  transform: scale(1.0);
+}
+
+/* 扫光特效 (Light Sweep) */
+.spot-light-sweep {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.45) 50%, transparent 100%);
+  transform: translateX(-150%) translateY(-150%);
+  pointer-events: none;
+}
+#spotlight.show .spot-light-sweep {
+  animation: spotLightSweep 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+}
+@keyframes spotLightSweep {
+  0% { transform: translateX(-150%) translateY(-150%); opacity: 1; }
+  100% { transform: translateX(150%) translateY(150%); opacity: 0; }
+}
+
+/* 禁用专属覆盖层与双激光斩击 */
+.spot-ban-cover {
+  position: absolute; inset: 0; display: none;
+  background: rgba(140, 10, 25, 0.7);
+  flex-direction: column; align-items: center; justify-content: center;
+  z-index: 10;
+}
+#spotlight.spot-ban .spot-ban-cover { display: flex; }
+.spot-ban-laser-slash1, .spot-ban-laser-slash2 {
+  position: absolute; width: 180%; height: 4px; background: #fff;
+  box-shadow: 0 0 20px #ff3344, 0 0 40px #ff0000;
+}
+.spot-ban-laser-slash1 { transform: rotate(-38deg); }
+.spot-ban-laser-slash2 { transform: rotate(38deg); }
+.spot-ban-icon {
+  font-size: 130px; font-weight: 900; color: #ff3344;
+  text-shadow: 0 0 50px rgba(255, 0, 0, 1), 0 0 100px rgba(255, 0, 0, 0.8);
+  transform: scale(0.6); animation: spotBanPop 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes spotBanPop {
+  0% { transform: scale(0.4) rotate(-15deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.spot-ban-text {
+  font-family: var(--font-esports); font-size: 14px; font-weight: 800; letter-spacing: 6px;
+  color: #fff; text-shadow: 0 0 14px rgba(255, 50, 50, 0.9);
+  padding: 3px 18px; border: 1px solid rgba(255, 80, 80, 0.6);
+  background: rgba(160, 20, 30, 0.85); border-radius: 3px; margin-top: 10px;
+}
+
+/* 底部英雄展台信息 (Bottom Card HUD) */
+.spot-banner-info {
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 12;
+  padding: 50px 24px 22px;
+  background: linear-gradient(0deg, rgba(2, 6, 18, 0.98) 0%, rgba(2, 6, 18, 0.88) 55%, rgba(2, 6, 18, 0.4) 80%, transparent 100%);
+  display: flex; flex-direction: column; gap: 4px;
+}
+
+.spot-meta-row {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 2px;
+}
+.spot-badge-tag {
+  font-family: var(--font-esports); font-size: 11px; font-weight: 800; letter-spacing: 3px;
+  padding: 3px 12px; border-radius: 3px; text-transform: uppercase;
+}
+.spot-element-pill {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  padding: 2px 10px; border-radius: 3px;
+  background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.spot-role-pill {
+  font-family: var(--font-esports); font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  color: var(--gold-hex); padding: 2px 8px; border-radius: 3px;
+  background: rgba(229, 185, 96, 0.15); border: 1px solid rgba(229, 185, 96, 0.4);
+}
+
+.spot-hero-names {
+  display: flex; align-items: baseline; gap: 12px;
+}
+.spot-name-zh {
+  font-family: var(--font-title); font-size: 38px; font-weight: 900; letter-spacing: 4px;
+  color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.6), 0 3px 8px rgba(0, 0, 0, 0.9);
+  line-height: 1.1;
+}
+.spot-name-en {
+  font-family: var(--font-esports); font-size: 16px; font-weight: 700; letter-spacing: 4px;
+  color: var(--text-dim); text-transform: uppercase;
+}
+
+.spot-action-desc {
+  font-family: var(--font-esports); font-size: 12px; font-weight: 700; letter-spacing: 3px;
+  color: var(--text-muted); text-transform: uppercase; margin-top: 2px;
+}
+
+/* 侧边已锁定卡片的高光冲击动画 (Lock-in Card Pulse) */
+.es-pick-card.just-locked {
+  animation: cardLockBurst 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes cardLockBurst {
+  0% { transform: scale(1.08); box-shadow: 0 0 40px #fff, inset 0 0 30px #fff; filter: brightness(1.6); }
+  50% { transform: scale(1.02); filter: brightness(1.2); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   10. 底部状态与全息挑战栏 (Bottom Match HUD & Holo Strategic Score)
+   ══════════════════════════════════════════════════════════════════════════ */
+#bottom {
+  grid-column: 1 / -1; grid-row: 4;
+  display: grid;
+  grid-template-columns: 460px 1fr 460px;
+  align-items: center;
+  background: linear-gradient(180deg, rgba(3, 8, 22, 0.95) 0%, rgba(1, 4, 12, 0.98) 100%);
+  border-top: 1px solid rgba(56, 189, 248, 0.22);
+  padding: 0 24px; position: relative; z-index: 10;
+}
+#bottom::before {
+  content: ''; position: absolute; top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.6) 50%, transparent);
+}
+
+/* 左侧状态区 */
+.bt-status-box { display: flex; flex-direction: column; gap: 4px; }
+.bt-phase-title {
+  font-family: var(--font-title); font-size: 16px; font-weight: 700; letter-spacing: 3px;
+  display: flex; align-items: center; gap: 8px;
+}
+.bt-current-turn { font-family: var(--font-esports); font-size: 12px; color: var(--text-muted); letter-spacing: 2px; }
+
+/* 中央比分板 */
+.bt-score-board {
+  display: flex; align-items: center; justify-content: center; gap: 24px;
+}
+.bt-score-team {
+  font-family: var(--font-esports); font-size: 14px; font-weight: 700; letter-spacing: 2px;
+}
+.bt-score-team.blue { color: var(--blue-team); }
+.bt-score-team.red { color: var(--red-team); }
+.bt-score-digits {
+  font-family: 'Oswald', var(--font-esports); font-size: 38px; font-weight: 700; letter-spacing: 6px;
+  color: #ffffff; text-shadow: 0 0 20px var(--gold-glow);
+  display: flex; align-items: center; gap: 12px;
+}
+.bt-score-divider { color: var(--gold-hex); opacity: 0.7; }
+
+/* 右侧全息战略挑战 HUD */
+.bt-holo-box {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 4px;
+}
+.bt-holo-title {
+  font-family: var(--font-esports); font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  color: var(--gold-hex);
+}
+.bt-holo-enemies { display: flex; gap: 6px; }
+.bt-holo-enemy-slot {
+  width: 24px; height: 24px; border-radius: 3px;
+  background: rgba(10, 24, 50, 0.8); border: 1px solid rgba(56, 189, 248, 0.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: var(--text-main);
+  transition: all 0.3s;
+}
+.bt-holo-enemy-slot.current {
+  border-color: var(--gold-hex); background: rgba(229, 185, 96, 0.25);
+  box-shadow: 0 0 10px var(--gold-glow);
+}
+.bt-holo-enemy-slot.defeated {
+  filter: grayscale(1); opacity: 0.25; border-color: rgba(255, 255, 255, 0.1);
+}
+.bt-holo-score {
+  font-family: var(--font-esports); font-size: 12px; font-weight: 700; color: var(--gold-hex);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   11. 音效与全屏交互 (SFX Unlock & Video Overlays)
+   ══════════════════════════════════════════════════════════════════════════ */
+#sfx-unlock {
+  position: fixed; top: 12px; right: 12px; z-index: 9999;
+  background: rgba(0, 210, 255, 0.15); border: 1px solid var(--blue-team);
+  color: var(--blue-team); font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  padding: 6px 16px; border-radius: 4px; cursor: pointer; backdrop-filter: blur(8px);
+  transition: all 0.2s;
+}
+#sfx-unlock:hover { background: var(--blue-team); color: #000; }
+#sfx-unlock.hidden { display: none; }
+
+/* 赛前 PV 与倒计时 */
+#pv-layer {
+  position: fixed; inset: 0; z-index: 1000; background: #000;
+  display: none; align-items: center; justify-content: center;
+}
+#pv-layer.show { display: flex; }
+#pv-video { width: 1920px; height: 1080px; object-fit: cover; }
+#pv-overlay {
+  position: absolute; inset: 0; z-index: 1002;
+  display: none; align-items: center; justify-content: center; flex-direction: column; gap: 12px;
+}
+#pv-overlay.show { display: flex; }
+#pv-countdown {
+  font-family: 'Oswald', sans-serif; font-size: 140px; font-weight: 700;
+  color: var(--blue-team); text-shadow: 0 0 60px var(--blue-team-glow);
+}
+
+/* 角色阵亡全屏红闪 (Death Flash) */
+#death-flash {
+  position: fixed; inset: 0; z-index: 999; pointer-events: none;
+  background: rgba(255, 0, 0, 0.35); opacity: 0; transition: opacity 0.3s;
+}
+#death-flash.active { opacity: 1; animation: flash-fade 1.2s ease-out forwards; }
+@keyframes flash-fade { 0% { opacity: 0.8; } 100% { opacity: 0; } }
+
 </style>
+<script src="./characters-data.js"></script>
 <script src="./mqtt.min.js"></script>
 <script src="./sync-config.js"></script>
 <script>
+// 远程 MQTT 同步
 (function(){
-  const ch=window.SYNC_CHANNEL;
-  if(!ch||ch.includes('填入'))return;
-  const client=mqtt.connect('wss://broker.emqx.io:8084/mqtt',{
-    clientId:'wuwa_obs_'+(Math.random()*1e9|0).toString(36),
-    reconnectPeriod:3000,connectTimeout:10000,clean:true
-  });
-  client.on('connect',()=>{
-    client.subscribe(ch);
-    console.log('%c✓ OBS同步已连接 · 频道:'+ch,'color:#20c8a0;font-weight:700');
-  });
-  client.on('message',(t,msg)=>{
-    const j=msg.toString();
-    if(j!==localStorage.getItem('wuwa_bp_state')){
-      localStorage.setItem('wuwa_bp_state',j);
-      window.dispatchEvent(new StorageEvent('storage',{key:'wuwa_bp_state'}));
-    }
-  });
-  client.on('error',e=>console.warn('同步错误',e));
+  const ch = window.SYNC_CHANNEL;
+  if(!ch || ch.includes('填入')) return;
+  try {
+    const client = mqtt.connect('wss://broker.emqx.io:8084/mqtt', {
+      clientId: 'wuwa_obs_' + (Math.random()*1e9|0).toString(36),
+      reconnectPeriod: 3000, connectTimeout: 10000, clean: true
+    });
+    client.on('connect', () => {
+      client.subscribe(ch);
+      console.log('%c✓ 英雄联盟级OBS直播流已就绪 · 频道:' + ch, 'color:#00d2ff;font-weight:700');
+    });
+    client.on('message', (t, msg) => {
+      const j = msg.toString();
+      if(j !== localStorage.getItem('wuwa_bp_state')){
+        localStorage.setItem('wuwa_bp_state', j);
+        window.dispatchEvent(new StorageEvent('storage', {key:'wuwa_bp_state'}));
+      }
+    });
+  } catch(e) { console.warn('MQTT 连接提示:', e); }
 })();
 </script>
 </head>
 <body>
-<!-- 今州杯风格艺术细线框 -->
-<div class="ef-edge ef-top"></div>
-<div class="ef-edge ef-bottom"></div>
-<div class="ef-edge ef-left"></div>
-<div class="ef-edge ef-right"></div>
-<div class="ef-corner tl"></div>
-<div class="ef-corner tr"></div>
-<div class="ef-corner bl"></div>
-<div class="ef-corner br"></div>
-<div class="ef-dot tl"></div>
-<div class="ef-dot tr"></div>
-<div class="ef-dot bl"></div>
-<div class="ef-dot br"></div>
-<div class="ef-tick t"></div>
-<div class="ef-tick b"></div>
-<div class="ef-tick l"></div>
-<div class="ef-tick r"></div>
 
+<!-- 科技外框 -->
+<div class="frame-edge-t"></div>
+<div class="frame-edge-b"></div>
+<div class="frame-corner tl"></div>
+<div class="frame-corner tr"></div>
+<div class="frame-corner bl"></div>
+<div class="frame-corner br"></div>
+
+<!-- 背景层 -->
 <div id="bg-main"></div>
-<div id="bg-dim"></div>
-<div id="bg-side-l"></div>
-<div id="bg-side-r"></div>
+<div id="bg-overlay"></div>
 <div id="scanlines"></div>
 <canvas id="pcanvas"></canvas>
 
-<div class="fl-top"></div><div class="fl-bottom"></div>
-<div class="fl-left"></div><div class="fl-right"></div>
-<div class="fl-ti"></div><div class="fl-bi"></div>
-<div class="fl-li"></div><div class="fl-ri"></div>
-<div class="fc tl"></div><div class="fc tr"></div>
-<div class="fc bl"></div><div class="fc br"></div>
-<div class="fd tl"></div><div class="fd tr"></div>
-<div class="fd bl"></div><div class="fd br"></div>
-<div class="fm top"></div><div class="fm bottom"></div>
-<div class="fm left"></div><div class="fm right"></div>
-<div class="fq t1"></div><div class="fq t2"></div>
-<div class="fq b1"></div><div class="fq b2"></div>
-<div class="fq l1"></div><div class="fq l2"></div>
-<div class="fq r1"></div><div class="fq r2"></div>
+<!-- 音效解锁按钮 -->
+<div id="sfx-unlock">🔊 点击启用电竞赛事音效</div>
+<div id="death-flash"></div>
 
+<!-- 赛前 PV 播放层 -->
 <div id="pv-layer">
   <video id="pv-video" src="./SG.mp4" preload="auto"></video>
-  <div id="pv-title">旧雨杯 · 赛前PV · 西格莉卡</div>
-  <div id="pv-controls"><div class="pv-btn" onclick="stopPV()">跳过 ▶</div></div>
   <div id="pv-overlay">
     <div id="pv-countdown">3</div>
-    <div id="pv-countdown-label">比赛即将开始</div>
+    <div style="font-size:18px;letter-spacing:6px;color:#fff;">MATCH STARTING</div>
   </div>
 </div>
 
-<div id="sfx-unlock">🔊 点击此处启用音效</div>
-<div id="death-flash"></div>
-<div id="death-text">角色阵亡！</div>
-
 <div id="app">
 
-  <!-- ── Header ── -->
+  <!-- ════════ 1. 顶部对决比分台 ════════ -->
   <div id="header">
-    <div id="p1-header-area">
-      <img class="guild-img p1g" src="./guide.png" onerror="this.style.display='none'" alt="">
-      <div class="player-info">
-        <div class="player-label">PLAYER 1</div>
-        <div class="player-name-hdr p1c" id="hdr-p1-name">玩家一</div>
-        <div class="player-sub-hdr" id="hdr-p1-sub">旧雨杯参赛选手</div>
+    <!-- 蓝方 P1 -->
+    <div class="team-header-box blue">
+      <div class="team-logo-wrap blue">
+        <img class="team-logo-img" src="./guide.png" onerror="this.src='./logo-crop.jpg'" alt="">
       </div>
-    </div>
-    <div id="center-header">
-      <div id="logo-row">
-        <img id="logo-img" src="./logo.png" onerror="this.style.display='none'" alt="">
-        <div id="main-title">旧 雨 杯</div>
-      </div>
-      <div id="sub-title">鸣 潮 娱 乐 赛 · WUTHERING WAVES</div>
-      <div id="phase-tag">BP 阶段</div>
-    </div>
-    <div id="p2-header-area">
-      <img class="guild-img p2g" src="./guide.png" onerror="this.style.display='none'" alt="">
-      <div class="p2-wrap">
-        <div class="player-label" style="text-align:right;">PLAYER 2</div>
-        <div class="player-name-hdr p2c" id="hdr-p2-name">玩家二</div>
-        <div class="player-sub-hdr" style="text-align:right;" id="hdr-p2-sub">旧雨杯参赛选手</div>
-      </div>
-    </div>
-    <div class="hdr-line"></div>
-  </div>
-
-  <!-- ── Sponsor bar ── -->
-  <div id="sponsor-bar">
-    <div class="sp-item">
-      <img class="sp-gif" src="./鸣潮.gif" onerror="this.style.display='none'" alt="">
-      <div><div class="sp-text c-ice">螃蟹账号</div><div class="sp-sub">赞助支持</div></div>
-    </div>
-    <div class="sp-div"></div>
-    <div class="sp-item">
-      <img class="sp-img" src="./guide.png" onerror="this.style.display='none'" alt="">
-      <div><div class="sp-text c-blue">蓝桉互娱</div><div class="sp-sub">赞助支持</div></div>
-    </div>
-    <div class="sp-div"></div>
-    <div class="sp-item">
-      <div><div class="sp-text c-gold" style="font-size:13px;letter-spacing:4px;">旧 雨 杯</div><div class="sp-sub">赞助支持</div></div>
-    </div>
-    <div class="sp-div"></div>
-    <div class="sp-item">
-      <div><div class="sp-text c-teal">鸣 潮 娱 乐 赛</div><div class="sp-sub">WUTHERING WAVES ENTERTAINMENT</div></div>
-    </div>
-    <div class="sp-div"></div>
-    <div class="sp-item">
-      <div><div class="sp-text c-white" style="font-size:13px;letter-spacing:3px;">赵礼杰天下第一</div><div class="sp-sub">赞助支持</div></div>
-    </div>
-    <div class="sp-div"></div>
-    <div class="sp-item">
-      <div><div class="sp-text c-teal" style="font-size:13px;letter-spacing:3px;">Rainly 雨屿</div><div class="sp-sub">技术支持</div></div>
-    </div>
-  </div>
-
-  <!-- ── P1 panel ── -->
-  <div class="player-panel" id="p1-panel">
-    <div class="panel-player-hdr ph-p1" id="p1-panel-name">玩家一</div>
-    <div class="ban-section">
-      <div class="section-lbl ban-lbl">BAN 禁用</div>
-      <div class="ban-cards-row" id="p1-ban-cards"></div>
-    </div>
-    <div class="pick-section">
-      <div class="section-lbl pick-lbl">PICK 选择</div>
-      <div class="pick-cards-col" id="p1-pick-cards"></div>
-    </div>
-  </div>
-
-  <!-- ── Center ── -->
-  <div id="center">
-    <div id="bp-seq-bar"></div>
-    <div id="video-area">
-      <div class="vc tl"></div><div class="vc tr"></div>
-      <div class="vc bl"></div><div class="vc br"></div>
-      <div class="vf-l"></div><div class="vf-r"></div>
-      <div class="vf-t"></div>
-      <!-- BP countdown timer -->
-      <div id="bp-timer">
-        <svg width="150" height="150" viewBox="0 0 150 150">
-          <circle cx="75" cy="75" r="68" fill="rgba(3,6,20,0.72)"/>
-          <circle cx="75" cy="75" r="63" fill="none" stroke="rgba(50,90,170,0.15)" stroke-width="5"/>
-          <circle id="bp-timer-arc" cx="75" cy="75" r="63" fill="none"
-            stroke="#3a8fff" stroke-width="5" stroke-linecap="round"
-            stroke-dasharray="395.8" stroke-dashoffset="0"
-            transform="rotate(-90,75,75)"/>
-          <text id="bp-timer-num" x="75" y="88" text-anchor="middle"
-            fill="#d8eeff" font-family="Oswald" font-size="52" font-weight="700">—</text>
-        </svg>
-        <div id="bp-timer-sub">P1 · PICK</div>
-      </div>
-      <!-- character spotlight -->
-      <div id="spotlight">
-        <div id="spot-card">
-          <img id="spot-img" src="" alt="">
-          <div id="spot-ban-tint"><div id="spot-ban-x">✕</div></div>
-          <div id="spot-info">
-            <div id="spot-name"></div>
-            <div id="spot-action"></div>
-          </div>
-          <div id="spot-badge">BAN</div>
+      <div class="team-text-meta">
+        <div class="team-side-tag blue">
+          <span>BLUE SIDE</span>
+          <span>·</span>
+          <span>P1</span>
+        </div>
+        <div class="team-player-name" id="hdr-p1-name">玩家一</div>
+        <div class="score-gems">
+          <div class="score-gem blue" id="gem-p1-1"></div>
+          <div class="score-gem blue" id="gem-p1-2"></div>
+          <div class="score-gem blue" id="gem-p1-3"></div>
         </div>
       </div>
     </div>
-    <div id="ban-row">
-      <div class="br-line top"></div>
-      <div class="br-line bottom"></div>
-      <div class="ban-group" id="p1-ban-row"></div>
-      <div id="ban-center-label">BANS</div>
-      <div class="ban-group" id="p2-ban-row"></div>
+
+    <!-- 中央赛事标题 -->
+    <div id="center-header">
+      <div class="match-title-row">
+        <img class="match-logo" src="./logo-crop.jpg" onerror="this.src='./guide.png'" alt="">
+        <div class="match-title-text">旧 雨 杯</div>
+      </div>
+      <div class="match-stage-tag" id="phase-tag">BAN & PICK 阶段</div>
+    </div>
+
+    <!-- 红方 P2 -->
+    <div class="team-header-box red">
+      <div class="team-logo-wrap red">
+        <img class="team-logo-img" src="./guide.png" onerror="this.src='./logo-crop.jpg'" alt="">
+      </div>
+      <div class="team-text-meta">
+        <div class="team-side-tag red">
+          <span>P2</span>
+          <span>·</span>
+          <span>RED SIDE</span>
+        </div>
+        <div class="team-player-name" id="hdr-p2-name">玩家二</div>
+        <div class="score-gems" style="justify-content:flex-end;">
+          <div class="score-gem red" id="gem-p2-1"></div>
+          <div class="score-gem red" id="gem-p2-2"></div>
+          <div class="score-gem red" id="gem-p2-3"></div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- ── P2 panel ── -->
-  <div class="player-panel" id="p2-panel">
-    <div class="p2-vline"></div>
-    <div class="panel-player-hdr ph-p2" id="p2-panel-name">玩家二</div>
-    <div class="ban-section">
-      <div class="section-lbl ban-lbl">BAN 禁用</div>
-      <div class="ban-cards-row" id="p2-ban-cards"></div>
+  <!-- ════════ 2. 赞助商跑马条 ════════ -->
+  <div id="sponsor-bar">
+    <div class="sp-item"><img src="./鸣潮.gif" onerror="this.style.display='none'" alt=""><span style="color:#00d2ff;">螃蟹账号</span> <span style="color:var(--text-muted);">赞助支持</span></div>
+    <div class="sp-sep"></div>
+    <div class="sp-item"><img src="./guide.png" onerror="this.style.display='none'" alt=""><span style="color:#38bdf8;">蓝桉互娱</span> <span style="color:var(--text-muted);">赞助支持</span></div>
+    <div class="sp-sep"></div>
+    <div class="sp-item"><span style="color:var(--gold-hex);">旧 雨 杯</span> <span style="color:var(--text-muted);">鸣潮娱乐赛</span></div>
+    <div class="sp-sep"></div>
+    <div class="sp-item"><span style="color:#ff3366;">赵礼杰天下第一</span> <span style="color:var(--text-muted);">赞助支持</span></div>
+    <div class="sp-sep"></div>
+    <div class="sp-item"><span style="color:#20c8a0;">Rainly 雨屿</span> <span style="color:var(--text-muted);">技术支持</span></div>
+  </div>
+
+  <!-- ════════ 3. 蓝方选角栏 (Left - Blue Side) ════════ -->
+  <div class="player-column" id="p1-panel">
+    <div class="col-header blue">
+      <span>BLUE PICKS</span>
+      <span id="p1-panel-name">玩家一</span>
     </div>
-    <div class="pick-section">
-      <div class="section-lbl pick-lbl">PICK 选择</div>
-      <div class="pick-cards-col" id="p2-pick-cards"></div>
+    <div class="pick-cards-container" id="p1-pick-cards"></div>
+    <!-- 蓝方禁用托盘 -->
+    <div class="ban-section-tray">
+      <div class="ban-tray-lbl">BLUE BANS</div>
+      <div class="ban-cards-grid" id="p1-ban-cards"></div>
     </div>
   </div>
 
-  <!-- ── Bottom ── -->
+  <!-- ════════ 4. 中央舞台与全息聚光灯 ════════ -->
+  <div id="center">
+    <div id="bp-seq-bar"></div>
+    <div id="video-area">
+      <!-- 科技感取景角标 -->
+      <div class="hud-corner tl"></div>
+      <div class="hud-corner tr"></div>
+      <div class="hud-corner bl"></div>
+      <div class="hud-corner br"></div>
+
+      <!-- 中央环形倒计时器 -->
+      <div id="bp-timer-widget">
+        <div class="timer-svg-box">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="54" fill="rgba(4,9,24,0.75)"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(56,189,248,0.15)" stroke-width="6"/>
+            <circle id="timer-arc" cx="60" cy="60" r="50" fill="none"
+              stroke="#00d2ff" stroke-width="6" stroke-linecap="round"
+              stroke-dasharray="314.16" stroke-dashoffset="0"
+              transform="rotate(-90,60,60)"/>
+          </svg>
+          <div class="timer-num-display" id="timer-num-val">30</div>
+        </div>
+        <div class="timer-sub-label" id="timer-turn-lbl">P1 · PICK</div>
+      </div>
+
+      <!-- 英雄联盟全球总决赛级 英雄锁定专属宏大动画 (Hero Lock-In Cinematic Stage) -->
+      <div id="spotlight">
+        <div class="spot-bg-overlay"></div>
+        <div class="spot-flare-core"></div>
+        <div class="spot-shockwave"></div>
+        <div class="spot-rune-ring"></div>
+
+        <div class="spot-card-wrapper">
+          <div class="spot-hero-art-box">
+            <img class="spot-img" id="spot-img" src="" alt="">
+            <div class="spot-light-sweep"></div>
+          </div>
+          <div class="spot-ban-cover">
+            <div class="spot-ban-laser-slash1"></div>
+            <div class="spot-ban-laser-slash2"></div>
+            <div class="spot-ban-icon">✕</div>
+            <div class="spot-ban-text">HERO BANNED</div>
+          </div>
+          <div class="spot-banner-info">
+            <div class="spot-meta-row">
+              <span class="spot-badge-tag" id="spot-badge">✦ LOCKED IN</span>
+              <span class="spot-element-pill" id="spot-element-pill">衍射 · SPECTRO</span>
+              <span class="spot-role-pill" id="spot-role-pill">5★ MAIN DPS</span>
+            </div>
+            <div class="spot-hero-names">
+              <div class="spot-name-zh" id="spot-name">角色名</div>
+              <div class="spot-name-en" id="spot-en-name">HERO NAME</div>
+            </div>
+            <div class="spot-action-desc" id="spot-action">BLUE SIDE LOCKED IN</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ 5. 红方选角栏 (Right - Red Side) ════════ -->
+  <div class="player-column" id="p2-panel">
+    <div class="col-header red">
+      <span>RED PICKS</span>
+      <span id="p2-panel-name">玩家二</span>
+    </div>
+    <div class="pick-cards-container" id="p2-pick-cards"></div>
+    <!-- 红方禁用托盘 -->
+    <div class="ban-section-tray">
+      <div class="ban-tray-lbl" style="justify-content:flex-end;color:var(--red-team);">RED BANS</div>
+      <div class="ban-cards-grid" id="p2-ban-cards"></div>
+    </div>
+  </div>
+
+  <!-- ════════ 6. 底部状态与对战比分板 ════════ -->
   <div id="bottom">
-    <div class="bt-line"></div>
-    <div id="status-area">
-      <div id="status-phase-row">
-        <span id="status-who" style="color:var(--p1)">玩家一</span>
-        <span id="status-phase">▸ 禁用阶段</span>
+    <div class="bt-status-box">
+      <div class="bt-phase-title">
+        <span id="status-who" style="color:var(--blue-team);">玩家一</span>
+        <span id="status-phase" style="color:var(--text-muted);">▸ 选择阶段</span>
       </div>
-      <div id="status-seq"></div>
+      <div class="bt-current-turn" id="status-turn-hint">CURRENT ACTION TURN</div>
     </div>
-    <div id="score-area">
-      <div class="score-block">
-        <div class="score-label" id="score-lbl-p1">玩家一</div>
-        <div class="score-num score-p1" id="score-p1">0</div>
+
+    <div class="bt-score-board">
+      <div class="bt-score-team blue" id="score-lbl-p1">玩家一</div>
+      <div class="bt-score-digits">
+        <span id="score-p1" style="color:var(--blue-team);">0</span>
+        <span class="bt-score-divider">:</span>
+        <span id="score-p2" style="color:var(--red-team);">0</span>
       </div>
-      <div class="score-divider">:</div>
-      <div class="score-block">
-        <div class="score-label" id="score-lbl-p2">玩家二</div>
-        <div class="score-num score-p2" id="score-p2">0</div>
-      </div>
+      <div class="bt-score-team red" id="score-lbl-p2">玩家二</div>
     </div>
-    <div id="holo-area">
-      <div id="holo-title">全息战略 · 当前挑战</div>
-      <div id="holo-enemies"></div>
-      <div id="holo-score-row">
-        <div id="holo-score-display">积分 <span id="holo-score-num">0</span></div>
-      </div>
+
+    <div class="bt-holo-box">
+      <div class="bt-holo-title">全息战略 · 挑战进度</div>
+      <div class="bt-holo-enemies" id="holo-enemies"></div>
+      <div class="bt-holo-score">当前积分: <span id="holo-score-num" style="color:#fff;">0</span></div>
     </div>
   </div>
 
 </div><!-- #app -->
 
 <script>
-/* ── particles ── */
+// ══════════════════════════════════════════════════════════════
+// 1. 粒子系统 (Ambient Energy Particles)
+// ══════════════════════════════════════════════════════════════
 (function(){
-  const c=document.getElementById('pcanvas'),x=c.getContext('2d');
-  c.width=1920;c.height=1080;
-  const pts=Array.from({length:45},()=>({
-    px:Math.random()*1920,py:Math.random()*1080,
-    r:Math.random()*1.8+0.4,
-    vx:(Math.random()-0.5)*0.28,vy:-(Math.random()*0.38+0.08),
-    a:Math.random()*0.35+0.08,
-    col:Math.random()>0.4?'rgba(168,216,247,':'rgba(200,236,255,'
+  const canvas = document.getElementById('pcanvas');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = 1920; canvas.height = 1080;
+  const particles = Array.from({length: 50}, () => ({
+    x: Math.random() * 1920,
+    y: Math.random() * 1080,
+    r: Math.random() * 2 + 0.5,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: -(Math.random() * 0.4 + 0.1),
+    alpha: Math.random() * 0.45 + 0.1,
+    color: Math.random() > 0.5 ? 'rgba(0,210,255,' : 'rgba(255,51,102,'
   }));
-  function draw(){
-    x.clearRect(0,0,1920,1080);
-    pts.forEach(p=>{
-      x.beginPath();x.arc(p.px,p.py,p.r,0,Math.PI*2);
-      x.fillStyle=p.col+p.a+')';x.fill();
-      p.px+=p.vx;p.py+=p.vy;
-      if(p.py<-10){p.py=1090;p.px=Math.random()*1920;}
-      if(p.px<-10)p.px=1930;if(p.px>1930)p.px=-10;
+
+  function loop(){
+    ctx.clearRect(0, 0, 1920, 1080);
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + p.alpha + ')';
+      ctx.fill();
+      p.x += p.vx; p.y += p.vy;
+      if (p.y < -10) { p.y = 1090; p.x = Math.random() * 1920; }
+      if (p.x < -10) p.x = 1930; if (p.x > 1930) p.x = -10;
     });
-    requestAnimationFrame(draw);
+    requestAnimationFrame(loop);
   }
-  draw();
+  loop();
 })();
 
-/* ── PV ── */
-function playPV(){
-  const layer=document.getElementById('pv-layer'),video=document.getElementById('pv-video');
-  layer.classList.add('show');video.currentTime=0;video.play();
-  video.onended=startCountdown;
-}
-function stopPV(){document.getElementById('pv-video').pause();startCountdown();}
-function startCountdown(){
-  const ov=document.getElementById('pv-overlay'),num=document.getElementById('pv-countdown');
-  ov.classList.add('show');let n=3;num.textContent=n;
-  const t=setInterval(()=>{
-    n--;
-    if(n<=0){clearInterval(t);ov.classList.remove('show');document.getElementById('pv-layer').classList.remove('show');}
-    else{num.textContent=n;num.style.animation='none';num.offsetHeight;num.style.animation='cdpulse 1s ease-in-out';}
-  },1000);
-}
-
-/* ── constants ── */
-const EL_ZH={Fusion:'热熔',Glacio:'冷凝',Electro:'导电',Aero:'气动',Spectro:'衍射',Havoc:'湮灭'};
-const SEQ_BAN_PICK=[
-  // 第1轮BAN：各禁2个
-  {phase:'ban',player:1},{phase:'ban',player:2},
-  {phase:'ban',player:1},{phase:'ban',player:2},
-  // 第1组PICK：2号先手
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:2},{phase:'pick',player:2},
-  {phase:'pick',player:1},{phase:'pick',player:1},
-  // 第2轮BAN：2号先手 各禁2个
-  {phase:'ban',player:2},{phase:'ban',player:1},
-  {phase:'ban',player:2},{phase:'ban',player:1},
-  // 第2组PICK：1号先手
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  // 第3组PICK：2号先手（反转）
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
+// ══════════════════════════════════════════════════════════════
+// 2. 赛事规则序列定义 (BP Sequence Definitions)
+// ══════════════════════════════════════════════════════════════
+const SEQ_BAN_PICK = [
+  // 第1轮 BAN：各禁2个
+  { phase: 'ban', player: 1 }, { phase: 'ban', player: 2 },
+  { phase: 'ban', player: 1 }, { phase: 'ban', player: 2 },
+  // 第1组 PICK：2号先手 (2-1-2-2-1-1)
+  { phase: 'pick', player: 2 }, { phase: 'pick', player: 1 },
+  { phase: 'pick', player: 2 }, { phase: 'pick', player: 2 },
+  { phase: 'pick', player: 1 }, { phase: 'pick', player: 1 },
+  // 第2轮 BAN：2号先手 各禁2个
+  { phase: 'ban', player: 2 }, { phase: 'ban', player: 1 },
+  { phase: 'ban', player: 2 }, { phase: 'ban', player: 1 },
+  // 第2组 PICK：1号先手
+  { phase: 'pick', player: 1 }, { phase: 'pick', player: 2 },
+  { phase: 'pick', player: 2 }, { phase: 'pick', player: 1 },
+  { phase: 'pick', player: 1 }, { phase: 'pick', player: 2 },
+  // 第3组 PICK：2号先手
+  { phase: 'pick', player: 2 }, { phase: 'pick', player: 1 },
+  { phase: 'pick', player: 1 }, { phase: 'pick', player: 2 },
+  { phase: 'pick', player: 2 }, { phase: 'pick', player: 1 }
 ];
-const SEQ_PICK_ONLY=[
-  // 第1组：2号先手
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:2},{phase:'pick',player:2},
-  {phase:'pick',player:1},{phase:'pick',player:1},
-  // 第2组：1号先手
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  // 第3组：2号先手（反转）
-  {phase:'pick',player:2},{phase:'pick',player:1},
-  {phase:'pick',player:1},{phase:'pick',player:2},
-  {phase:'pick',player:2},{phase:'pick',player:1},
-];
-let SEQ=SEQ_BAN_PICK;
-let BANS_EACH=4;
-const PICKS_EACH=9;
-let _obsMode='ban_pick';
 
-function loadState(){try{return JSON.parse(localStorage.getItem('wuwa_bp_state'))||null;}catch{return null;}}
-function imgErr(img,n){
-  img.style.display='none';
-  img.parentNode.insertAdjacentHTML('beforeend',
-    `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:rgba(168,216,247,0.7);text-align:center;padding:4px;line-height:1.3;">${n}</div>`);
+const SEQ_PICK_ONLY = [
+  { phase: 'pick', player: 2 }, { phase: 'pick', player: 1 },
+  { phase: 'pick', player: 2 }, { phase: 'pick', player: 2 },
+  { phase: 'pick', player: 1 }, { phase: 'pick', player: 1 },
+  { phase: 'pick', player: 1 }, { phase: 'pick', player: 2 },
+  { phase: 'pick', player: 2 }, { phase: 'pick', player: 1 },
+  { phase: 'pick', player: 1 }, { phase: 'pick', player: 2 },
+  { phase: 'pick', player: 2 }, { phase: 'pick', player: 1 },
+  { phase: 'pick', player: 1 }, { phase: 'pick', player: 2 },
+  { phase: 'pick', player: 2 }, { phase: 'pick', player: 1 }
+];
+
+let SEQ = SEQ_BAN_PICK;
+let BANS_EACH = 4;
+const PICKS_EACH = 9;
+let _obsMode = 'ban_pick';
+
+function loadState(){
+  try { return JSON.parse(localStorage.getItem('wuwa_bp_state')) || null; }
+  catch { return null; }
 }
 
-/* active slot calculation */
-function getActiveInfo(step,done){
-  if(done||step>=SEQ.length)return null;
-  const cur=SEQ[step];
-  let p1b=0,p2b=0,p1p=0,p2p=0;
-  for(let i=0;i<step;i++){
-    if(SEQ[i].player===1&&SEQ[i].phase==='ban')p1b++;
-    if(SEQ[i].player===2&&SEQ[i].phase==='ban')p2b++;
-    if(SEQ[i].player===1&&SEQ[i].phase==='pick')p1p++;
-    if(SEQ[i].player===2&&SEQ[i].phase==='pick')p2p++;
+function getActiveInfo(step, done){
+  if(done || step >= SEQ.length) return null;
+  const cur = SEQ[step];
+  let p1b = 0, p2b = 0, p1p = 0, p2p = 0;
+  for(let i = 0; i < step; i++){
+    if(SEQ[i].player === 1 && SEQ[i].phase === 'ban') p1b++;
+    if(SEQ[i].player === 2 && SEQ[i].phase === 'ban') p2b++;
+    if(SEQ[i].player === 1 && SEQ[i].phase === 'pick') p1p++;
+    if(SEQ[i].player === 2 && SEQ[i].phase === 'pick') p2p++;
   }
-  const idx=cur.player===1?(cur.phase==='ban'?p1b:p1p):(cur.phase==='ban'?p2b:p2p);
-  return{player:cur.player,phase:cur.phase,idx};
+  const idx = cur.player === 1 ? (cur.phase === 'ban' ? p1b : p1p) : (cur.phase === 'ban' ? p2b : p2p);
+  return { player: cur.player, phase: cur.phase, idx };
 }
 
-/* render ban cards */
-function renderBanCards(id,slots,player,activeInfo){
-  let h='';
-  for(let i=0;i<BANS_EACH;i++){
-    const c=slots&&slots[i];
-    const isActive=!c&&activeInfo&&activeInfo.phase==='ban'&&activeInfo.player===player&&activeInfo.idx===i;
-    if(c){
-      h+=`<div class="ban-card filled">
-        <img src="${c.img}" onerror="imgErr(this,'${c.name}')" alt="${c.name}">
-        <div class="bc-overlay">
-          <svg viewBox="0 0 32 32" fill="none" stroke="rgba(255,80,80,0.92)" stroke-width="4" stroke-linecap="round">
-            <line x1="6" y1="6" x2="26" y2="26"/><line x1="26" y1="6" x2="6" y2="26"/>
-          </svg>
+// ══════════════════════════════════════════════════════════════
+// 3. 渲染英雄卡片 (Render Hero Cards & Bans)
+// ══════════════════════════════════════════════════════════════
+function renderPickCards(id, slots, player, activeInfo){
+  let h = '';
+  const isBlue = player === 1;
+  const sideCls = isBlue ? 'blue' : 'red';
+
+  for(let i = 0; i < PICKS_EACH; i++){
+    const rawChar = slots && slots[i];
+    const char = rawChar ? (window.getCharInfo ? window.getCharInfo(rawChar) : rawChar) : null;
+    const isActive = !char && activeInfo && activeInfo.phase === 'pick' && activeInfo.player === player && activeInfo.idx === i;
+
+    if(char){
+      const elMeta = window.WUWA_ELEMENTS && window.WUWA_ELEMENTS[char.el] ? window.WUWA_ELEMENTS[char.el] : { name: char.el, color: '#00d2ff' };
+      const fPos = char.facePos || 'center 22%';
+      if(isBlue){
+        h += `
+        <div class="es-pick-card locked blue">
+          <div class="es-pick-meta">
+            <div class="es-pick-slot-tag">PICK 0${i+1}</div>
+            <div class="es-pick-name-zh">${char.name}</div>
+            <div class="es-pick-badge-row">
+              <span class="es-element-badge" style="border-color:${elMeta.color};color:${elMeta.color}">
+                ${elMeta.name || char.el}
+              </span>
+              <span style="font-size:9px;color:rgba(255,255,255,0.4);font-family:var(--font-esports);">${char.en || ''}</span>
+            </div>
+          </div>
+          <div class="es-pick-portrait-box">
+            <img class="es-pick-portrait-img" src="${char.img}" style="object-position:${fPos};" onerror="this.style.display='none'" alt="${char.name}">
+          </div>
+        </div>`;
+      } else {
+        h += `
+        <div class="es-pick-card locked red">
+          <div class="es-pick-portrait-box">
+            <img class="es-pick-portrait-img" src="${char.img}" style="object-position:${fPos};" onerror="this.style.display='none'" alt="${char.name}">
+          </div>
+          <div class="es-pick-meta">
+            <div class="es-pick-slot-tag">PICK 0${i+1}</div>
+            <div class="es-pick-name-zh">${char.name}</div>
+            <div class="es-pick-badge-row">
+              <span style="font-size:9px;color:rgba(255,255,255,0.4);font-family:var(--font-esports);">${char.en || ''}</span>
+              <span class="es-element-badge" style="border-color:${elMeta.color};color:${elMeta.color}">
+                ${elMeta.name || char.el}
+              </span>
+            </div>
+          </div>
+        </div>`;
+      }
+    } else if(isActive){
+      h += `
+      <div class="es-pick-card active ${sideCls}">
+        <div class="es-pick-meta">
+          <div class="es-pick-slot-tag" style="color:${isBlue?'var(--blue-team)':'var(--red-team)'}">PICKING 0${i+1}</div>
+          <div class="es-pick-name-zh" style="color:${isBlue?'var(--blue-team)':'var(--red-team)'};opacity:0.85;">选择中...</div>
         </div>
-        <div class="bc-name">${c.name}</div>
-        <div class="bc-badge">B${i+1}</div>
+        <div class="es-picking-flag" style="color:${isBlue?'var(--blue-team)':'var(--red-team)'}">✦ ACTIVE</div>
       </div>`;
     } else {
-      h+=`<div class="ban-card${isActive?' active':''}">
-        <div class="bc-empty-txt">${isActive?'BAN...':'— 禁用 —'}</div>
-        ${isActive?`<div class="bc-badge" style="background:rgba(180,20,20,0.5);color:#ff9999;border-color:rgba(220,40,40,0.6);">B${i+1}</div>`:''}
+      h += `
+      <div class="es-pick-card empty">
+        <div class="es-empty-hint">SLOT 0${i+1}</div>
       </div>`;
     }
   }
-  document.getElementById(id).innerHTML=h;
+  document.getElementById(id).innerHTML = h;
 }
 
-/* render pick cards */
-function renderPickCards(id,slots,player,activeInfo){
-  let h='';
-  for(let i=0;i<PICKS_EACH;i++){
-    const c=slots&&slots[i];
-    const isActive=!c&&activeInfo&&activeInfo.phase==='pick'&&activeInfo.player===player&&activeInfo.idx===i;
-    const pCls=player===1?'p1':'p2';
-    if(c){
-      h+=`<div class="pick-card ${pCls}-filled">
-        <div class="pc-text-side">
-          <div class="pc-seq">P${i+1}</div>
-          <div class="pc-name">${c.name}</div>
-          <div class="pc-el el-${c.el}">${EL_ZH[c.el]||c.el}</div>
-        </div>
-        <div class="pc-port-side">
-          <img src="${c.img}" onerror="imgErr(this,'${c.name}')" alt="${c.name}">
-        </div>
+function renderBanCards(id, slots, player, activeInfo){
+  let h = '';
+  for(let i = 0; i < BANS_EACH; i++){
+    const rawChar = slots && slots[i];
+    const char = rawChar ? (window.getCharInfo ? window.getCharInfo(rawChar) : rawChar) : null;
+    const isActive = !char && activeInfo && activeInfo.phase === 'ban' && activeInfo.player === player && activeInfo.idx === i;
+
+    if(char){
+      h += `
+      <div class="es-ban-slot filled">
+        <img class="es-ban-artwork" src="${char.img}" onerror="this.style.display='none'" alt="${char.name}">
+        <div class="es-ban-slash"></div>
+        <div class="es-ban-badge-x">✕</div>
+        <div class="es-ban-name-overlay">${char.name}</div>
+      </div>`;
+    } else if(isActive){
+      h += `
+      <div class="es-ban-slot active">
+        <span style="font-size:8px;font-weight:700;color:var(--ban-red);">BANNING</span>
       </div>`;
     } else {
-      const activeCls=isActive?` active ${pCls}-active`:'';
-      const pVar=player===1?'var(--p1)':'var(--p2)';
-      h+=`<div class="pick-card${activeCls}">
-        ${isActive
-          ?`<div class="pc-text-side">
-              <div class="pc-seq" style="color:${pVar}">P${i+1}</div>
-              <div class="pc-name" style="color:${pVar};opacity:0.75;font-size:11px;">选择中...</div>
-            </div>`
-          :`<div class="pc-empty-v">—</div>`
-        }
+      h += `
+      <div class="es-ban-slot empty">
+        <span>B${i+1}</span>
       </div>`;
     }
   }
-  document.getElementById(id).innerHTML=h;
+  document.getElementById(id).innerHTML = h;
 }
 
-/* render ban row (center) */
-function renderBanRow(id,slots,cls,count){
-  let h='';
-  for(let i=0;i<count;i++){
-    const c=slots&&slots[i];
-    h+=`<div class="ban-avatar${!c?' empty':' filled '+cls}">
-      ${c?`<img src="${c.img}" onerror="imgErr(this,'${c.name}')" alt="${c.name}">`:''}
-    </div>`;
-  }
-  document.getElementById(id).innerHTML=h;
-}
-
-/* render BP sequence bar */
-function renderSeqBar(step,done){
-  const seps=_obsMode==='pick_only'?[6,12]:[4,10,14,20];
-  const sep=`<div style="width:1px;height:20px;flex-shrink:0;background:linear-gradient(180deg,transparent,rgba(168,216,247,0.28),transparent);margin:0 1px;"></div>`;
-  let h='';
-  SEQ.forEach((s,i)=>{
-    if(seps.includes(i))h+=sep;
-    const isBan=s.phase==='ban';
-    const isDone=i<step;
-    const isCur=i===step&&!done;
-    let cls='seq-block';
-    cls+=isBan?' sb-ban':' sb-pick';
-    if(isDone)cls+=' sb-done';
-    if(isCur){
-      cls+=' sb-cur';
-      if(isBan)cls+=' sb-ban';
-      else cls+=s.player===1?' sb-pick-p1':' sb-pick-p2';
+function renderSeqBar(step, done){
+  const seps = _obsMode === 'pick_only' ? [6, 12] : [4, 10, 14, 20];
+  let h = '';
+  SEQ.forEach((s, i) => {
+    if(seps.includes(i)){
+      h += `<div style="width:1px;height:16px;background:rgba(56,189,248,0.25);margin:0 2px;"></div>`;
     }
-    h+=`<div class="${cls}"><span class="sb-dot sb-p${s.player}-dot"></span></div>`;
+    const isBan = s.phase === 'ban';
+    const isDone = i < step;
+    const isCur = i === step && !done;
+    let cls = 'seq-node';
+    if(isDone) cls += ' done ' + (isBan ? 'ban' : 'pick p' + s.player);
+    if(isCur) cls += ' cur ' + (isBan ? 'ban' : 'p' + s.player);
+    h += `<div class="${cls}"></div>`;
   });
-  document.getElementById('bp-seq-bar').innerHTML=h;
+  document.getElementById('bp-seq-bar').innerHTML = h;
 }
 
-/* ── spotlight ── */
-let spotTimer=null;
-let prevCounts={p1bans:0,p2bans:0,p1picks:0,p2picks:0};
+// ══════════════════════════════════════════════════════════════
+// 4. 全息 3D 聚光灯 (3D Holographic Spotlight)
+// ══════════════════════════════════════════════════════════════
+let spotTimer = null;
+let prevCounts = { p1bans: 0, p2bans: 0, p1picks: 0, p2picks: 0 };
 
-function showSpotlight(char,type){
-  // type: 'ban' | 'pick-p1' | 'pick-p2'
-  if(type==='ban')playBanSFX();else playPickSFX();
-  if(spotTimer)clearTimeout(spotTimer);
-  const sp=document.getElementById('spotlight');
-  sp.classList.remove('show');
-  void sp.offsetWidth; // force reflow to restart transition
+function showSpotlight(rawChar, type){
+  const char = window.getCharInfo ? window.getCharInfo(rawChar) : rawChar;
+  if(!char) return;
 
-  document.getElementById('spot-img').src=char.img;
-  document.getElementById('spot-name').textContent=char.name;
+  if(type === 'ban') playBanSFX(); else playPickSFX();
+  if(spotTimer) clearTimeout(spotTimer);
 
-  const actionEl=document.getElementById('spot-action');
-  const badgeEl=document.getElementById('spot-badge');
-  if(type==='ban'){
-    actionEl.textContent='BANNED · 已禁用';
-    badgeEl.textContent='BAN';
-  } else if(type==='pick-p1'){
-    actionEl.textContent='PICKED · 玩家一选择';
-    badgeEl.textContent='PICK · P1';
-  } else {
-    actionEl.textContent='PICKED · 玩家二选择';
-    badgeEl.textContent='PICK · P2';
+  const sp = document.getElementById('spotlight');
+  sp.classList.remove('show', 'spot-blue', 'spot-red', 'spot-ban');
+  void sp.offsetWidth; // force reflow
+
+  const imgEl = document.getElementById('spot-img');
+  imgEl.src = char.img || '';
+  imgEl.style.objectPosition = char.facePos || 'center 20%';
+
+  document.getElementById('spot-name').textContent = char.name || '';
+  document.getElementById('spot-en-name').textContent = (char.en || '').toUpperCase();
+
+  const elMeta = window.WUWA_ELEMENTS && window.WUWA_ELEMENTS[char.el] ? window.WUWA_ELEMENTS[char.el] : { name: char.el, color: '#00d2ff' };
+  const elPill = document.getElementById('spot-element-pill');
+  if(elPill){
+    elPill.textContent = `${elMeta.name || char.el} · ${(char.el || '').toUpperCase()}`;
+    elPill.style.color = elMeta.color;
+    elPill.style.borderColor = elMeta.color;
   }
 
-  sp.className='show spot-'+type;
-  spotTimer=setTimeout(()=>sp.classList.remove('show'),2600);
+  const rolePill = document.getElementById('spot-role-pill');
+  if(rolePill){
+    const roleText = char.role === 'mainDPS' ? `${char.gen ? char.gen+'代' : ''}主C` : char.role === 'subDPS' ? '副C辅助' : char.role === 'healer' ? '生存治疗' : '4星专属';
+    rolePill.textContent = `${char.star || 5}★ ${roleText}`;
+  }
+
+  const actionEl = document.getElementById('spot-action');
+  const badgeEl = document.getElementById('spot-badge');
+
+  if(type === 'ban'){
+    sp.classList.add('spot-ban');
+    badgeEl.textContent = '✖ HERO BANNED';
+    badgeEl.style.background = 'rgba(255, 30, 30, 0.9)';
+    badgeEl.style.color = '#fff';
+    badgeEl.style.boxShadow = '0 0 16px rgba(255, 30, 30, 0.8)';
+    actionEl.textContent = '英雄已禁用 · BANNED FROM MATCH';
+  } else if(type === 'pick-p1'){
+    sp.classList.add('spot-blue');
+    badgeEl.textContent = '✦ BLUE SIDE LOCK-IN';
+    badgeEl.style.background = 'var(--blue-team)';
+    badgeEl.style.color = '#000';
+    badgeEl.style.boxShadow = '0 0 16px var(--blue-team-glow)';
+    actionEl.textContent = '蓝方玩家一锁定 · LOCKED IN';
+  } else {
+    sp.classList.add('spot-red');
+    badgeEl.textContent = '✦ RED SIDE LOCK-IN';
+    badgeEl.style.background = 'var(--red-team)';
+    badgeEl.style.color = '#fff';
+    badgeEl.style.boxShadow = '0 0 16px var(--red-team-glow)';
+    actionEl.textContent = '红方玩家二锁定 · LOCKED IN';
+  }
+
+  sp.classList.add('show');
+  spotTimer = setTimeout(() => {
+    sp.classList.remove('show');
+  }, 3200);
 }
 
 function checkSpotlight(S){
-  const p1b=(S.p1bans||[]).length;
-  const p2b=(S.p2bans||[]).length;
-  const p1p=(S.p1picks||[]).length;
-  const p2p=(S.p2picks||[]).length;
+  const p1b = (S.p1bans || []).length;
+  const p2b = (S.p2bans || []).length;
+  const p1p = (S.p1picks || []).length;
+  const p2p = (S.p2picks || []).length;
 
-  if(p1b>prevCounts.p1bans){
-    const ch=S.p1bans[p1b-1];
-    if(ch)showSpotlight(ch,'ban');
-  } else if(p2b>prevCounts.p2bans){
-    const ch=S.p2bans[p2b-1];
-    if(ch)showSpotlight(ch,'ban');
-  } else if(p1p>prevCounts.p1picks){
-    const ch=S.p1picks[p1p-1];
-    if(ch)showSpotlight(ch,'pick-p1');
-  } else if(p2p>prevCounts.p2picks){
-    const ch=S.p2picks[p2p-1];
-    if(ch)showSpotlight(ch,'pick-p2');
+  if(p1b > prevCounts.p1bans){
+    const ch = S.p1bans[p1b - 1];
+    if(ch) showSpotlight(ch, 'ban');
+  } else if(p2b > prevCounts.p2bans){
+    const ch = S.p2bans[p2b - 1];
+    if(ch) showSpotlight(ch, 'ban');
+  } else if(p1p > prevCounts.p1picks){
+    const ch = S.p1picks[p1p - 1];
+    if(ch) showSpotlight(ch, 'pick-p1');
+  } else if(p2p > prevCounts.p2picks){
+    const ch = S.p2picks[p2p - 1];
+    if(ch) showSpotlight(ch, 'pick-p2');
   }
 
-  prevCounts={p1bans:p1b,p2bans:p2b,p1picks:p1p,p2picks:p2p};
+  prevCounts = { p1bans: p1b, p2bans: p2b, p1picks: p1p, p2picks: p2p };
 }
 
-/* ── mode switch ── */
+// ══════════════════════════════════════════════════════════════
+// 5. 倒计时器 (Center Ring Timer)
+// ══════════════════════════════════════════════════════════════
+let _bpTimerRaf = null;
+let _bpTS = null, _bpTD = 0, _bpPlayer = 1, _bpPhase = 'pick';
+
+function _bpTimerFrac(){
+  if(!_bpTS || !_bpTD) return 1;
+  return Math.max(0, 1 - (Date.now() - _bpTS) / (_bpTD * 1000));
+}
+
+function _bpTimerRender(){
+  const widget = document.getElementById('bp-timer-widget');
+  const arc = document.getElementById('timer-arc');
+  const num = document.getElementById('timer-num-val');
+  const lbl = document.getElementById('timer-turn-lbl');
+  if(!widget || !arc || !num) return;
+
+  if(!_bpTS){
+    widget.classList.remove('visible');
+    return;
+  }
+  widget.classList.add('visible');
+
+  const pColor = _bpPlayer === 1 ? 'var(--blue-team)' : 'var(--red-team)';
+  lbl.style.color = pColor;
+  lbl.textContent = `P${_bpPlayer} · ${_bpPhase === 'ban' ? 'BAN' : 'PICK'}`;
+
+  if(!_bpTD){
+    arc.setAttribute('stroke', 'rgba(0, 210, 255, 0.3)');
+    arc.style.strokeDashoffset = '0';
+    num.textContent = '∞';
+    return;
+  }
+
+  const frac = _bpTimerFrac();
+  const C = 2 * Math.PI * 50; // 314.16
+  arc.style.strokeDashoffset = C * (1 - frac);
+
+  const col = frac > 0.4 ? pColor : frac > 0.15 ? 'var(--gold-hex)' : 'var(--ban-red)';
+  arc.setAttribute('stroke', col);
+
+  const rem = Math.max(0, _bpTD - (Date.now() - _bpTS) / 1000);
+  num.textContent = Math.ceil(rem);
+  num.style.color = frac <= 0.15 ? '#ff4d4f' : frac <= 0.4 ? 'var(--gold-hex)' : '#fff';
+}
+
+function updateBPTimer(S){
+  const widget = document.getElementById('bp-timer-widget');
+  if(!widget) return;
+  const isDone = S.done || (S.step || 0) >= SEQ.length;
+
+  if(isDone || !S.timerStart){
+    widget.classList.remove('visible');
+    if(_bpTimerRaf){ cancelAnimationFrame(_bpTimerRaf); _bpTimerRaf = null; }
+    _bpTS = null;
+    return;
+  }
+
+  const newTS = S.timerStart || null;
+  const newTD = typeof S.timerDuration === 'number' ? S.timerDuration : 0;
+  const step = S.step || 0;
+  if(step < SEQ.length && !S.done && newTS){
+    _bpPlayer = SEQ[step].player;
+    _bpPhase = SEQ[step].phase;
+  }
+  _bpTS = newTS; _bpTD = newTD;
+
+  if(_bpTimerRaf){ cancelAnimationFrame(_bpTimerRaf); _bpTimerRaf = null; }
+  if(newTS && _bpTD > 0){
+    function tick(){
+      if(!_bpTS || S.done || (S.step || 0) >= SEQ.length){
+        widget.classList.remove('visible');
+        return;
+      }
+      _bpTimerRender();
+      if(_bpTS && _bpTimerFrac() > 0) _bpTimerRaf = requestAnimationFrame(tick);
+      else _bpTimerRender();
+    }
+    _bpTimerRaf = requestAnimationFrame(tick);
+  } else {
+    _bpTimerRender();
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// 6. 全局状态渲染 (State Render & Updates)
+// ══════════════════════════════════════════════════════════════
 function applyMode(mode){
-  if(_obsMode===mode)return;
-  _obsMode=mode;
-  SEQ=mode==='pick_only'?SEQ_PICK_ONLY:SEQ_BAN_PICK;
-  BANS_EACH=mode==='pick_only'?0:4;
-  document.body.classList.toggle('mode-pick-only',mode==='pick_only');
+  if(_obsMode === mode) return;
+  _obsMode = mode;
+  SEQ = mode === 'pick_only' ? SEQ_PICK_ONLY : SEQ_BAN_PICK;
+  BANS_EACH = mode === 'pick_only' ? 0 : 4;
 }
 
-/* ── main render ── */
 function renderFromState(S){
-  if(!S)return;
-  applyMode(S.mode||'ban_pick');
-  const p1n=S.p1name||'玩家一',p2n=S.p2name||'玩家二';
-  document.getElementById('hdr-p1-name').textContent=p1n;
-  document.getElementById('hdr-p2-name').textContent=p2n;
-  document.getElementById('hdr-p1-sub').textContent=S.p1sub||'旧雨杯参赛选手';
-  document.getElementById('hdr-p2-sub').textContent=S.p2sub||'旧雨杯参赛选手';
-  document.getElementById('p1-panel-name').textContent=p1n;
-  document.getElementById('p2-panel-name').textContent=p2n;
-  document.getElementById('score-lbl-p1').textContent=p1n;
-  document.getElementById('score-lbl-p2').textContent=p2n;
-  document.getElementById('score-p1').textContent=S.scoreP1||0;
-  document.getElementById('score-p2').textContent=S.scoreP2||0;
+  if(!S) return;
+  applyMode(S.mode || 'ban_pick');
 
-  const ai=getActiveInfo(S.step||0,S.done||false);
-  renderBanCards('p1-ban-cards',S.p1bans,1,ai);
-  renderBanCards('p2-ban-cards',S.p2bans,2,ai);
-  renderPickCards('p1-pick-cards',S.p1picks,1,ai);
-  renderPickCards('p2-pick-cards',S.p2picks,2,ai);
-  renderBanRow('p1-ban-row',S.p1bans,'p1-ban',BANS_EACH);
-  renderBanRow('p2-ban-row',S.p2bans,'p2-ban',BANS_EACH);
-  renderSeqBar(S.step||0,S.done||false);
+  const p1n = S.p1name || '玩家一', p2n = S.p2name || '玩家二';
+  document.getElementById('hdr-p1-name').textContent = p1n;
+  document.getElementById('hdr-p2-name').textContent = p2n;
+  document.getElementById('p1-panel-name').textContent = p1n;
+  document.getElementById('p2-panel-name').textContent = p2n;
+  document.getElementById('score-lbl-p1').textContent = p1n;
+  document.getElementById('score-lbl-p2').textContent = p2n;
+
+  const score1 = S.scoreP1 || 0;
+  const score2 = S.scoreP2 || 0;
+  document.getElementById('score-p1').textContent = score1;
+  document.getElementById('score-p2').textContent = score2;
+
+  // 比分晶石更新
+  for(let i=1; i<=3; i++){
+    const g1 = document.getElementById('gem-p1-'+i);
+    const g2 = document.getElementById('gem-p2-'+i);
+    if(g1) g1.classList.toggle('active', i <= score1);
+    if(g2) g2.classList.toggle('active', i <= score2);
+  }
+
+  const ai = getActiveInfo(S.step || 0, S.done || false);
+  renderBanCards('p1-ban-cards', S.p1bans, 1, ai);
+  renderBanCards('p2-ban-cards', S.p2bans, 2, ai);
+  renderPickCards('p1-pick-cards', S.p1picks, 1, ai);
+  renderPickCards('p2-pick-cards', S.p2picks, 2, ai);
+  renderSeqBar(S.step || 0, S.done || false);
   renderHolo(S);
   renderStatus(S);
   updateBPTimer(S);
 }
 
 function renderHolo(S){
-  const en=S.holoEnemies||[],cur=S.holoCurrentEnemy||0;
-  let h='';
-  en.forEach((name,i)=>{
-    let cls='enemy-slot';
-    if(i<cur)cls+=' defeated';else if(i===cur)cls+=' current';
-    h+=`<div class="${cls}"><div class="enemy-avatar">${name.charAt(0)}</div><div class="enemy-name">${name}</div></div>`;
+  const en = S.holoEnemies || [], cur = S.holoCurrentEnemy || 0;
+  let h = '';
+  en.forEach((name, i) => {
+    let cls = 'bt-holo-enemy-slot';
+    if(i < cur) cls += ' defeated';
+    else if(i === cur) cls += ' current';
+    h += `<div class="${cls}" title="${name}">${name.charAt(0)}</div>`;
   });
-  document.getElementById('holo-enemies').innerHTML=h;
-
-  const prevScore=parseInt(document.getElementById('holo-score-num').textContent)||0;
-  const newScore=S.holoScore||0;
-  document.getElementById('holo-score-num').textContent=newScore;
-
-  if(newScore>prevScore){
-    const diff=newScore-prevScore;
-    const el=document.createElement('div');
-    el.className='score-float';el.textContent='+'+diff;
-    const rect=document.getElementById('holo-score-num').getBoundingClientRect();
-    el.style.left=(rect.left+rect.width/2-20)+'px';
-    el.style.top=(rect.top-10)+'px';
-    document.body.appendChild(el);
-    setTimeout(()=>el.remove(),1500);
-  }
+  document.getElementById('holo-enemies').innerHTML = h;
+  document.getElementById('holo-score-num').textContent = S.holoScore || 0;
 }
 
-let lastHoloScore=0;
+let lastHoloScore = 0;
 function checkDeathFlash(S){
-  const cur=S.holoScore||0;
-  if(lastHoloScore>0&&cur===0){
-    const flash=document.getElementById('death-flash');
-    const txt=document.getElementById('death-text');
-    flash.classList.remove('active');txt.classList.remove('active');
-    flash.offsetHeight;
-    flash.classList.add('active');txt.classList.add('active');
-    setTimeout(()=>{flash.classList.remove('active');txt.classList.remove('active');},1300);
+  const cur = S.holoScore || 0;
+  if(lastHoloScore > 0 && cur === 0){
+    const flash = document.getElementById('death-flash');
+    flash.classList.remove('active');
+    void flash.offsetWidth;
+    flash.classList.add('active');
   }
-  lastHoloScore=cur;
+  lastHoloScore = cur;
 }
 
 function renderStatus(S){
-  const step=S.step||0,done=S.done||false;
-  const wo=document.getElementById('status-who'),ph=document.getElementById('status-phase');
-  if(done||step>=SEQ.length){
-    document.getElementById('phase-tag').textContent='BP 完成';
-    wo.textContent='BP 完成';wo.style.color='var(--gold)';ph.textContent='';
+  const step = S.step || 0, done = S.done || false;
+  const wo = document.getElementById('status-who');
+  const ph = document.getElementById('status-phase');
+  const tag = document.getElementById('phase-tag');
+  const hint = document.getElementById('status-turn-hint');
+
+  if(done || step >= SEQ.length){
+    tag.textContent = 'BP 完成 · DRAFT COMPLETE';
+    wo.textContent = 'BP 完成';
+    wo.style.color = 'var(--gold-hex)';
+    ph.textContent = '';
+    hint.textContent = 'ALL PICKS LOCKED IN';
+    const widget = document.getElementById('bp-timer-widget');
+    if(widget) widget.classList.remove('visible');
   } else {
-    const cur=SEQ[step];
-    let tag;
-    if(cur.phase==='ban'){
-      const r=step<4?1:2;
-      const n=step<4?step+1:step-9;
-      tag=`禁用第${r}轮 ${n}/4`;
+    const cur = SEQ[step];
+    if(cur.phase === 'ban'){
+      const r = step < 4 ? 1 : 2;
+      tag.textContent = `BAN PHASE ${r}`;
+      wo.textContent = `玩家${cur.player}`;
+      wo.style.color = cur.player === 1 ? 'var(--blue-team)' : 'var(--red-team)';
+      ph.textContent = '▸ 禁用阶段';
+      hint.textContent = `PLAYER ${cur.player} IS BANNING...`;
     } else {
-      const g=_obsMode==='pick_only'
-        ?(step<6?1:step<12?2:3)
-        :(step<10?1:step<20?2:3);
-      tag=`第${g}组 PICK`;
+      const g = _obsMode === 'pick_only' ? (step < 6 ? 1 : step < 12 ? 2 : 3) : (step < 10 ? 1 : step < 20 ? 2 : 3);
+      tag.textContent = `PICK PHASE ${g}`;
+      wo.textContent = `玩家${cur.player}`;
+      wo.style.color = cur.player === 1 ? 'var(--blue-team)' : 'var(--red-team)';
+      ph.textContent = '▸ 选择阶段';
+      hint.textContent = `PLAYER ${cur.player} IS SELECTING...`;
     }
-    document.getElementById('phase-tag').textContent=tag;
-    wo.textContent=`玩家${cur.player}`;
-    wo.style.color=cur.player===1?'var(--p1)':'var(--p2)';
-    ph.textContent=cur.phase==='ban'?'▸ 禁用阶段':'▸ 选择阶段';
   }
-  document.getElementById('status-seq').innerHTML=SEQ.map((s,i)=>{
-    let cls='seq-dot '+(s.phase==='ban'?'ban-dot':'pick-dot');
-    if(i<step)cls+=' done-dot';
-    if(i===step&&!done)cls+=' cur-dot';
-    return `<div class="${cls}"></div>`;
-  }).join('');
 }
 
-/* ── 音效解锁 ── */
-(function(){
-  const btn=document.getElementById('sfx-unlock');
-  function unlock(){
-    _sfxCtxGet();
-    btn.classList.add('hidden');
-    setTimeout(()=>btn.remove(),600);
-    document.removeEventListener('click',unlock);
-    document.removeEventListener('keydown',unlock);
-  }
-  document.addEventListener('click',unlock);
-  document.addEventListener('keydown',unlock);
-  btn.addEventListener('click',e=>{e.stopPropagation();unlock();});
-})();
-
-/* ── Sound Effects ── */
-let _sfxCtx=null;
+// ══════════════════════════════════════════════════════════════
+// 7. 电竞赛事 Web Audio 合成音效引擎 (Sub Bass Drop & Crystal Chime)
+// ══════════════════════════════════════════════════════════════
+let _sfxCtx = null;
 function _sfxCtxGet(){
-  if(!_sfxCtx)_sfxCtx=new(window.AudioContext||window.webkitAudioContext)();
-  if(_sfxCtx.state==='suspended')_sfxCtx.resume();
+  if(!_sfxCtx) _sfxCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(_sfxCtx.state === 'suspended') _sfxCtx.resume();
   return _sfxCtx;
-}
-function _makeReverb(ctx,dur,decay){
-  const len=ctx.sampleRate*dur;
-  const buf=ctx.createBuffer(2,len,ctx.sampleRate);
-  for(let ch=0;ch<2;ch++){const d=buf.getChannelData(ch);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}
-  const c=ctx.createConvolver();c.buffer=buf;return c;
 }
 
 function playBanSFX(){
-  const ctx=_sfxCtxGet();const t=ctx.currentTime;
-  const master=ctx.createGain();master.gain.value=0.82;master.connect(ctx.destination);
-  const rev=_makeReverb(ctx,0.55,3.2);rev.connect(master);
+  try {
+    const ctx = _sfxCtxGet(); const t = ctx.currentTime;
+    
+    // 1. Heavy distorted sub impact
+    const subOsc = ctx.createOscillator();
+    const subGain = ctx.createGain();
+    subOsc.type = 'sawtooth';
+    subOsc.frequency.setValueAtTime(140, t);
+    subOsc.frequency.exponentialRampToValueAtTime(30, t + 0.6);
+    subGain.gain.setValueAtTime(0.8, t);
+    subGain.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+    subOsc.connect(subGain);
+    subGain.connect(ctx.destination);
+    subOsc.start(t);
+    subOsc.stop(t + 0.75);
 
-  // ① 低沉下滑冲击
-  const o1=ctx.createOscillator();const g1=ctx.createGain();
-  o1.type='sine';
-  o1.frequency.setValueAtTime(210,t);
-  o1.frequency.exponentialRampToValueAtTime(40,t+0.38);
-  g1.gain.setValueAtTime(0.95,t);
-  g1.gain.exponentialRampToValueAtTime(0.001,t+0.46);
-  o1.connect(g1);g1.connect(rev);g1.connect(master);
-  o1.start(t);o1.stop(t+0.52);
-
-  // ② 金属质感噪声 + bandpass
-  const nLen=Math.floor(ctx.sampleRate*0.2);
-  const nBuf=ctx.createBuffer(1,nLen,ctx.sampleRate);
-  const nd=nBuf.getChannelData(0);
-  for(let i=0;i<nLen;i++)nd[i]=(Math.random()*2-1)*Math.pow(1-i/nLen,2.2);
-  const ns=ctx.createBufferSource();ns.buffer=nBuf;
-  const nf=ctx.createBiquadFilter();nf.type='bandpass';nf.frequency.value=260;nf.Q.value=1.1;
-  const ng=ctx.createGain();ng.gain.setValueAtTime(0.5,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.2);
-  ns.connect(nf);nf.connect(ng);ng.connect(rev);ng.connect(master);ns.start(t);
-
-  // ③ 短促高频刮擦
-  const s2Len=Math.floor(ctx.sampleRate*0.055);
-  const s2Buf=ctx.createBuffer(1,s2Len,ctx.sampleRate);
-  const s2d=s2Buf.getChannelData(0);
-  for(let i=0;i<s2Len;i++)s2d[i]=(Math.random()*2-1)*Math.pow(1-i/s2Len,1.4);
-  const s2=ctx.createBufferSource();s2.buffer=s2Buf;
-  const sf2=ctx.createBiquadFilter();sf2.type='highpass';sf2.frequency.value=2600;
-  const sg2=ctx.createGain();sg2.gain.value=0.2;
-  s2.connect(sf2);sf2.connect(sg2);sg2.connect(master);s2.start(t);
+    // 2. Laser Slash Whoosh
+    const slashOsc = ctx.createOscillator();
+    const slashGain = ctx.createGain();
+    slashOsc.type = 'sawtooth';
+    slashOsc.frequency.setValueAtTime(1800, t);
+    slashOsc.frequency.exponentialRampToValueAtTime(80, t + 0.35);
+    slashGain.gain.setValueAtTime(0.6, t);
+    slashGain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+    slashOsc.connect(slashGain);
+    slashGain.connect(ctx.destination);
+    slashOsc.start(t);
+    slashOsc.stop(t + 0.45);
+  } catch(e){}
 }
 
 function playPickSFX(){
-  const ctx=_sfxCtxGet();const t=ctx.currentTime;
-  const master=ctx.createGain();master.gain.value=0.78;master.connect(ctx.destination);
-  const rev=_makeReverb(ctx,1.4,2.4);rev.connect(master);
+  try {
+    const ctx = _sfxCtxGet(); const t = ctx.currentTime;
+    
+    // 1. Sub Bass 808 Impact (Deep rumble)
+    const subOsc = ctx.createOscillator();
+    const subGain = ctx.createGain();
+    subOsc.type = 'sine';
+    subOsc.frequency.setValueAtTime(90, t);
+    subOsc.frequency.exponentialRampToValueAtTime(28, t + 0.8);
+    subGain.gain.setValueAtTime(0.7, t);
+    subGain.gain.exponentialRampToValueAtTime(0.001, t + 0.9);
+    subOsc.connect(subGain);
+    subGain.connect(ctx.destination);
+    subOsc.start(t);
+    subOsc.stop(t + 0.95);
 
-  [{freq:587.3,dt:0},{freq:880,dt:0.15}].forEach(({freq,dt})=>{
-    const nt=t+dt;
-    const o=ctx.createOscillator();const g=ctx.createGain();
-    o.type='sine';o.frequency.value=freq;
-    g.gain.setValueAtTime(0,nt);g.gain.linearRampToValueAtTime(0.48,nt+0.008);
-    g.gain.exponentialRampToValueAtTime(0.001,nt+1.0);
-    o.connect(g);g.connect(rev);g.connect(master);o.start(nt);o.stop(nt+1.1);
-    const o2=ctx.createOscillator();const g2=ctx.createGain();
-    o2.type='sine';o2.frequency.value=freq*2.756;
-    g2.gain.setValueAtTime(0,nt);g2.gain.linearRampToValueAtTime(0.14,nt+0.005);
-    g2.gain.exponentialRampToValueAtTime(0.001,nt+0.22);
-    o2.connect(g2);g2.connect(rev);g2.connect(master);o2.start(nt);o2.stop(nt+0.28);
-    const o3=ctx.createOscillator();const g3=ctx.createGain();
-    o3.type='sine';o3.frequency.value=freq*5.4;
-    g3.gain.setValueAtTime(0,nt);g3.gain.linearRampToValueAtTime(0.06,nt+0.003);
-    g3.gain.exponentialRampToValueAtTime(0.001,nt+0.08);
-    o3.connect(g3);g3.connect(master);o3.start(nt);o3.stop(nt+0.1);
-  });
+    // 2. Crystal Chime Triad (Major Chord Resonance)
+    [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const st = t + idx * 0.035;
+      g.gain.setValueAtTime(0, st);
+      g.gain.linearRampToValueAtTime(0.35, st + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, st + 0.75);
+      osc.connect(g);
+      g.connect(ctx.destination);
+      osc.start(st);
+      osc.stop(st + 0.8);
+    });
+
+    // 3. Metallic Latch Click
+    const clickOsc = ctx.createOscillator();
+    const clickGain = ctx.createGain();
+    clickOsc.type = 'triangle';
+    clickOsc.frequency.setValueAtTime(2200, t);
+    clickOsc.frequency.exponentialRampToValueAtTime(400, t + 0.08);
+    clickGain.gain.setValueAtTime(0.4, t);
+    clickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    clickOsc.connect(clickGain);
+    clickGain.connect(ctx.destination);
+    clickOsc.start(t);
+    clickOsc.stop(t + 0.1);
+  } catch(e){}
 }
 
-/* ── BP countdown timer ── */
-let _bpTimerRaf=null;
-let _bpTS=null,_bpTD=0,_bpPlayer=1,_bpPhase='pick';
-
-function _bpTimerFrac(){
-  if(!_bpTS||!_bpTD)return 1;
-  return Math.max(0,1-(Date.now()-_bpTS)/(_bpTD*1000));
-}
-
-function _bpTimerRender(){
-  const el=document.getElementById('bp-timer');
-  const arc=document.getElementById('bp-timer-arc');
-  const num=document.getElementById('bp-timer-num');
-  const sub=document.getElementById('bp-timer-sub');
-  if(!el||!arc||!num)return;
-
-  if(!_bpTS){el.classList.remove('t-show');return;}
-  el.classList.add('t-show');
-
-  // sub label
-  if(sub){
-    const pColor=_bpPlayer===1?'var(--p1)':'var(--p2)';
-    sub.style.color=pColor;
-    sub.textContent=`P${_bpPlayer} · ${_bpPhase==='ban'?'BAN':'PICK'}`;
+// 音效解锁
+(function(){
+  const btn = document.getElementById('sfx-unlock');
+  function unlock(){
+    _sfxCtxGet();
+    btn.classList.add('hidden');
+    document.removeEventListener('click', unlock);
   }
+  document.addEventListener('click', unlock);
+  btn.addEventListener('click', e => { e.stopPropagation(); unlock(); });
+})();
 
-  if(!_bpTD){
-    // infinite
-    arc.setAttribute('stroke','rgba(106,184,240,0.28)');
-    arc.style.strokeDashoffset='0';
-    num.textContent='∞';
-    num.setAttribute('fill','rgba(106,184,240,0.4)');
-    return;
-  }
-
-  const frac=_bpTimerFrac();
-  const C=2*Math.PI*63;
-  arc.style.strokeDashoffset=C*(1-frac);
-  const col=frac>0.5?'#3a8fff':frac>0.2?'#d4a020':'#cc2020';
-  arc.setAttribute('stroke',col);
-  const rem=Math.max(0,_bpTD-(Date.now()-_bpTS)/1000);
-  num.textContent=Math.ceil(rem);
-  num.setAttribute('fill',frac<0.2?'#ff8888':frac<0.5?'#ffd060':'#a8d8f7');
-}
-
-function _bpTimerRunRaf(){
-  if(_bpTimerRaf){cancelAnimationFrame(_bpTimerRaf);_bpTimerRaf=null;}
-  if(!_bpTS)return;
-  if(!_bpTD){_bpTimerRender();return;} // infinite: static render
-  function tick(){
-    _bpTimerRender();
-    if(_bpTS&&_bpTimerFrac()>0){
-      _bpTimerRaf=requestAnimationFrame(tick);
-    } else {
-      _bpTimerRaf=null;
-      _bpTimerRender();
-    }
-  }
-  _bpTimerRaf=requestAnimationFrame(tick);
-}
-
-function updateBPTimer(S){
-  const newTS=S.timerStart||null;
-  const newTD=typeof S.timerDuration==='number'?S.timerDuration:0;
-  const step=S.step||0;
-  if(step<SEQ.length&&!S.done&&newTS){
-    _bpPlayer=SEQ[step].player;
-    _bpPhase=SEQ[step].phase;
-  }
-  const changed=newTS!==_bpTS||newTD!==_bpTD;
-  _bpTS=newTS;_bpTD=newTD;
-  if(changed){
-    if(_bpTimerRaf){cancelAnimationFrame(_bpTimerRaf);_bpTimerRaf=null;}
-    if(newTS)_bpTimerRunRaf();
-    else _bpTimerRender();
-  }
-}
-
-/* ── init ── */
+// 初始化并启动监听
 renderFromState({
-  p1bans:[],p2bans:[],p1picks:[],p2picks:[],
-  step:0,done:false,scoreP1:0,scoreP2:0,
-  holoEnemies:['飞廉之猩','燎照之骑','无冠者','芙露德莉斯','赫卡忒','罗蕾莱'],
-  holoCurrentEnemy:0,holoScore:0
+  p1bans: [], p2bans: [], p1picks: [], p2picks: [],
+  step: 0, done: false, scoreP1: 0, scoreP2: 0,
+  holoEnemies: ['飞廉之猩','燎照之骑','无冠者','芙露德莉斯','赫卡忒','罗蕾莱'],
+  holoCurrentEnemy: 0, holoScore: 0
 });
 
-setInterval(()=>{
-  const S=loadState();
-  if(S){checkSpotlight(S);renderFromState(S);checkDeathFlash(S);}
-},300);
-window.addEventListener('storage',()=>{
-  const S=loadState();
-  if(S){checkSpotlight(S);renderFromState(S);checkDeathFlash(S);}
+setInterval(() => {
+  const S = loadState();
+  if(S){ checkSpotlight(S); renderFromState(S); checkDeathFlash(S); }
+}, 300);
+
+window.addEventListener('storage', () => {
+  const S = loadState();
+  if(S){ checkSpotlight(S); renderFromState(S); checkDeathFlash(S); }
 });
 </script>
 </body>

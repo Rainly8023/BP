@@ -193,57 +193,9 @@ html,body{width:1920px;height:1080px;overflow:hidden;
   <button class="c-btn red" onclick="clearStats()">清空数据</button>
 </div>
 
+<script src="./characters-data.js"></script>
 <script>
-const CHARS_INFO=[
-  {name:'今汐',el:'Spectro',img:'./images/jx.jpg'},
-  {name:'珂莱塔',el:'Glacio',img:'./images/klt.jpg'},
-  {name:'椿',el:'Havoc',img:'./images/c.jpg'},
-  {name:'漂泊者·衍射',el:'Spectro',img:'./images/manys.jpg'},
-  {name:'漂泊者·湮灭',el:'Havoc',img:'./images/manym.jpg'},
-  {name:'吟霖',el:'Electro',img:'./images/ys.jpg'},
-  {name:'维里奈',el:'Spectro',img:'./images/wln.jpg'},
-  {name:'相里要',el:'Electro',img:'./images/xly.jpg'},
-  {name:'长离',el:'Fusion',img:'./images/cl.jpg'},
-  {name:'布兰特',el:'Fusion',img:'./images/blt.jpg'},
-  {name:'折枝',el:'Glacio',img:'./images/zz.jpg'},
-  {name:'卡卡罗',el:'Electro',img:'./images/kkl.jpg'},
-  {name:'凌阳',el:'Glacio',img:'./images/ly.jpg'},
-  {name:'安可',el:'Fusion',img:'./images/ak.jpg'},
-  {name:'守岸人',el:'Spectro',img:'./images/sar.jpg'},
-  {name:'菲比',el:'Spectro',img:'./images/fb.jpg'},
-  {name:'忌炎',el:'Aero',img:'./images/jy.jpg'},
-  {name:'坎特蕾拉',el:'Havoc',img:'./images/ll.jpg'},
-  {name:'赞妮',el:'Spectro',img:'./images/zn.jpg'},
-  {name:'夏空',el:'Aero',img:'./images/xk.jpg'},
-  {name:'卡提希娅',el:'Aero',img:'./images/kt.jpg'},
-  {name:'露帕',el:'Fusion',img:'./images/lp.jpg'},
-  {name:'琳奈',el:'Spectro',img:'./images/ln.jpg'},
-  {name:'莫宁',el:'Fusion',img:'./images/mn.jpg'},
-  {name:'爱弥斯',el:'Fusion',img:'./images/am.jpg'},
-  {name:'陆·赫斯',el:'Spectro',img:'./images/lh.jpg'},
-  {name:'西格莉卡',el:'Aero',img:'./images/SG.jpg'},
-  {name:'洛可可',el:'Havoc',img:'./images/lkk.jpg'},
-  {name:'奥古斯塔',el:'Electro',img:'./images/ag.jpg'},
-  {name:'尤诺',el:'Glacio',img:'./images/yn.jpg'},
-  {name:'仇远',el:'Aero',img:'./images/cy.jpg'},
-  {name:'弗洛洛',el:'Havoc',img:'./images/fll.jpg'},
-  {name:'千咲',el:'Havoc',img:'./images/qx.jpg'},
-  {name:'秧秧',el:'Aero',img:'./images/yy.jpg'},
-  {name:'白芷',el:'Glacio',img:'./images/bz.jpg'},
-  {name:'炽霞',el:'Fusion',img:'./images/cx.jpg'},
-  {name:'散华',el:'Glacio',img:'./images/sh.jpg'},
-  {name:'釉瑚',el:'Glacio',img:'./images/yh.jpg'},
-  {name:'丹瑾',el:'Havoc',img:'./images/dj.jpg'},
-  {name:'莫特斐',el:'Fusion',img:'./images/mtf.jpg'},
-  {name:'渊武',el:'Electro',img:'./images/yw.jpg'},
-  {name:'秋水',el:'Aero',img:'./images/qs.jpg'},
-  {name:'桃祈',el:'Havoc',img:'./images/tq.jpg'},
-  {name:'灯灯',el:'Electro',img:'./images/dd.jpg'},
-  {name:'卜灵',el:'Electro',img:'./images/bl.jpg'},
-  {name:'鉴心',el:'Aero',img:'./images/jx1.jpg'},
-  {name:'漂泊者·气动',el:'Aero',img:'./images/pd.jpg'},
-  {name:'嘉贝丽娜',el:'Fusion',img:'./images/jb.jpg'},
-];
+const CHARS_INFO = window.ALL_CHARACTERS || [];
 const EL_ZH={Fusion:'热熔',Glacio:'冷凝',Electro:'导电',Aero:'气动',Spectro:'衍射',Havoc:'湮灭'};
 const CHAR_MAP={};CHARS_INFO.forEach(c=>CHAR_MAP[c.name]=c);
 
